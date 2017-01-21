@@ -1,0 +1,28 @@
+accessControl:
+  enabled: false
+api:
+  allowCrossOrigin: true
+  key: 1D8DF67AD9594E81A44830CF33936F55
+plugins:
+  announcements:
+    channels:
+      _important:
+        read_until: 1478614200
+  cura:
+    cura_engine: /opt/cura/CuraEngine
+  discovery:
+    upnpUuid: 452f54a5-65e9-4251-918d-578923a26612
+serial:
+  autoconnect: true
+  baudrate: 0
+  port: AUTO
+server:
+  firstRun: false
+  secretKey: Dnk5IiOXoMl7ZeKWLDugMEwjjgW3uWtE
+  seenWizards:
+    corewizard: null
+    cura: null
+    softwareupdate: null
+slicing:
+  defaultProfiles:
+    cura: ultimaker
