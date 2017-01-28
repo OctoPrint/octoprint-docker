@@ -10,5 +10,5 @@ services:
 script:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
   - docker build --build-arg tag=$TAG -t gaetancollaud/octoprint:$TAG .
-  - if [[ "$TAG" != "master" ]]; docker push gaetancollaud/octoprint:$TAG
+  - if [[ "$TAG" != "master" ]]; then docker push gaetancollaud/octoprint:$TAG; fi
   - if [[ "$TAG" == "master" ]]; then docker tag gaetancollaud/octoprint:$TAG gaetancollaud/octoprint:latest && docker push gaetancollaud/octoprint:latest; fi
