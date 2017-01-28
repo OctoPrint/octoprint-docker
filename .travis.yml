@@ -2,16 +2,13 @@ sudo: required
 
 env:
   global:
-    - DOCKER_COMPOSE_VERSION: 1.4.2
     - TAG: master
-    - IMAGE_NAME: gaetancollaud/octoprint
 
 services:
   - docker
 
 script:
-  - docker build --build-arg tag=$TAG -t $IMAGE_NAME:$TAG .
-
-after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - docker push $IMAGE_NAME:$TAG
+  - docker build --build-arg tag=$TAG -t gaetancollaud/octoprint:$TAG .
+  - docker push gaetancollaud/octoprint:$TAG
+  - if [[ "$TAG" == "master" ]]; then docker tag gaetancollaud/octoprint:$TAG gaetancollaud/octoprint:latest && docker push gaetancollaud/octoprint:latest; fi
