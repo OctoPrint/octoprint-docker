@@ -1,4 +1,4 @@
-# OctoPrint-docker
+# OctoPrint-docker [![Build Status](https://travis-ci.org/OctoPrint/docker.svg?branch=master)](https://travis-ci.org/OctoPrint/docker)
 
 This repository contains everything you need to run [Octoprint](https://github.com/foosel/OctoPrint) in a docker environment.
 
@@ -33,4 +33,4 @@ Octoprint allows you to make timelapses using an IP webcam and ffmpeg. It is ins
 
 ## Cura Engine
 
-Octoprint allows you to import .STL files and slice them directly in the application. For this you need to upload the profiles that you want to use (you can export them from Cura). Cura Engine is installed in `opt/cura/CuraEngine`.
+Octoprint allows you to import .STL files and slice them directly in the application. For this you need to upload the profiles that you want to use (you can export them from Cura). Cura Engine is installed in `/opt/cura/CuraEngine`.
