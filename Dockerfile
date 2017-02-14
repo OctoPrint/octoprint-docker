@@ -32,13 +32,15 @@ RUN cd /tmp \
 	&& mv -f ./build /opt/cura/ \
   && rm -Rf /tmp/*
 
+#Create an octoprint user
+RUN useradd -ms /bin/bash octoprint && adduser octoprint dialout
+RUN chown octoprint:octoprint /opt/octoprint
+USER octoprint
+
 #Install Octoprint
 RUN git clone --branch $tag https://github.com/foosel/OctoPrint.git /opt/octoprint \
   && virtualenv venv \
 	&& ./venv/bin/python setup.py install
 
-#Create an octoprint user
-RUN useradd -ms /bin/bash octoprint && adduser octoprint dialout
-USER octoprint
 
 CMD ["/opt/octoprint/venv/bin/octoprint", "serve"]
