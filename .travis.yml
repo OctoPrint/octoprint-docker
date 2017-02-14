@@ -10,5 +10,5 @@ services:
 script:
   - echo "Building octroprint branch/tag $TAG into gaetancollaud/octoprint:$DOCKER_TAG"
   - docker build --build-arg tag=$TAG -t gaetancollaud/octoprint:$DOCKER_TAG .
-  - if [[ "$TAG" != "automatic" ]]; then docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"; fi
-  - if [[ "$TAG" != "automatic" ]]; then docker push gaetancollaud/octoprint:$DOCKER_TAG; fi
+  - if [[ "$DOCKER_TAG" != "automatic" ]]; then docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"; fi
+  - if [[ "$DOCKER_TAG" != "automatic" ]]; then docker push gaetancollaud/octoprint:$DOCKER_TAG; fi
