@@ -22,7 +22,7 @@ You can display the log using `docker-compose logs -f`
 
 ## Without docker-compose
 ```
-docker run -d -v --device /dev/ttyACM0:/dev/ttyACM0 -p 5000:5000 --name octoprint gaetancollaud/octoprint
+docker run -d -v --device /dev/ttyACM0:/dev/ttyACM0 -p 5000:5000 --name octoprint octoprint/octoprint
 ```
 
 # Additional tools
