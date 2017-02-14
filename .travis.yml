@@ -2,13 +2,14 @@ sudo: required
 
 env:
   global:
-    - TAG: master
+    - TAG: automatic
 
 services:
   - docker
 
 script:
-  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - docker build --build-arg tag=$TAG -t gaetancollaud/octoprint:$TAG .
-  - if [[ "$TAG" != "master" ]]; then docker push gaetancollaud/octoprint:$TAG; fi
-  - if [[ "$TAG" == "master" ]]; then docker tag gaetancollaud/octoprint:$TAG gaetancollaud/octoprint:latest && docker push gaetancollaud/octoprint:latest; fi
+  - [[ $TAG == "master" ]] && DOCKER_TAG="latest" || DOCKER_TAG="$TAG"
+  - echo "Building octroprint branch/tag $TAG into gaetancollaud/octoprint:$DOCKER_TAG"
+  - if [[ "$TAG" != "automatic" ]]; then docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"; fi
+  - docker build --build-arg tag=$TAG -t gaetancollaud/octoprint:$DOCKER_TAG .
+  - if [[ "$TAG" != "automatic" ]]; then docker push gaetancollaud/octoprint:$DOCKER_TAG; fi
