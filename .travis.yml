@@ -2,7 +2,7 @@ sudo: required
 
 env:
   global:
-    - TAG=master DOCKERTAG=automatic
+    - TAG=master DOCKER_TAG=automatic
 
 services:
   - docker
