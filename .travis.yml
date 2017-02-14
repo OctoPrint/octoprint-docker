@@ -8,7 +8,7 @@ services:
   - docker
 
 script:
-  - [[ $TAG == "master" ]] && DOCKER_TAG="latest" || DOCKER_TAG="$TAG"
+  - if [[ $TAG == "master" ]]; then DOCKER_TAG="latest"; else DOCKER_TAG="$TAG"; fi
   - echo "Building octroprint branch/tag $TAG into gaetancollaud/octoprint:$DOCKER_TAG"
   - if [[ "$TAG" != "automatic" ]]; then docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"; fi
   - docker build --build-arg tag=$TAG -t gaetancollaud/octoprint:$DOCKER_TAG .
