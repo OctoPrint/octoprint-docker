@@ -2,8 +2,6 @@
 FROM python:2.7
 EXPOSE 5000
 LABEL maintainer "gaetancollaud@gmail.com"
-#Based on work done by gaetancollaud@gmail.com
-
 
 ENV CURA_VERSION=15.04.6
 ARG tag=master
@@ -37,7 +35,7 @@ RUN cd /tmp \
 
 #Create an octoprint user
 RUN useradd -ms /bin/bash octoprint && adduser octoprint dialout
-RUN chown octoprint:octoprint /opt/octoprint && chown octoprint:octoprint /user/octoprint
+RUN chown octoprint:octoprint /opt/octoprint
 USER octoprint
 
 #Install Octoprint
