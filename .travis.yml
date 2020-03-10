@@ -6,6 +6,10 @@ env:
 
 services:
   - docker
+arch:
+  - amd64
+  - arm64
+  - arm
 
 script:
   - echo "Building octroprint branch/tag $TAG into octoprint/octoprint:$DOCKER_TAG"
