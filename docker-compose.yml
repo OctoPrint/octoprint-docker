@@ -2,7 +2,7 @@ version: '2'
 services:
   octoprint:
     build: .
-    image: octoprint/octoprint
+    image: badsmoke/octoprint
     container_name: octoprint
     ports:
       - 5000:5000

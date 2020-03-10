@@ -1,18 +1,20 @@
-
-FROM python:2.7
+FROM python:3.8-slim-buster
 EXPOSE 5000
-LABEL maintainer "gaetancollaud@gmail.com"
+LABEL maintainer badsmoke "dockerhub@badcloud.eu"
 
 ENV CURA_VERSION=15.04.6
 ARG tag=master
 
 WORKDIR /opt/octoprint
 
-# In case of alpine
-#RUN apk update && apk upgrade \
-#    && apk add --no-cache bash git openssh gcc\
-#		&& pip install virtualenv \
-#		&& rm -rf /var/cache/apk/*
+
+#install necessary packages
+RUN apt update
+RUN apt install wget git xz-utils g++ make -y
+RUN rm -rf /var/lib/apt/lists/*
+
+#install venv            
+RUN pip install virtualenv
 
 #install ffmpeg
 RUN cd /tmp \
@@ -37,12 +39,10 @@ RUN chown octoprint:octoprint /opt/octoprint
 USER octoprint
 #This fixes issues with the volume command setting wrong permissions
 RUN mkdir /home/octoprint/.octoprint
-
 #Install Octoprint
 RUN git clone --branch $tag https://github.com/foosel/OctoPrint.git /opt/octoprint \
   && virtualenv venv \
 	&& ./venv/bin/python setup.py install
-
 VOLUME /home/octoprint/.octoprint
 
 

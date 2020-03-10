@@ -22,14 +22,22 @@ You can display the log using `docker-compose logs -f`
 
 ## Without docker-compose
 ```
-docker run -d -v ./config:/home/octoprint/.octoprint --device /dev/ttyACM0:/dev/ttyACM0 -p 5000:5000 --name octoprint octoprint/octoprint
+docker run -d -v ./config:/home/octoprint/.octoprint --device /dev/ttyACM0:/dev/ttyACM0 -p 5000:5000 --name octoprint badsmoke/octoprint
+
 ```
 
 # Additional tools
 
+## mjpg-streamer (webcam access)
+
+the matching mjpg-streamer container I have linked here with instruction:
+
+https://hub.docker.com/r/badsmoke/mjpg-streamer
+
+
 ## FFMPEG
 
-Octoprint allows you to make timelapses using an IP webcam and ffmpeg. It is installed in `/opt/ffmpeg`
+Octoprint allows you to make timelapses using an IP webcam and ffmpeg. It is installed in `/opt/ffmpeg/ffmpeg`
 
 ## Cura Engine
 
