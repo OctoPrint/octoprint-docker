@@ -2,7 +2,7 @@ sudo: required
 
 env:
   global:
-    - TAG=master DOCKER_TAG=1.40
+    - TAG=master DOCKER_TAG=1.40-python3
 
 services:
   - docker
