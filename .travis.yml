@@ -2,14 +2,14 @@ sudo: required
 
 env:
   global:
-    - TAG=master DOCKER_TAG=1.40-python3
+    - TAG=master DOCKER_TAG=automatic
 
 services:
   - docker
 arch:
   - amd64
   - arm64
-  - arm
+
 
 script:
   - echo "Building octroprint branch/tag $TAG into octoprint/octoprint:$DOCKER_TAG"
