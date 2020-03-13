@@ -2,6 +2,13 @@
 
 This repository contains everything you need to run [Octoprint](https://github.com/foosel/OctoPrint) in a docker environment.
 
+i have also built a python2 version, because not all plugins have been ported to python3 yet. So far there is no reason why not, I would still prefer python3.
+
+I noticed that I forgot one point in the tags, it will be fixed next week.
+
+the python3 version is available for all three major architectures (amd64, arm64, arm)
+the python2 will follow soon
+
 # Getting started
 
 ```
