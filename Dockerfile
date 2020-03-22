@@ -18,7 +18,18 @@ RUN mkdir /opt/cura \
 	| tar zx --strip 1 -C /opt/cura
 
 
-FROM python:3.8 AS compiler
+# build cura engine
+FROM python:3.8-slim-buster AS cura-compiler
+
+RUN apt install -y g++ make
+
+RUN mkdir -p /opt/cura/build
+WORKDIR /opt/cura
+COPY --from=deps /opt/cura .
+RUN make
+
+# build ocotprint
+FROM python:3.8-slim-buster AS compiler
 EXPOSE 5000
 LABEL maintainer badsmoke "dockerhub@badcloud.eu"
 
@@ -42,16 +53,7 @@ RUN cd /tmp \
 	&& tar xvf ffmpeg.tar.xz -C /opt/ffmpeg --strip-components=1 \
   && rm -Rf /tmp/*
 
-#install Cura
-RUN cd /tmp \
-  && wget https://github.com/Ultimaker/CuraEngine/archive/${CURA_VERSION}.tar.gz \
-  && tar -zxf ${CURA_VERSION}.tar.gz \
-	&& cd CuraEngine-${CURA_VERSION} \
-	&& mkdir build \
-	&& make \
-	&& mv -f ./build /opt/cura/ \
-  && rm -Rf /tmp/*
-
+FROM python:3.8-slim-buster
 #Create an octoprint user
 RUN useradd -ms /bin/bash octoprint && adduser octoprint dialout
 RUN chown octoprint:octoprint /opt/octoprint
