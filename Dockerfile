@@ -21,6 +21,7 @@ RUN mkdir /opt/cura \
 # build cura engine
 FROM python:slim AS cura-compiler
 
+RUN apt update && apt install g++ make
 RUN mkdir -p /opt/cura/build
 WORKDIR /opt/cura
 COPY --from=deps /opt/cura .
@@ -29,18 +30,29 @@ RUN make
 # build ocotprint
 FROM python:2.7-slim AS compiler
 
+RUN apt update && apt install make g++
+
+WORKDIR /opt/venv
 #install venv            
 RUN pip install virtualenv
+RUN python -m virtualenv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+COPY --from=deps /var/opt/octoprint .
+RUN python setup.py install
 
 
 FROM python:2.7-slim
 LABEL maintainer badsmoke "dockerhub@badcloud.eu"
+
 # Install cura engine and ffmpeg
 COPY --from=deps /opt/ffmpeg /opt/ffmpeg
 COPY --from=cura-compiler /opt/cura/build /opt/cura
 
 #Install Octoprint
-
+RUN mkdir /opt/octoprint
+WORKDIR /opt/octoprint
+COPY --from=compiler /opt/venv /opt/octoprint
+ENV PATH="/opt/octoprint:$PATH"
 
 EXPOSE 5000
 CMD ["/opt/octoprint/venv/bin/octoprint", "serve"]
