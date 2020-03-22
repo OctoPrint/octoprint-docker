@@ -9,7 +9,6 @@ WORKDIR /opt/octoprint
 
 
 #install necessary packages
-RUN apt update
 RUN apt install wget git xz-utils g++ make -y
 RUN rm -rf /var/lib/apt/lists/*
 
