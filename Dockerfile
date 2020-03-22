@@ -46,12 +46,6 @@ RUN rm -rf /var/lib/apt/lists/*
 #install venv            
 RUN pip install virtualenv
 
-#install ffmpeg
-RUN cd /tmp \
-  && wget -O ffmpeg.tar.xz https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-i686-static.tar.xz \
-	&& mkdir -p /opt/ffmpeg \
-	&& tar xvf ffmpeg.tar.xz -C /opt/ffmpeg --strip-components=1 \
-  && rm -Rf /tmp/*
 
 FROM python:3.8-slim-buster
 #Create an octoprint user
@@ -64,6 +58,8 @@ RUN mkdir /home/octoprint/.octoprint
 RUN git clone --branch $tag https://github.com/foosel/OctoPrint.git /opt/octoprint \
   && virtualenv venv \
 	&& ./venv/bin/python setup.py install
+
+COPY --from=deps /opt/ffmpeg /opt/ffmpeg
 VOLUME /home/octoprint/.octoprint
 
 
