@@ -1,39 +1,25 @@
 ARG PYTHON_IMAGE_TAG=2.7-slim-buster
-FROM curlimages/curl AS deps 
 
-ARG CURA_VERSION
-ENV CURA_VERSION ${CURA_VERSION:-15.04.6}
-ARG tag
-ENV tag ${tag:-master}
-
-RUN mkdir -p /var/opt/octoprint \
-	&& curl -L https://github.com/foosel/OctoPrint/archive/${VERSION}.tar.gz \
-	| tar zx --strip 1 -C /var/opt/octoprint
-
-RUN mkdir /opt/ffmpeg \
-	&& curl -L https://johnvansicle.com/ffmpeg/releases/ffmpeg-release-i686-static.tar.xz \
-	| tar zx --strip 1 -C /opt/ffmpeg
-
-RUN mkdir /opt/cura \
-	&& curl -L https://github.com/Ultimaker/CuraEngine/archive/${CURA_VERSION}.tar.gz \
-	| tar zx --strip 1 -C /opt/cura
-
-
-# build cura engine
 FROM python:${PYTHON_IMAGE_TAG} AS cura-compiler
 
 RUN apt update && apt install g++ make
-RUN mkdir -p /opt/cura/build
-WORKDIR /opt/cura
-COPY --from=deps /opt/cura .
+RUN curl -fsSLO https://github.com/Ultimaker/CuraEngine/archive/${CURA_VERSION}.tar.gz \
+  && mkdir -p /opt \
+  && tar -xzf ${CURA_VERSION}.tar.gz --strip-components=1 -C /opt --no-same-owner
 RUN make
 
 # build ocotprint
 FROM python:${PYTHON_IMAGE_TAG} AS compiler
 
+ARG tag
+ENV tag ${tag:-master}
+
 RUN apt update && apt install make g++
 
-WORKDIR /opt/venv
+RUN	curl -fsSLO --compressed https://github.com/foosel/OctoPrint/archive/${tag}.tar.gz \
+	&& mkdir -p /opt \
+  && tar xzf ${tag}.tar.gz --strip-components 1 -C /opt --no-same-owner
+
 #install venv            
 RUN pip install virtualenv
 RUN python -m virtualenv /opt/venv
@@ -42,14 +28,19 @@ COPY --from=deps /var/opt/octoprint .
 RUN python setup.py install
 
 
-FROM python:${PYTHON_IMAGE_TAG}
+FROM python:${PYTHON_IMAGE_TAG} AS build
 LABEL maintainer badsmoke "dockerhub@badcloud.eu"
 
 RUN groupadd --gid 1000 octoprint \
   && useradd --uid 1000 --gid octoprint --shell /bin/bash --create-home octoprint
-# Install cura engine and ffmpeg
+
+# Install cura engine
 COPY --from=deps /opt/ffmpeg /opt/ffmpeg
-COPY --from=cura-compiler /opt/cura/build /opt/cura
+
+# Install ffmpeg
+RUN mkdir /opt/ffmpeg \
+	&& curl -L https://johnvansicle.com/ffmpeg/releases/ffmpeg-release-i686-static.tar.xz \
+	| tar zx --strip 1 -C /opt/ffmpeg
 
 #Install Octoprint
 RUN mkdir /opt/octoprint
