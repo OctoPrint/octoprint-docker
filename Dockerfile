@@ -1,3 +1,4 @@
+ARG PYTHON_IMAGE_TAG=2.7-slim-buster
 FROM curlimages/curl AS deps 
 
 ARG CURA_VERSION
@@ -19,7 +20,7 @@ RUN mkdir /opt/cura \
 
 
 # build cura engine
-FROM python:slim AS cura-compiler
+FROM python:${PYTHON_IMAGE_TAG} AS cura-compiler
 
 RUN apt update && apt install g++ make
 RUN mkdir -p /opt/cura/build
@@ -28,7 +29,7 @@ COPY --from=deps /opt/cura .
 RUN make
 
 # build ocotprint
-FROM python:2.7-slim AS compiler
+FROM python:${PYTHON_IMAGE_TAG} AS compiler
 
 RUN apt update && apt install make g++
 
@@ -41,9 +42,11 @@ COPY --from=deps /var/opt/octoprint .
 RUN python setup.py install
 
 
-FROM python:2.7-slim
+FROM python:${PYTHON_IMAGE_TAG}
 LABEL maintainer badsmoke "dockerhub@badcloud.eu"
 
+RUN groupadd --gid 1000 octoprint \
+  && useradd --uid 1000 --gid octoprint --shell /bin/bash --create-home octoprint
 # Install cura engine and ffmpeg
 COPY --from=deps /opt/ffmpeg /opt/ffmpeg
 COPY --from=cura-compiler /opt/cura/build /opt/cura
@@ -55,4 +58,6 @@ COPY --from=compiler /opt/venv /opt/octoprint
 ENV PATH="/opt/octoprint:$PATH"
 
 EXPOSE 5000
-CMD ["/opt/octoprint/venv/bin/octoprint", "serve"]
+COPY docker-entrypoint.sh /usr/local/bin/
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["octoprint", "serve"]
