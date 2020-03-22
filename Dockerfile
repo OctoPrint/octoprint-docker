@@ -19,17 +19,16 @@ RUN mkdir /opt/cura \
 
 
 # build cura engine
-FROM python:3.8-slim-buster AS cura-compiler
+FROM python:alpine AS cura-compiler
 
-RUN apt install -y g++ make
-
+RUN apk add --no-cache linux-headers g++ make
 RUN mkdir -p /opt/cura/build
 WORKDIR /opt/cura
 COPY --from=deps /opt/cura .
 RUN make
 
 # build ocotprint
-FROM python:3.8-slim-buster AS compiler
+FROM python:2.7-alpine AS compiler
 EXPOSE 5000
 LABEL maintainer badsmoke "dockerhub@badcloud.eu"
 
@@ -39,28 +38,16 @@ ARG tag=master
 WORKDIR /opt/octoprint
 
 
-#install necessary packages
-RUN apt install wget git xz-utils g++ make -y
-RUN rm -rf /var/lib/apt/lists/*
-
 #install venv            
 RUN pip install virtualenv
 
 
-FROM python:3.8-slim-buster
-#Create an octoprint user
-RUN useradd -ms /bin/bash octoprint && adduser octoprint dialout
-RUN chown octoprint:octoprint /opt/octoprint
-USER octoprint
-#This fixes issues with the volume command setting wrong permissions
-RUN mkdir /home/octoprint/.octoprint
-#Install Octoprint
-RUN git clone --branch $tag https://github.com/foosel/OctoPrint.git /opt/octoprint \
-  && virtualenv venv \
-	&& ./venv/bin/python setup.py install
-
+FROM python:2.7-alpine
+# Install cura engine and ffmpeg
 COPY --from=deps /opt/ffmpeg /opt/ffmpeg
-VOLUME /home/octoprint/.octoprint
+COPY --from=cura-compiler /opt/cura/build /opt/cura
+
+#Install Octoprint
 
 
 CMD ["/opt/octoprint/venv/bin/octoprint", "serve"]
