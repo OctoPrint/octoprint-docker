@@ -28,14 +28,14 @@ ENV tag ${tag:-master}
 RUN apt update && apt install -y make g++ curl
 
 RUN	curl -fsSLO --compressed https://github.com/foosel/OctoPrint/archive/${tag}.tar.gz \
-	&& mkdir -p /opt \
-  && tar xzf ${tag}.tar.gz --strip-components 1 -C /opt --no-same-owner
+	&& mkdir -p /opt/venv \
+  && tar xzf ${tag}.tar.gz --strip-components 1 -C /opt/venv --no-same-owner
 
 #install venv            
 RUN pip install virtualenv
 RUN python -m virtualenv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
-WORKDIR /opt
+WORKDIR /opt/venv
 RUN python setup.py install
 
 
@@ -44,15 +44,15 @@ LABEL maintainer badsmoke "dockerhub@badcloud.eu"
 
 RUN groupadd --gid 1000 octoprint \
   && useradd --uid 1000 --gid octoprint --shell /bin/bash --create-home octoprint
-
+USER octoprint
 
 #Install Octoprint, ffmpeg, and cura engine
-COPY --from=compiler /opt/venv /opt/octoprint
+COPY --from=compiler /opt/venv /opt/venv
 COPY --from=ffmpeg /opt /opt/ffmpeg
 COPY --from=cura-compiler /opt /opt/cura
 
 # symlink packages to path
-RUN ln -s /opt/octoprint/bin/octoprint /usr/local/bin/octoprint
+ENV PATH="/opt/venv/bin:$PATH"
 
 EXPOSE 5000
 COPY docker-entrypoint.sh /usr/local/bin/
