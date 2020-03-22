@@ -52,7 +52,8 @@ COPY --from=ffmpeg /opt /opt/ffmpeg
 COPY --from=cura-compiler /opt /opt/cura
 
 # symlink packages to path
-#RUN ln -s /opt/cura /usr/local/bin/cura
+RUN ln -s /opt/octoprint/bin/octoprint /usr/local/bin/octoprint
+
 EXPOSE 5000
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
