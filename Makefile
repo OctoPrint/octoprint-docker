@@ -22,3 +22,9 @@ build-stable:
 
 build-stable-python3:
 	docker build --build-arg PYTHON_IMAGE_TAG=slim-buster --build-arg tag=${VERSION} -t $(IMAGE):${VERSION}-python3 .
+
+release:
+	docker push $(IMAGE):latest
+	docker push $(IMAGE):${VERSION}
+	docker push $(IMAGE):python3
+	docker push $(IMAGE):${VERSION}-python3

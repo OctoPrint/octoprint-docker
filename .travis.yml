@@ -1,9 +1,5 @@
 sudo: required
 
-env:
-  global:
-    - TAG=master DOCKER_TAG=automatic
-
 services:
   - docker
 arch:
@@ -11,8 +7,16 @@ arch:
   - arm64
 
 
-script:
-  - echo "Building octroprint branch/tag $TAG into octoprint/octoprint:$DOCKER_TAG"
-  - docker build --build-arg tag=$TAG -t octoprint/octoprint:$DOCKER_TAG .
-  - if [[ "$DOCKER_TAG" != "automatic" ]]; then docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"; fi
-  - if [[ "$DOCKER_TAG" != "automatic" ]]; then docker push octoprint/octoprint:$DOCKER_TAG; fi
+stages:
+	- build
+	- deploy
+
+jobs:
+  include:
+    - stage: build
+      script: make build
+    - stage: deploy
+      script: docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      script: make release 
+      on:
+        branch: master
