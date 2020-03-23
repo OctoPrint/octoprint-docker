@@ -18,13 +18,13 @@ build-master-python3:
 	docker build --build-arg PYTHON_IMAGE_TAG=slim-buster -t $(IMAGE):python3
 
 build-stable:
-	docker build --build-arg PYTHON_IMAGE_TAG=$(PYTHON_IMAGE_TAG) --build-arg tag=${VERSION} -t $(IMAGE):${VERSION} .
+	docker build --build-arg PYTHON_IMAGE_TAG=$(PYTHON_IMAGE_TAG) --build-arg tag=$(VERSION) -t $(IMAGE):$(VERSION) .
 
 build-stable-python3:
-	docker build --build-arg PYTHON_IMAGE_TAG=slim-buster --build-arg tag=${VERSION} -t $(IMAGE):${VERSION}-python3 .
+	docker build --build-arg PYTHON_IMAGE_TAG=slim-buster --build-arg tag=$(VERSION) -t $(IMAGE):$(VERSION)-python3 .
 
 release:
 	docker push $(IMAGE):latest
-	docker push $(IMAGE):${VERSION}
+	docker push $(IMAGE):$(VERSION)
 	docker push $(IMAGE):python3
-	docker push $(IMAGE):${VERSION}-python3
+	docker push $(IMAGE):$(VERSION)-python3
