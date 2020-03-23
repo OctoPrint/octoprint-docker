@@ -1,11 +1,16 @@
 sudo: required
 
+language: python
+
+dist: bionic
+
+addons:
+  apt:
+    update: true
+    packages: jq
+
 services:
   - docker
-arch:
-  - amd64
-  - arm64
-
 
 stages:
   - build
