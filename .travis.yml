@@ -15,11 +15,14 @@ services:
   - docker
 
 stages:
+  - validate
   - build
   - deploy
 
 jobs:
   include:
+    - stage: validate
+      script: make validate
     - stage: build
       script: make build
     - stage: deploy

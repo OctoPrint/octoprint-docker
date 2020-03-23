@@ -12,9 +12,11 @@ VERSION := $(shell ./version.sh)
 build: build-stable build-stable-python3
 
 build-master:
+	@echo 'building $(IMAGE) from master with python 2.7'
 	docker build -t $(IMAGE) .
 
 build-master-python3:
+	@echo 'building $(IMAGE) from master with python 3'
 	docker build --build-arg PYTHON_IMAGE_TAG=slim-buster -t $(IMAGE):python3
 
 build-stable:
@@ -32,4 +34,4 @@ release:
 	docker push $(IMAGE):$(VERSION)-python3
 
 validate:
-	@echo $(VERSION)
+	@echo latest stable release: $(VERSION)
