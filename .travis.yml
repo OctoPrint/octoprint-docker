@@ -8,8 +8,8 @@ arch:
 
 
 stages:
-	- build
-	- deploy
+  - build
+  - deploy
 
 jobs:
   include:
