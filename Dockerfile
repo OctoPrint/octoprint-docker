@@ -56,5 +56,6 @@ ENV PATH="/opt/venv/bin:$PATH"
 EXPOSE 5000
 COPY docker-entrypoint.sh /usr/local/bin/
 USER octoprint
+VOLUME /home/octoprint
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["octoprint", "serve"]
