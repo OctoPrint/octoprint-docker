@@ -30,3 +30,6 @@ release:
 	docker push $(IMAGE):$(VERSION)
 	docker push $(IMAGE):python3
 	docker push $(IMAGE):$(VERSION)-python3
+
+validate:
+	@echo $(VERSION)
