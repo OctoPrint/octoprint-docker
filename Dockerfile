@@ -44,17 +44,17 @@ LABEL maintainer badsmoke "dockerhub@badcloud.eu"
 
 RUN groupadd --gid 1000 octoprint \
   && useradd --uid 1000 --gid octoprint --shell /bin/bash --create-home octoprint
-USER octoprint
 
 #Install Octoprint, ffmpeg, and cura engine
 COPY --from=compiler /opt/venv /opt/venv
 COPY --from=ffmpeg /opt /opt/ffmpeg
 COPY --from=cura-compiler /opt /opt/cura
 
-# symlink packages to path
+RUN chown -R octoprint:octoprint /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 EXPOSE 5000
 COPY docker-entrypoint.sh /usr/local/bin/
+USER octoprint
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["octoprint", "serve"]
