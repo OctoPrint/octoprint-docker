@@ -1,13 +1,15 @@
 sudo: required
 
-language: python
+language: generic
 
 dist: bionic
 
 addons:
   apt:
     update: true
-    packages: jq
+    packages: 
+      - jq 
+      - make
 
 services:
   - docker
