@@ -5,11 +5,10 @@ include $(cnf)
 export $(shell sed 's/=.*//' $(cnf))
 
 # get the version of the latest stable release for build
-VERSION := $(shell ./version.sh)
-
+VERSION:= $(shell ./version.sh)
 .DEFAULT_GOAL := build
 
-build: build-stable build-stable-python3
+build: build-stable build-stable-python3 build-master build-master-python3
 
 build-master:
 	@echo 'building $(IMAGE) from master with python 2.7'
@@ -25,7 +24,7 @@ build-stable:
 
 build-stable-python3:
 	@echo 'building stable, version: $(VERSION) with python 3'
-	docker build --build-arg PYTHON_IMAGE_TAG=slim-buster --build-arg tag=$(VERSION) -t $(IMAGE):$(VERSION)-python3 .
+	docker build --build-arg PYTHON_IMAGE_TAG=slim-buster --build-arg tag=$(VERSION) -t $(IMAGE):$(get_version)-python3 .
 
 release:
 	docker push $(IMAGE):latest
@@ -34,4 +33,4 @@ release:
 	docker push $(IMAGE):$(VERSION)-python3
 
 validate:
-	@echo latest stable release: $(VERSION)
+	@echo latest stable tag: $(VERSION)
