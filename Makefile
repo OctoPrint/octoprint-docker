@@ -12,19 +12,19 @@ build: build-stable build-stable-python3 build-master build-master-python3
 
 build-master:
 	@echo 'building $(IMAGE) from master with python 2.7'
-	@docker build -t $(IMAGE) .
+	@docker build --progress plain -t $(IMAGE) .
 
 build-master-python3:
 	@echo 'building $(IMAGE):python3 from master with python 3'
-	@docker build --build-arg PYTHON_IMAGE_TAG=slim-buster -t $(IMAGE):python3 .
+	@docker build --progress plain --build-arg PYTHON_IMAGE_TAG=slim-buster -t $(IMAGE):python3 .
 
 build-stable:
 	@echo 'building stable, version: ${VERSION} with python 2'
-	@docker build --build-arg PYTHON_IMAGE_TAG=$(PYTHON_IMAGE_TAG) --build-arg tag=${VERSION} -t $(IMAGE):${VERSION} .
+	@docker build --progress plain --build-arg PYTHON_IMAGE_TAG=$(PYTHON_IMAGE_TAG) --build-arg tag=${VERSION} -t $(IMAGE):${VERSION} .
 
 build-stable-python3:
 	@echo 'building stable, version: ${VERSION} with python 3'
-	@docker build --build-arg PYTHON_IMAGE_TAG=slim-buster --build-arg tag=${VERSION} -t $(IMAGE):$(VERSION)-python3 .
+	@docker build --progress plain --build-arg PYTHON_IMAGE_TAG=slim-buster --build-arg tag=${VERSION} -t $(IMAGE):$(VERSION)-python3 .
 
 release:
 	@docker push $(IMAGE):latest
