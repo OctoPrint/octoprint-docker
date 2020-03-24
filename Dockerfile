@@ -1,49 +1,64 @@
-FROM python:3.8-slim-buster
-EXPOSE 5000
-LABEL maintainer badsmoke "dockerhub@badcloud.eu"
+ARG PYTHON_IMAGE_TAG=2.7-slim-buster
 
-ENV CURA_VERSION=15.04.6
-ARG tag=master
+FROM buildpack-deps:curl AS ffmpeg
+RUN apt-get update && apt-get install -y xz-utils
+RUN curl -fsSLO https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-i686-static.tar.xz \
+  && mkdir -p /opt \
+  && tar -xJf ffmpeg-release-i686-static.tar.xz --strip-components=1 -C /opt
 
-WORKDIR /opt/octoprint
 
+FROM python:${PYTHON_IMAGE_TAG} AS cura-compiler
 
-#install necessary packages
-RUN apt update
-RUN apt install wget git xz-utils g++ make -y
-RUN rm -rf /var/lib/apt/lists/*
+ARG CURA_VERSION
+ENV CURA_VERSION ${CURA_VERSION:-15.04.6}
+
+RUN apt-get update && apt-get install -y g++ make curl
+RUN curl -fsSLO https://github.com/Ultimaker/CuraEngine/archive/${CURA_VERSION}.tar.gz \
+  && mkdir -p /opt \
+  && tar -xzf ${CURA_VERSION}.tar.gz --strip-components=1 -C /opt --no-same-owner
+WORKDIR /opt
+RUN make
+
+# build ocotprint
+FROM python:${PYTHON_IMAGE_TAG} AS compiler
+
+ARG tag
+ENV tag ${tag:-master}
+
+RUN apt-get update && apt-get install -y make g++ curl
+
+RUN	curl -fsSLO --compressed --retry 3 --retry-delay 10 \
+  https://github.com/foosel/OctoPrint/archive/${tag}.tar.gz \
+	&& mkdir -p /opt/venv \
+  && tar xzf ${tag}.tar.gz --strip-components 1 -C /opt/venv --no-same-owner
 
 #install venv            
 RUN pip install virtualenv
+RUN python -m virtualenv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+WORKDIR /opt/venv
+RUN python setup.py install
 
-#install ffmpeg
-RUN cd /tmp \
-  && wget -O ffmpeg.tar.xz https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-i686-static.tar.xz \
-	&& mkdir -p /opt/ffmpeg \
-	&& tar xvf ffmpeg.tar.xz -C /opt/ffmpeg --strip-components=1 \
-  && rm -Rf /tmp/*
 
-#install Cura
-RUN cd /tmp \
-  && wget https://github.com/Ultimaker/CuraEngine/archive/${CURA_VERSION}.tar.gz \
-  && tar -zxf ${CURA_VERSION}.tar.gz \
-	&& cd CuraEngine-${CURA_VERSION} \
-	&& mkdir build \
-	&& make \
-	&& mv -f ./build /opt/cura/ \
-  && rm -Rf /tmp/*
+FROM python:${PYTHON_IMAGE_TAG} AS build
+LABEL description="The snappy web interface for your 3D printer"
+LABEL authors="longlivechief <chief@hackerhappyhour.com>, badsmoke <dockerhub@badcloud.eu>"
+LABEL issues="github.com/OcotPrint/docker/issues"
 
-#Create an octoprint user
-RUN useradd -ms /bin/bash octoprint && adduser octoprint dialout
-RUN chown octoprint:octoprint /opt/octoprint
+RUN groupadd --gid 1000 octoprint \
+  && useradd --uid 1000 --gid octoprint --shell /bin/bash --create-home octoprint
+
+#Install Octoprint, ffmpeg, and cura engine
+COPY --from=compiler /opt/venv /opt/venv
+COPY --from=ffmpeg /opt /opt/ffmpeg
+COPY --from=cura-compiler /opt /opt/cura
+
+RUN chown -R octoprint:octoprint /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+EXPOSE 5000
+COPY docker-entrypoint.sh /usr/local/bin/
 USER octoprint
-#This fixes issues with the volume command setting wrong permissions
-RUN mkdir /home/octoprint/.octoprint
-#Install Octoprint
-RUN git clone --branch $tag https://github.com/foosel/OctoPrint.git /opt/octoprint \
-  && virtualenv venv \
-	&& ./venv/bin/python setup.py install
-VOLUME /home/octoprint/.octoprint
-
-
-CMD ["/opt/octoprint/venv/bin/octoprint", "serve"]
+VOLUME /home/octoprint
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["octoprint", "serve"]

@@ -1,9 +1,8 @@
-version: '2'
+version: '3.7'
+
 services:
   octoprint:
-    build: .
-    image: badsmoke/octoprint
-    container_name: octoprint
+    image: octoprint/octoprint
     ports:
       - 5000:5000
     # devices:

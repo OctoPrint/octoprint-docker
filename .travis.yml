@@ -1,18 +1,26 @@
-sudo: required
+language: generic
 
-env:
-  global:
-    - TAG=master DOCKER_TAG=automatic
+os: linux
+dist: bionic
+
+install: './.travis/install.sh'
 
 services:
   - docker
-arch:
-  - amd64
-  - arm64
 
+stages:
+  - validate
+  - build
 
-script:
-  - echo "Building octroprint branch/tag $TAG into octoprint/octoprint:$DOCKER_TAG"
-  - docker build --build-arg tag=$TAG -t octoprint/octoprint:$DOCKER_TAG .
-  - if [[ "$DOCKER_TAG" != "automatic" ]]; then docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"; fi
-  - if [[ "$DOCKER_TAG" != "automatic" ]]; then docker push octoprint/octoprint:$DOCKER_TAG; fi
+jobs:
+  include:
+    - stage: validate
+      script: make validate
+    - stage: build
+      script: make build
+
+deploy:
+  provider: script
+  script: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD && make release
+  on:
+    branch: master
