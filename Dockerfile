@@ -27,7 +27,8 @@ ENV tag ${tag:-master}
 
 RUN apt-get update && apt-get install -y make g++ curl
 
-RUN	curl -fsSLO --compressed https://github.com/foosel/OctoPrint/archive/${tag}.tar.gz \
+RUN	curl -fsSLO --compressed --retry 3 --retry-delay 10 \
+  https://github.com/foosel/OctoPrint/archive/${tag}.tar.gz \
 	&& mkdir -p /opt/venv \
   && tar xzf ${tag}.tar.gz --strip-components 1 -C /opt/venv --no-same-owner
 
