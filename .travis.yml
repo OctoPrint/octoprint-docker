@@ -1,15 +1,9 @@
-sudo: required
-
 language: generic
 
+os: linux
 dist: bionic
 
-addons:
-  apt:
-    update: true
-    packages: 
-      - jq 
-      - make
+install: './.travis/install.sh'
 
 services:
   - docker
@@ -17,7 +11,6 @@ services:
 stages:
   - validate
   - build
-  - deploy
 
 jobs:
   include:
@@ -25,8 +18,9 @@ jobs:
       script: make validate
     - stage: build
       script: make build
-    - stage: deploy
-      script: docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-      script: make release 
-      on:
-        branch: master
+
+deploy:
+  provider: script
+  script: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD && make release
+  on:
+    branch: master
