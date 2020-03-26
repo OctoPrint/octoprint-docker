@@ -8,4 +8,7 @@ services:
     # devices:
     #  - /dev/ttyACM0:/dev/ttyACM0
     volumes:
-     - ./config:/home/octoprint/.octoprint
+     - octoprint:/home/octoprint
+
+volumes:
+  octoprint:
