@@ -1,36 +1,28 @@
 #import config.
 # You can change the default config with `make cnf="config_special.env" build`
-cnf ?= config.env
+cnf ?= env.mk
 include $(cnf)
-export $(shell sed 's/=.*//' $(cnf))
+IMG = "$(REGISTRY)/$(IMAGE):$(TAG)"
 
-# get the version of the latest stable release for build
-VERSION:= $(shell ./version.sh)
+OCTOPRINT_VERSION:= $(shell ./version.sh "foosel/OctoPrint")
+
 .DEFAULT_GOAL := build
 
-build: build-stable build-stable-python3 build-master build-master-python3
+prepare:
+	@docker buildx create --use
 
-build-master:
-	@echo 'building $(IMAGE) from master with python 2.7'
-	@docker build --progress plain -t $(IMAGE) .
+build:
+	@echo '[default]: building local octoprint image with all default options'
+	@docker build -t octoprint .
 
-build-master-python3:
-	@echo 'building $(IMAGE):python3 from master with python 3'
-	@docker build --progress plain --build-arg PYTHON_IMAGE_TAG=slim-buster -t $(IMAGE):python3 .
+buildx: prepare
+	@echo '[buildx]: building image: ${IMG} for all architectures'
+	@docker buildx build --platform linux/amd64,linux/arm64/v8 \
+		--build-arg PYTHON_BASE_IMAGE=$(PYTHON_BASE_IMAGE) \
+		--progress plain -t ${IMG} .
 
-build-stable:
-	@echo 'building stable, version: ${VERSION} with python 2'
-	@docker build --progress plain --build-arg PYTHON_IMAGE_TAG=$(PYTHON_IMAGE_TAG) --build-arg tag=${VERSION} -t $(IMAGE):${VERSION} .
-
-build-stable-python3:
-	@echo 'building stable, version: ${VERSION} with python 3'
-	@docker build --progress plain --build-arg PYTHON_IMAGE_TAG=slim-buster --build-arg tag=${VERSION} -t $(IMAGE):$(VERSION)-python3 .
-
-release:
-	@docker push $(IMAGE):latest
-	@docker push $(IMAGE):${VERSION}
-	@docker push $(IMAGE):python3
-	@docker push $(IMAGE):${VERSION}-python3
-
-validate:
-	@echo latest stable tag: ${VERSION}
+buildx-push: prepare
+	@echo '[buildx]: building and pushing images: ${IMG} for all supported architectures'
+	docker buildx build --push --platform linux/arm64,linux/amd64 \
+		--build-arg PYTHON_BASE_IMAGE=$(PYTHON_BASE_IMAGE) \
+		--progress plain -t ${IMG} .

@@ -8,47 +8,31 @@ A build environment that:
 
 ### Building
 
- - [building images from latest stable release tag](#stable)
- - [building images from master](#master)
- - [alternate build configuration](#build-config)
-
-<a name="stable"></a>**Building stable release images**
-Running `make` will run a build that will result in 2 images based on the `Dockerfile`
-one using python 2.7, and one using the latest slim-buster python tag from docker hub.
-
-Resulting Tags/Images:
-
-```
-octoprint/octoprint:<version> (python 2.7)
-octoprint/octoprint:<version>-python3
-```
-
-<a name="master"></a>**Building 'latest' from master**
-
-Run `make build-master` or `make build-master-python3` to build the
-corresponding images:
-
-```
-octoprint/octoprint:latest
-octoprint/octoprint:python3
-```
-
-**Build Configurations**
-
-The `make` command will pull in the `config.env` file, and 
+The `make` command will pull in the `env.mk` file, and 
 utilize the variables within during the various stages of build,
 test, and release.
 
 To build alternate infrastructures, or get use different base images
-for end-use, you can either change the variables in `config.env`, or
-provide alternate saved configsets by using `cnf=<some_other_config.env`
-argument supplied to `make`. 
+for end-use, you have a few options:
 
-For example, let's say you want to build using the full `buster` instead of the default `slim`, and publish to your own private repo. You could create a `private_buster_full.env` file, supplying the content below:
+- change the variables in `env.mk`
+- provide alternate saved configsets by using `cnf=<some_other_env.mk`
+argument supplied to `make` (and creating/savig `some_other_env.mk`) 
+- set the variables found in `env.mk` in the build environment or supply them to command line
+to override the default configs
+
+**Travis**
+
+To test and publish your builds automatically, you can set the following travis
+environment variables to override the default configs.
 
 ```
-IMAGE=my.private.repo:5000/someuser/octoprint
-PYTHON_IMAGE_TAG=buster
+# tell build what docker repository to push to
+IMAGE <your_dockerhub_username>/octoprint
+# used during image push
+DOCKER_PASSWORD <your_dockerhub_password>  (don't show in logs)
+# used during image push
+DOCKER_USERNAME <your dockerhub username> 
+# (optional) push to a private registry instead of docker hub
+REGISTRY <registry_url>
 ```
-
-Then run: `make cnf="private_buster_full.env" build-stable`, which would result in a python 3 based image with the tag `my.private.repo:5000/someuser/octoprint:<latest stable version>`
