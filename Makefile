@@ -25,15 +25,18 @@ build:
 	@docker build -t octoprint .
 
 
-buildx: prepare
+buildx:
 	@echo '[buildx]: building image: ${IMG} for all architectures'
-	@docker buildx build --platform linux/amd64,linux/arm64/v8 \
+	@docker buildx build --platform linux/amd64,linux/arm64 \
 		--cache-from ${CACHE} \
 		--cache-to	${CACHE} \
 		--build-arg PYTHON_BASE_IMAGE=$(PYTHON_BASE_IMAGE) \
 		--progress plain -t ${IMG} .
 
-buildx-push: prepare
+manifest:
+	docker manifest inspect ${IMG}
+
+buildx-push:
 	@echo '[buildx]: building and pushing images: ${IMG} for all supported architectures'
 	docker buildx build --push --platform linux/arm64,linux/amd64 \
 		--cache-from ${CACHE} \
