@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Multi-Arch Image Build
 
 
 on:
@@ -8,12 +8,26 @@ on:
     branches: [ master ]
 
 jobs:
-
-  build:
-
-    runs-on: self-hosted
-
+  buildx:
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag octoprint/octoprint:$(date +%s)
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      - 
+        name: Set up Docker Buildx
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
+        with:
+          version: v0.3.1
+      -
+        name: Available platforms
+        run: echo ${{ steps.buildx.outps.platforms }}
+      -
+        name: Run Buildx
+        run: |
+          docker buildx build \
+            --platform linux/arm64,linux/amd64 \
+            --output type=image,push=false \
+            .
+            
