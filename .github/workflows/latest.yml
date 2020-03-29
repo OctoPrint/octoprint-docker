@@ -9,24 +9,19 @@ jobs:
   buildx:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v2
-      - 
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         id: setup
         uses: crazy-max/ghaction-docker-buildx@v1
         with:
           version: v0.3.1
-      -
-        name: Available platforms
+      - name: Available platforms
         run: echo ${{ steps.buildx.outputs.platforms }}
-      -
-        name: Run Buildx
+      - name: Run Buildx
         id: buildx
         run: |
           echo ${{ secrets.DOCKER_PASSWORD}} | docker login -u ${{ secrets.DOCKER_USERNAME}} --password-stdin
           make buildx
-      -
-        name: Show Manifests
+      - name: Show Manifests
         run: make manifest 
