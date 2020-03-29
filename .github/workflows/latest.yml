@@ -5,6 +5,9 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  DOCKER_CLI_EXPERIMENTAL: "enabled"
+
 jobs:
   buildx:
     runs-on: ubuntu-latest
