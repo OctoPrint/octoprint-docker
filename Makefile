@@ -33,6 +33,9 @@ buildx:
 		--build-arg PYTHON_BASE_IMAGE=$(PYTHON_BASE_IMAGE) \
 		--progress plain -t ${IMG} .
 
+manifest:
+	@echo docker manifest inspect ${IMG}
+
 buildx-push: prepare
 	@echo '[buildx]: building and pushing images: ${IMG} for all supported architectures'
 	docker buildx build --push --platform linux/arm64,linux/amd64 \
