@@ -29,5 +29,4 @@ jobs:
           make buildx
       -
         name: Show Manifests
-        needs: buildx
         run: make manifest 
