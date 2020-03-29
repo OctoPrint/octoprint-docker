@@ -36,7 +36,7 @@ buildx:
 manifest:
 	docker manifest inspect ${IMG}
 
-buildx-push: prepare
+buildx-push:
 	@echo '[buildx]: building and pushing images: ${IMG} for all supported architectures'
 	docker buildx build --push --platform linux/arm64,linux/amd64 \
 		--cache-from ${CACHE} \
