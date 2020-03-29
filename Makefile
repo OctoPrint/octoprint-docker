@@ -34,7 +34,7 @@ buildx:
 		--progress plain -t ${IMG} .
 
 manifest:
-	@echo docker manifest inspect ${IMG}
+	echo docker manifest inspect ${IMG}
 
 buildx-push: prepare
 	@echo '[buildx]: building and pushing images: ${IMG} for all supported architectures'
