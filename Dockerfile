@@ -7,6 +7,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && case "${dpkgArch##*-}" in \
   amd64) ARCH='amd64';; \
   arm64) ARCH='arm64';; \
+  armhf) ARCH='armhf';; \
   *) echo "unsupported architecture: $(dpkg --print-architecture)"; exit 1 ;; \
   esac \
   && set -ex \
