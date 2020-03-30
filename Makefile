@@ -27,7 +27,7 @@ build:
 
 buildx:
 	@echo '[buildx]: building image: ${IMG} for all architectures'
-	@docker buildx build --platform linux/amd64,linux/arm64 \
+	@docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 \
 		--cache-from ${CACHE} \
 		--cache-to	${CACHE} \
 		--build-arg PYTHON_BASE_IMAGE=$(PYTHON_BASE_IMAGE) \
@@ -38,7 +38,7 @@ manifest:
 
 buildx-push:
 	@echo '[buildx]: building and pushing images: ${IMG} for all supported architectures'
-	docker buildx build --push --platform linux/arm64,linux/amd64 \
+	docker buildx build --push --platform linux/arm64,linux/amd64,linux/arm/v7 \
 		--cache-from ${CACHE} \
 		--cache-to	${CACHE} \
 		--build-arg PYTHON_BASE_IMAGE=$(PYTHON_BASE_IMAGE) \
