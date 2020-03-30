@@ -60,10 +60,10 @@ RUN groupadd --gid 1000 octoprint \
 #Install Octoprint, ffmpeg, and cura engine
 COPY --from=compiler /opt/venv /opt/venv
 COPY --from=ffmpeg /opt /opt/ffmpeg
-COPY --from=cura-compiler /opt /opt/cura
+COPY --from=cura-compiler /opt/build /opt/cura
 
 RUN chown -R octoprint:octoprint /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+ENV PATH="/opt/venv/bin:/opt/ffmpeg:/opt/cura:$PATH"
 
 EXPOSE 5000
 COPY docker-entrypoint.sh /usr/local/bin/
