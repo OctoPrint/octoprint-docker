@@ -2,10 +2,11 @@
 # You can change the default config with `make cnf="config_special.env" build`
 cnf ?= env.mk
 include $(cnf)
-IMG = "$(REGISTRY)/$(IMAGE):$(TAG)"
 CACHE = $(REGISTRY)/$(IMAGE):cache
+IMG = $(REGISTRY)/$(IMAGE)
+IMG_TAG?=latest
 
-OCTOPRINT_VERSION:= $(shell ./scripts/version.sh "foosel/OctoPrint")
+OCTOPRINT_VERSION?= $(shell ./scripts/version.sh "OctoPrint/OctoPrint")
 
 .DEFAULT_GOAL := build
 
@@ -26,20 +27,19 @@ build:
 
 
 buildx:
-	@echo '[buildx]: building image: ${IMG} for all architectures'
+	@echo '[buildx]: building image: ${IMG}:${IMG_TAG} for all architectures'
 	@docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 \
 		--cache-from ${CACHE} \
 		--cache-to	${CACHE} \
 		--build-arg PYTHON_BASE_IMAGE=$(PYTHON_BASE_IMAGE) \
-		--progress plain -t ${IMG} .
-
-manifest:
-	docker manifest inspect ${IMG}
+		--build-arg tag=${OCTOPRINT_VERSION} \
+		--progress plain -t ${IMG}:${IMG_TAG} .
 
 buildx-push:
-	@echo '[buildx]: building and pushing images: ${IMG} for all supported architectures'
+	@echo '[buildx]: building and pushing images: ${IMG}:${IMG_TAG} for all supported architectures'
 	docker buildx build --push --platform linux/arm64,linux/amd64,linux/arm/v7 \
 		--cache-from ${CACHE} \
 		--cache-to	${CACHE} \
 		--build-arg PYTHON_BASE_IMAGE=$(PYTHON_BASE_IMAGE) \
-		--progress plain -t ${IMG} .
+		--build-arg tag=${OCTOPRINT_VERSION} \
+		--progress plain -t ${IMG}:${IMG_TAG} .

@@ -37,7 +37,7 @@ ENV tag ${tag:-master}
 RUN apt-get update && apt-get install -y build-essential curl
 
 RUN	curl -fsSLO --compressed --retry 3 --retry-delay 10 \
-  https://github.com/foosel/OctoPrint/archive/${tag}.tar.gz \
+  https://github.com/OctoPrint/OctoPrint/archive/${tag}.tar.gz \
 	&& mkdir -p /opt/venv \
   && tar xzf ${tag}.tar.gz --strip-components 1 -C /opt/venv --no-same-owner
 
