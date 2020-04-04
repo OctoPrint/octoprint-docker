@@ -2,10 +2,10 @@
 # You can change the default config with `make cnf="config_special.env" build`
 cnf ?= env.mk
 include $(cnf)
-IMG = "$(REGISTRY)/$(IMAGE):$(TAG)"
 CACHE = $(REGISTRY)/$(IMAGE):cache
+IMG = "$(REGISTRY)/$(IMAGE):$(TAG)" 
 
-OCTOPRINT_VERSION:= $(shell ./scripts/version.sh "foosel/OctoPrint")
+OCTOPRINT_VERSION:= $(shell ./scripts/version.sh "OctoPrint/OctoPrint")
 
 .DEFAULT_GOAL := build
 
