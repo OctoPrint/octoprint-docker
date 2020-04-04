@@ -3,7 +3,7 @@
 cnf ?= env.mk
 include $(cnf)
 CACHE = $(REGISTRY)/$(IMAGE):cache
-IMG = "$(REGISTRY)/$(IMAGE)" 
+IMG = $(REGISTRY)/$(IMAGE)
 IMG_TAG?=latest
 
 OCTOPRINT_VERSION?= $(shell ./scripts/version.sh "OctoPrint/OctoPrint")
@@ -27,7 +27,7 @@ build:
 
 
 buildx:
-	@echo '[buildx]: building image: ${IMG} for all architectures'
+	@echo '[buildx]: building image: ${IMG}:${IMG_TAG} for all architectures'
 	@docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 \
 		--cache-from ${CACHE} \
 		--cache-to	${CACHE} \
@@ -36,7 +36,7 @@ buildx:
 		--progress plain -t ${IMG}:${IMG_TAG} .
 
 buildx-push:
-	@echo '[buildx]: building and pushing images: ${IMG} for all supported architectures'
+	@echo '[buildx]: building and pushing images: ${IMG}:${IMG_TAG} for all supported architectures'
 	docker buildx build --push --platform linux/arm64,linux/amd64,linux/arm/v7 \
 		--cache-from ${CACHE} \
 		--cache-to	${CACHE} \
