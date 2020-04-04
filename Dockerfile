@@ -34,7 +34,7 @@ FROM python:${PYTHON_BASE_IMAGE} AS compiler
 ARG tag
 ENV tag ${tag:-master}
 
-RUN apt-get update && apt-get install -y make g++ curl
+RUN apt-get update && apt-get install -y build-essential curl
 
 RUN	curl -fsSLO --compressed --retry 3 --retry-delay 10 \
   https://github.com/foosel/OctoPrint/archive/${tag}.tar.gz \
