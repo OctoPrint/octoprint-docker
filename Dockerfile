@@ -54,6 +54,8 @@ LABEL description="The snappy web interface for your 3D printer"
 LABEL authors="longlivechief <chief@hackerhappyhour.com>, badsmoke <dockerhub@badcloud.eu>"
 LABEL issues="github.com/OcotPrint/docker/issues"
 
+RUN apt-get update && apt-get install -y build-essential
+
 RUN groupadd --gid 1000 octoprint \
   && useradd --uid 1000 --gid octoprint -G dialout --shell /bin/bash --create-home octoprint
 
