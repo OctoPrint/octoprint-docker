@@ -3,9 +3,10 @@
 cnf ?= env.mk
 include $(cnf)
 CACHE = $(REGISTRY)/$(IMAGE):cache
-IMG = "$(REGISTRY)/$(IMAGE):$(TAG)" 
+IMG = "$(REGISTRY)/$(IMAGE)" 
+IMG_TAG?=latest
 
-OCTOPRINT_VERSION:= $(shell ./scripts/version.sh "OctoPrint/OctoPrint")
+OCTOPRINT_VERSION?= $(shell ./scripts/version.sh "OctoPrint/OctoPrint")
 
 .DEFAULT_GOAL := build
 
@@ -31,10 +32,8 @@ buildx:
 		--cache-from ${CACHE} \
 		--cache-to	${CACHE} \
 		--build-arg PYTHON_BASE_IMAGE=$(PYTHON_BASE_IMAGE) \
-		--progress plain -t ${IMG} .
-
-manifest:
-	docker manifest inspect ${IMG}
+		--build-arg tag=${OCTOPRINT_VERSION} \
+		--progress plain -t ${IMG}:${IMG_TAG} .
 
 buildx-push:
 	@echo '[buildx]: building and pushing images: ${IMG} for all supported architectures'
@@ -42,4 +41,5 @@ buildx-push:
 		--cache-from ${CACHE} \
 		--cache-to	${CACHE} \
 		--build-arg PYTHON_BASE_IMAGE=$(PYTHON_BASE_IMAGE) \
-		--progress plain -t ${IMG} .
+		--build-arg tag=${OCTOPRINT_VERSION} \
+		--progress plain -t ${IMG}:${IMG_TAG} .
