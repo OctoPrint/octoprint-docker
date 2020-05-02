@@ -52,7 +52,7 @@ RUN python setup.py install
 FROM python:${PYTHON_BASE_IMAGE} AS build
 LABEL description="The snappy web interface for your 3D printer"
 LABEL authors="longlivechief <chief@hackerhappyhour.com>, badsmoke <dockerhub@badcloud.eu>"
-LABEL issues="github.com/OcotPrint/docker/issues"
+LABEL issues="github.com/OctoPrint/docker/issues"
 
 RUN apt-get update && apt-get install -y build-essential
 
