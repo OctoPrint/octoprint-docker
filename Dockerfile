@@ -70,6 +70,6 @@ ENV PATH="/opt/venv/bin:/opt/ffmpeg:/opt/cura:$PATH"
 EXPOSE 5000
 COPY docker-entrypoint.sh /usr/local/bin/
 USER octoprint
-VOLUME /home/octoprint
+VOLUME /home/octoprint/.octoprint
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["octoprint", "serve"]
