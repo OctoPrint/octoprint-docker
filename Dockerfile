@@ -46,7 +46,7 @@ RUN pip install virtualenv
 RUN python -m virtualenv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 WORKDIR /opt/venv
-RUN python setup.py install
+RUN pip install .
 
 
 FROM python:${PYTHON_BASE_IMAGE} AS build
