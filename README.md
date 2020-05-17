@@ -1,15 +1,50 @@
-# OctoPrint-docker [![Build Status](https://travis-ci.org/OctoPrint/docker.svg?branch=master)](https://travis-ci.org/OctoPrint/docker)
+# OctoPrint-docker ![deploy latest with python2.7](https://github.com/OctoPrint/docker/workflows/deploy%20latest%20with%20python2.7/badge.svg)
 
-This repository contains everything you need to run [Octoprint](https://github.com/foosel/OctoPrint) in a docker environment.
+## State of OctoPrint/docker and Notice to Docker Users
 
-I have also built a python2 version, because not all plugins have been ported to python3 yet. So far there is no reason why not, I would still prefer python3.
+This image is currently under development, and is by no means stable, or guaranteed
+to work. We are tracking the steps needed to get to a stable release in the 
+[Stable Automated Docker Releases](https://github.com/OctoPrint/docker/projects/1)
+project in this repository.
 
-I noticed that I forgot one "dot" in the tags, it will be fixed next week.
+At the moment, we do _strongly recommend_ installing OcotPrint natively, or using
+OctoPi. Making this image work will require you use only basic OctoPrint functionality,
+or that you be a skilled docker user.
 
-the python3 version is available for all three major architectures (amd64, arm64, arm)
-the python2 will follow soon
+** Why is this not stable?**
 
-# Getting started
+Docker is not a VM, and is designed to isolate a process by providing all the system
+libraries and toolchains required to run that process inside a container. 
+
+This means that containers are inherently stateless, and introducing state complicates
+the ability to execute the container.
+
+Using docker, you typically update your software by deploying a new image. OctoPrint however, is designed to update itself.
+
+This is further complicated with Plugin Management, which OctoPrint manages by
+altering the host state (installs plugins).
+
+This combination of environment manipulation makes it exceedingly difficult to share
+that state with the _container's_ host (the physical machine).
+
+Additionally, things like device and gpio access have to mapped and set up in specific
+ways, and are not easily automated (which native OctoPrint can handle very well)
+
+
+## Setup and Usage
+
+We recommend you use docker-compose to run octoprint via docker. 
+
+At the moment, we recommend that you do _not_ create a host mounted path for OctoPrint
+configuration.  Instead we recommend you create a docker volume for octoprint
+configuration, and mount that volume to the container.
+
+We have included a `docker-compose.yml` file in this project that will run octoprint.
+You will need to either copy that file into a directory on your machine, or clone this
+project.
+
+After the `docker-compose.yml` file is on your machine, you'll want to open it for
+editing, and add device mappings for your serial port.
 
 ```
 git clone https://github.com/OctoPrint/docker.git octoprint-docker && cd octoprint-docker
@@ -28,24 +63,12 @@ You can then go to http://localhost:5000
 You can display the log using `docker-compose logs -f`
 
 ## Without docker-compose
-```
-docker run -d -v ./config:/home/octoprint/.octoprint --device /dev/ttyACM0:/dev/ttyACM0 -p 5000:5000 --name octoprint octoprint/octoprint
+
+If you prefer to run without docker-compose, first create an `octoprint` docker volume
+on the host, and then start your container:
 
 ```
+docker volume create octoprint
+docker run -d -v octoprint:/home/octoprint --device /dev/ttyACM0:/dev/ttyACM0 -p 5000:5000 --name octoprint octoprint/octoprint
 
-# Additional tools
-
-## mjpg-streamer (webcam access)
-
-the matching mjpg-streamer container I have linked here with instruction:
-
-https://hub.docker.com/r/badsmoke/mjpg-streamer
-
-
-## FFMPEG
-
-Octoprint allows you to make timelapses using an IP webcam and ffmpeg. It is installed in `/opt/ffmpeg/ffmpeg`
-
-## Cura Engine
-
-Octoprint allows you to import .STL files and slice them directly in the application. For this you need to upload the profiles that you want to use (you can export them from Cura). Cura Engine is installed in `/opt/cura/CuraEngine`.
+```
