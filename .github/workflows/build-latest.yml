@@ -25,3 +25,7 @@ jobs:
         run: |
           echo ${{ secrets.DOCKER_PASSWORD}} | docker login -u ${{ secrets.DOCKER_USERNAME}} --password-stdin
           make buildx
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -f ${HOME}/.docker/config.json
