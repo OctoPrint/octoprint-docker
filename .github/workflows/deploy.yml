@@ -1,4 +1,4 @@
-name: deploy latest with python2.7
+name: Deploy Images
 
 on:
   push:

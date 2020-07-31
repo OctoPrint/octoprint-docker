@@ -1,4 +1,4 @@
-name: build latest with python2.7
+name: Build and Verify Image
 
 on:
   push:
