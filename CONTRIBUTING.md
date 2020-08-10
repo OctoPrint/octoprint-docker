@@ -6,7 +6,7 @@ A build environment that:
 - supports docker multi-stage builds
 - has `make` and `jq` commands available
 
-### Building
+### Building locally
 
 The `make` command will pull in the `env.mk` file, and 
 utilize the variables within during the various stages of build,
@@ -21,18 +21,12 @@ argument supplied to `make` (and creating/savig `some_other_env.mk`)
 - set the variables found in `env.mk` in the build environment or supply them to command line
 to override the default configs
 
-**Travis**
+**Github Actions**
 
-To test and publish your builds automatically, you can set the following travis
-environment variables to override the default configs.
+To test and publish your builds automatically, you can set the following
+github secrets to automatically override the default configs.
 
-```
-# tell build what docker repository to push to
-IMAGE <your_dockerhub_username>/octoprint
-# used during image push
-DOCKER_PASSWORD <your_dockerhub_password>  (don't show in logs)
-# used during image push
-DOCKER_USERNAME <your dockerhub username> 
-# (optional) push to a private registry instead of docker hub
-REGISTRY <registry_url>
-```
+| Variable      | Secret | Default Value |
+|---------------|--------|---------------|
+| `IMAGE` | `DOCKER_IMAGE_ORGANIZATION` |`github.repository_owner/octoprint` |  
+| `REGISTRY` | `DOCKER_IMAGE_REGISTRY` | `docker.io` |
