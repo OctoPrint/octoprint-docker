@@ -63,21 +63,6 @@ jobs:
           echo "::set-output name=dockerfile::${DOCKERFILE}"
           echo "::set-output name=python_base_image::${PYTHON_BASE_IMAGE}"
 
-      - name: Set Image Tag
-        id: image_tag
-        run: |
-          echo still working on this step
-          # will get the release tag from the dispatch event payload
-          # and set-output of octoprint_tag to match
-          
-          # use ${{ matrix.tags }} to parse semver
-          if [[ "${{ matrix.tags}}"  == 'latest ']]; then
-            echo "::set-output name=octoprint_tag::latest"
-          else
-            echo "gonna try this with an action"
-          fi
-            
-
       - name: Build and Deploy
         id: build_deploy
         run: |
