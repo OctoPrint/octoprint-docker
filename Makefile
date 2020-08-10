@@ -4,9 +4,9 @@ cnf ?= env.mk
 include $(cnf)
 CACHE = $(REGISTRY)/$(IMAGE):cache
 IMG = $(REGISTRY)/$(IMAGE)
-IMG_TAG?=latest
 
 OCTOPRINT_VERSION?= $(shell ./scripts/version.sh "OctoPrint/OctoPrint")
+IMG_TAG=${OCTOPRINT_VERSION}-python3
 
 .DEFAULT_GOAL := build
 
@@ -25,10 +25,12 @@ build:
 	@echo '[default]: building local octoprint image with all default options'
 	@docker build -t octoprint .
 
+dry-run:
+	@echo '[buildx]: building image: ${IMG}:${IMG_TAG} for all architectures'
 
 buildx:
 	@echo '[buildx]: building image: ${IMG}:${IMG_TAG} for all architectures'
-	@docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 \
+	@docker buildx build --load --platform $(PLATFORMS) \
 		--cache-from ${CACHE} \
 		--cache-to	${CACHE} \
 		--build-arg PYTHON_BASE_IMAGE=$(PYTHON_BASE_IMAGE) \
@@ -37,7 +39,7 @@ buildx:
 
 buildx-push:
 	@echo '[buildx]: building and pushing images: ${IMG}:${IMG_TAG} for all supported architectures'
-	docker buildx build --push --platform linux/arm64,linux/amd64,linux/arm/v7 \
+	docker buildx build --push --platform $(PLATFORMS) \
 		--cache-from ${CACHE} \
 		--cache-to	${CACHE} \
 		--build-arg PYTHON_BASE_IMAGE=$(PYTHON_BASE_IMAGE) \

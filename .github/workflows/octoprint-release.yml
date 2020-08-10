@@ -2,6 +2,9 @@ name: OctoPrint Release
 
 on:
   repository_dispatch:
+    types:
+      - released
+      - preresead
 
 jobs:
   buildx:
@@ -11,11 +14,17 @@ jobs:
         # python-variants: [3, 2]
         # build/deploy variants such as -camera by adding them here
         # feature-variants: ['vanilla']
-        tags: ['latest', 'X', 'X.Y', 'X.Y.Z']
+        tags: ['latest' '%X%', '%X.Y%', '%X.Y.Z%']
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Tagging strategy
+        id: Tagging
+        uses: HackerHappyHour/tagging-strategy@v1
+        with:
+          tag_name: "${{ github.event.client_payload.tag_name }}"
+          pattern: "${{ matrix.tags}}"
 
       - name: Set up Docker Buildx
         id: setup
