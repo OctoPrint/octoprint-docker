@@ -11,16 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # python-variants: [3, 2]
-        # build/deploy variants such as -camera by adding them here
-        # feature-variants: ['vanilla']
-        tags: ['latest' '%X%', '%X.Y%', '%X.Y.Z%']
+        tags: ['latest', '%X%', '%X.Y%', '%X.Y.Z%']
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Tagging strategy
-        id: Tagging
+        id: tagging
         uses: HackerHappyHour/tagging-strategy@v1
         with:
           tag_name: "${{ github.event.client_payload.tag_name }}"
@@ -39,7 +36,7 @@ jobs:
           echo ${{ secrets.DOCKER_PASSWORD}} | docker login -u ${{ secrets.DOCKER_USERNAME}} --password-stdin
 
       - name: Configure Build
-        id: configure
+        id: config
         run: |
           IMAGE=${{ github.repository_owner }}/octoprint
           if [["${{ secrets.DOCKER_IMAGE_ORGANIZATION }}"]]; then
@@ -66,9 +63,10 @@ jobs:
       - name: Build and Deploy
         id: build_deploy
         run: |
-          # docker buildx build --push
-          echo still working on this step
-          
-
-        
-
+          docker buildx build --push \
+            --platform ${{ steps.config.outputs.platform }} \
+            --cache-from ${{ steps.config.outputs.cache }} \
+            --cache-to ${{ steps.config.outputs.cache }} \
+            --build-arg PYTHON_BASE_IMAGE=${{ steps.config.outputs.python_base_image }} \
+            --build-arg tag=${{ github.event.client_payload.tag_name }} \
+            --progress plain -t ${{ steps.config.outputs.image }}:${{ steps.tagging.outputs.tag }} .
