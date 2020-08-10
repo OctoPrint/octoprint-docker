@@ -3,8 +3,8 @@ name: OctoPrint Release
 on:
   repository_dispatch:
     types:
-      - released
-      - preresead
+      - release
+      - prerelease
 
 jobs:
   buildx:
