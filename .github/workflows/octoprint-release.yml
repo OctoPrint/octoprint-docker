@@ -39,13 +39,7 @@ jobs:
         id: config
         run: |
           IMAGE=octoprint/octoprint 
-          if [["${{ secrets.DOCKER_IMAGE_ORGANIZATION }}"]]; then
-            IMAGE=${{ secrets.DOCKER_IMAGE_ORGANIZATION }}
-          fi
           REGISTRY=docker.io
-          if [["${{ secrets.DOCKER_IMAGE_REGISTRY }}"]]; then
-            REGISTRY=${{ secrets.DOCKER_IMAGE_REGISTRY }}
-          fi
           PLATFORMS=linux/arm64,linux/amd64
           CACHE = $(REGISTRY)/$(IMAGE):cache
           IMG=$(REGISTRY)/$(IMAGE)
@@ -53,12 +47,12 @@ jobs:
           DOCKERFILE="./Dockerfile"
           PYTHON_BASE_IMAGE=3.8-slim-buster
 
-          echo "::set-output name=registry::${REGISTRY}"
-          echo "::set-output name=image::${IMG}"
-          echo "::set-output name=platform::${PLATFORMS}"
-          echo "::set-output name=cache::${CACHE}"
-          echo "::set-output name=dockerfile::${DOCKERFILE}"
-          echo "::set-output name=python_base_image::${PYTHON_BASE_IMAGE}"
+          echo "::set-output name=registry::$REGISTRY"
+          echo "::set-output name=image::$IMG"
+          echo "::set-output name=platform::$PLATFORMS"
+          echo "::set-output name=cache::$CACHE"
+          echo "::set-output name=dockerfile::$DOCKERFILE"
+          echo "::set-output name=python_base_image::$PYTHON_BASE_IMAGE"
 
       - name: Build and Deploy
         id: build_deploy
