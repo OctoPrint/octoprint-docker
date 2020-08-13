@@ -1,0 +1,23 @@
+name: Manual Dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      version: 
+        description: 'Version of Octoprint to push images for'
+        required: true
+
+jobs:
+
+  dispatch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: dispatch
+        id: dispatch
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          event-type: 'release'
+          client-payload: '{"tag_name": "${{ github.event.inputs.version }}"}'
