@@ -38,13 +38,13 @@ jobs:
       - name: Configure Build
         id: config
         run: |
-          IMAGE=${{ github.repository_owner }}/octoprint
+          IMAGE=octoprint/octoprint 
           if [["${{ secrets.DOCKER_IMAGE_ORGANIZATION }}"]]; then
-            $IMAGE=${{ secrets.DOCKER_IMAGE_ORGANIZATION }}
+            IMAGE=${{ secrets.DOCKER_IMAGE_ORGANIZATION }}
           fi
           REGISTRY=docker.io
           if [["${{ secrets.DOCKER_IMAGE_REGISTRY }}"]]; then
-            $REGISTRY=${{ secrets.DOCKER_IMAGE_REGISTRY }}
+            REGISTRY=${{ secrets.DOCKER_IMAGE_REGISTRY }}
           fi
           PLATFORMS=linux/arm64,linux/amd64
           CACHE = $(REGISTRY)/$(IMAGE):cache
