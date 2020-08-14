@@ -35,32 +35,13 @@ jobs:
         run: |
           echo ${{ secrets.DOCKER_PASSWORD}} | docker login -u ${{ secrets.DOCKER_USERNAME}} --password-stdin
 
-      - name: Configure Build
-        id: config
-        run: |
-          IMAGE=octoprint/octoprint 
-          REGISTRY=docker.io
-          PLATFORMS=linux/arm64,linux/amd64
-          CACHE = $(REGISTRY)/$(IMAGE):cache
-          IMG=$(REGISTRY)/$(IMAGE)
-
-          DOCKERFILE="./Dockerfile"
-          PYTHON_BASE_IMAGE=3.8-slim-buster
-
-          echo "::set-output name=registry::$REGISTRY"
-          echo "::set-output name=image::$IMG"
-          echo "::set-output name=platform::$PLATFORMS"
-          echo "::set-output name=cache::$CACHE"
-          echo "::set-output name=dockerfile::$DOCKERFILE"
-          echo "::set-output name=python_base_image::$PYTHON_BASE_IMAGE"
-
       - name: Build and Deploy
         id: build_deploy
         run: |
           docker buildx build --push \
-            --platform ${{ steps.config.outputs.platform }} \
-            --cache-from ${{ steps.config.outputs.cache }} \
-            --cache-to ${{ steps.config.outputs.cache }} \
-            --build-arg PYTHON_BASE_IMAGE=${{ steps.config.outputs.python_base_image }} \
+            --platform linux/arm64,linux/amd64,linux/arm/v7 \
+            --cache-from docker.io/octoprint/octoprint:cache \
+            --cache-to docker.io/octoprint/octoprint:cache \
+            --build-arg PYTHON_BASE_IMAGE=3.8-slim-buster \
             --build-arg tag=${{ github.event.client_payload.tag_name }} \
-            --progress plain -t ${{ steps.config.outputs.image }}:${{ steps.tagging.outputs.tag }} .
+            --progress plain -t octoprint/octoprint:${{ steps.tagging.outputs.tag }} .
