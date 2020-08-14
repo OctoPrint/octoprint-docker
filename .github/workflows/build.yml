@@ -38,4 +38,4 @@ jobs:
             --cache-to docker.io/octoprint/octoprint:cache \
             --build-arg PYTHON_BASE_IMAGE=3.8-slim-buster \
             --build-arg tag=${{ steps.get-octoprint-release.outputs.release }} \
-            --progress plain -t octoprint/octoprint:ci
+            --progress plain -t octoprint/octoprint:ci .
