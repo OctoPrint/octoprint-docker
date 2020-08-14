@@ -25,11 +25,11 @@ jobs:
       - name: Build Image
         id: build
         run: |
-          echo ${{ secrets.DOCKER_PASSWORD }} | docker ligin -u ${{ secrets.DOCKER_USERNAME }}
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }}
           docker buildx build --load \
             --platform linux/arm64,linux/amd64,linux/armv7 \
             --cache-from docker.io/octoprint/octoprint:cache \
             --cache-to docker.io/octoprint/octoprint:cache \
             --build-arg PYTHON_BASE_IMAGE=3.8-slim-buster \
-            --build-arg tag=${{ jobs.steps.get-octoprint-release.release }} \
+            --build-arg tag=${{ steps.get-octoprint-release.outputs.release }} \
             --progress plain -t octoprint/octoprint:ci
