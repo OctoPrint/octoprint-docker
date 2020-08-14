@@ -22,10 +22,16 @@ jobs:
         with:
           buildx-version: latest
           qemu-version: latest
+      - name: Docker login
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --pasword-stdin
+
       - name: Build Image
         id: build
         run: |
-          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }}
           docker buildx build --load \
             --platform linux/arm64,linux/amd64,linux/armv7 \
             --cache-from docker.io/octoprint/octoprint:cache \
