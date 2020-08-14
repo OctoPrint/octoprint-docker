@@ -32,7 +32,7 @@ jobs:
       - name: Build Image
         id: build
         run: |
-          docker buildx build --load \
+          docker buildx build --push \
             --platform linux/arm64,linux/amd64,linux/arm/v7 \
             --cache-from octoprint/octoprint:cache \
             --cache-to octoprint/octoprint:cache \
