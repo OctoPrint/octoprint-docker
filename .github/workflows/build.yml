@@ -6,7 +6,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
     
     steps:
       - name: Checkout
