@@ -25,8 +25,8 @@ jobs:
           qemu-version: latest
       - name: Build Image
         id: build
-        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker ligin -u ${{ secrets.DOCKER_USERNAME }}
         run: |
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker ligin -u ${{ secrets.DOCKER_USERNAME }}
           docker buildx build --load \
             --platform linux/arm64,linux/amd64,linux/armv7 \
             --cache-from docker.io/octoprint/octoprint:cache \
