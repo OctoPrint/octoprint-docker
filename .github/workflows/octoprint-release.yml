@@ -1,26 +1,41 @@
-name: OctoPrint Release
+name: Image Deploy
 
 on:
   repository_dispatch:
     types:
       - release
-      - prerelease
+  push:
+    branches:
+      - master
 
 jobs:
-  buildx:
+  release:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         tags: ['latest', '%X%', '%X.Y%', '%X.Y.Z%']
 
     steps:
+      - name: Get Tag if push
+        id: get-octoprint-release
+        if: ${{ github.event_name == 'push'}}
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: OctoPrint
+          repo: OctoPrint
+      - name: Set Tag on Push
+        if: ${{ github.event_name == 'push'}}
+        run: echo "::set-env name=tag_name::${{ steps.get-octoprint-release.outputs.release }}"
+      - name: Set Tag on dispatch
+        if: ${{ github.event_name == 'repository_dispatch' }}
+        run: echo "::set-env name=tag_name::${{ github.event.client_payload.tag_name }}"
       - name: Checkout
         uses: actions/checkout@v2
       - name: Tagging strategy
         id: tagging
         uses: HackerHappyHour/tagging-strategy@1.0.0
         with:
-          tag_name: "${{ github.event.client_payload.tag_name }}"
+          tag_name: "${{ env.tag_name }}"
           pattern: "${{ matrix.tags}}"
 
       - name: Set up Docker Buildx
@@ -35,32 +50,14 @@ jobs:
         run: |
           echo ${{ secrets.DOCKER_PASSWORD}} | docker login -u ${{ secrets.DOCKER_USERNAME}} --password-stdin
 
-      - name: Configure Build
-        id: config
-        run: |
-          IMAGE=octoprint/octoprint 
-          REGISTRY=docker.io
-          PLATFORMS=linux/arm64,linux/amd64
-          CACHE = $(REGISTRY)/$(IMAGE):cache
-          IMG=$(REGISTRY)/$(IMAGE)
-
-          DOCKERFILE="./Dockerfile"
-          PYTHON_BASE_IMAGE=3.8-slim-buster
-
-          echo "::set-output name=registry::$REGISTRY"
-          echo "::set-output name=image::$IMG"
-          echo "::set-output name=platform::$PLATFORMS"
-          echo "::set-output name=cache::$CACHE"
-          echo "::set-output name=dockerfile::$DOCKERFILE"
-          echo "::set-output name=python_base_image::$PYTHON_BASE_IMAGE"
-
       - name: Build and Deploy
         id: build_deploy
         run: |
           docker buildx build --push \
-            --platform ${{ steps.config.outputs.platform }} \
-            --cache-from ${{ steps.config.outputs.cache }} \
-            --cache-to ${{ steps.config.outputs.cache }} \
-            --build-arg PYTHON_BASE_IMAGE=${{ steps.config.outputs.python_base_image }} \
-            --build-arg tag=${{ github.event.client_payload.tag_name }} \
-            --progress plain -t ${{ steps.config.outputs.image }}:${{ steps.tagging.outputs.tag }} .
+            --platform linux/arm64,linux/amd64,linux/arm/v7 \
+            --cache-from octoprint/octoprint:cache \
+            --cache-to octoprint/octoprint:cache \
+            --build-arg PYTHON_BASE_IMAGE=3.8-slim-buster \
+            --build-arg tag=${{ env.tag_name }} \
+            --progress plain -t octoprint/octoprint:${{ steps.tagging.outputs.tag }} .
+

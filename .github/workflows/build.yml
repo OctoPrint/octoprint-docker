@@ -1,0 +1,48 @@
+name: Build Images
+
+on:
+  push:
+    branches-ignore:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  _default:
+    runs-on: ubuntu-latest
+    env:
+      tag_name: ci
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Get OctoPrint Stable
+        id: get-octoprint-release
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: OctoPrint
+          repo: OctoPrint
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: crazy-max/ghaction-docker-buildx@v3
+        with:
+          buildx-version: latest
+          qemu-version: latest
+      - name: Docker login
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+      - name: Build Image
+        id: build
+        run: |
+          docker buildx build --push \
+            --platform linux/arm64,linux/amd64,linux/arm/v7 \
+            --cache-from octoprint/octoprint:cache \
+            --cache-to octoprint/octoprint:cache \
+            --build-arg PYTHON_BASE_IMAGE=3.8-slim-buster \
+            --build-arg tag=${{ steps.get-octoprint-release.outputs.release }} \
+            --progress plain -t octoprint/octoprint:${{ env.tag_name }} .
+  # variant builds (such as _camera) will go here
