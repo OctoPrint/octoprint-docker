@@ -1,11 +1,18 @@
-name: Build Default
+name: Build Images
 
 on:
   push:
+    branches-ignore:
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
-  build:
+  _default:
     runs-on: ubuntu-latest
+    env:
+      tag_name: ci
     
     steps:
       - name: Checkout
@@ -28,7 +35,6 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
-
       - name: Build Image
         id: build
         run: |
@@ -38,4 +44,4 @@ jobs:
             --cache-to octoprint/octoprint:cache \
             --build-arg PYTHON_BASE_IMAGE=3.8-slim-buster \
             --build-arg tag=${{ steps.get-octoprint-release.outputs.release }} \
-            --progress plain -t octoprint/octoprint:ci .
+            --progress plain -t octoprint/octoprint:${{ env.tag_name }} .
