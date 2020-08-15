@@ -57,7 +57,7 @@ LABEL issues="github.com/OcotPrint/docker/issues"
 RUN apt-get update && apt-get install -y build-essential
 
 RUN groupadd --gid 1000 octoprint \
-  && useradd --uid 1000 --gid octoprint -G dialout --shell /bin/bash --create-home octoprint
+  && useradd --uid 1000 --gid octoprint -G sudo --shell /bin/bash --create-home octoprint
 
 #Install Octoprint, ffmpeg, and cura engine
 COPY --from=compiler /opt/venv /opt/venv
