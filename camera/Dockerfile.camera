@@ -56,9 +56,13 @@ WORKDIR /mjpg/mjpg-streamer-master/mjpg-streamer-experimental
 RUN make
 RUN make install
 
-# Copy services into s6 servicedir
+# Copy services into s6 servicedir and set default ENV vars
 COPY camera /
+ENV CAMERA_DEV /dev/video0
+ENV MJPEG_STREAMER_AUTOSTART true
+ENV MJPEG_STREAMER_INPUT -y -n -r 640x480
 
+# port to access haproxy frontend
 EXPOSE 8888
 
 ENTRYPOINT ["/init"]
