@@ -111,5 +111,5 @@ jobs:
             --cache-from octoprint/octoprint:cache \
             --cache-to octoprint/octoprint:cache \
             --build-arg OCTOPRINT_BASE_IMAGE=${{ steps.get-octoprint-release.outputs.release }} \
-            --progress plain -t octoprint/octoprint:${{ env.tag_name }} -f ./camera/Dockerfile.camera .
+            --progress plain -t octoprint/octoprint:${{ steps.tagging.outputs.tag }} -f ./camera/Dockerfile.camera .
 
