@@ -77,5 +77,5 @@ jobs:
             --platform linux/arm64,linux/amd64,linux/arm/v7 \
             --cache-from octoprint/octoprint:cache \
             --cache-to octoprint/octoprint:cache \
-            --build-arg OCTOPRINT_BASE_IMAGE=1.4.2 \
+            --build-arg OCTOPRINT_BASE_IMAGE=${{ steps.get-octoprint-release.outputs.release }} \
             --progress plain -t octoprint/octoprint:ci-camera -f ./camera/Dockerfile.camera .
