@@ -48,6 +48,7 @@ jobs:
   # variant builds (such as _camera) will go here
   camera:
     runs-on: ubuntu-latest
+    needs: _default
     
     steps:
       - name: Checkout

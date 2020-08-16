@@ -63,6 +63,7 @@ jobs:
 
   camera:
     runs-on: ubuntu-latest
+    needs: _default
     strategy:
       matrix:
         tags: ['%X%-camera', '%X.Y%-camera', '%X.Y.Z%-camera']
