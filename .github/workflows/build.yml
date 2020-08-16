@@ -13,8 +13,6 @@ on:
 jobs:
   _default:
     runs-on: ubuntu-latest
-    env:
-      tag_name: ci
     
     steps:
       - name: Checkout
@@ -46,12 +44,10 @@ jobs:
             --cache-to octoprint/octoprint:cache \
             --build-arg PYTHON_BASE_IMAGE=3.8-slim-buster \
             --build-arg tag=${{ steps.get-octoprint-release.outputs.release }} \
-            --progress plain -t octoprint/octoprint:${{ env.tag_name }} .
+            --progress plain -t octoprint/octoprint:ci .
   # variant builds (such as _camera) will go here
   camera:
     runs-on: ubuntu-latest
-    env:
-      tag_name: ci-camera
     
     steps:
       - name: Checkout
@@ -82,5 +78,5 @@ jobs:
             --cache-from octoprint/octoprint:cache \
             --cache-to octoprint/octoprint:cache \
             --build-arg OCTOPRINT_BASE_IMAGE=${{ steps.get-octoprint-release.outputs.release }} \ 
-            --progress plain -t octoprint/octoprint:${{ env.tag_name }} -f ./camera/Dockerfile.camera .
+            --progress plain -t octoprint/octoprint:ci-camera -f ./camera/Dockerfile.camera .
 
