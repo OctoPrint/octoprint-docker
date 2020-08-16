@@ -58,3 +58,4 @@ RUN make
 RUN make install
 
 ENTRYPOINT ["/init"]
+CMD ["octoprint", "serve", "--iknowwhatimdoing", "--host", "0.0.0.0"]
