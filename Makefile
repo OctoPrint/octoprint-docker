@@ -9,6 +9,7 @@ OCTOPRINT_VERSION?= $(shell ./scripts/version.sh "OctoPrint/OctoPrint")
 IMG_TAG=${OCTOPRINT_VERSION}-python3
 
 .DEFAULT_GOAL := build
+.PHONY: camera
 
 clean:
 	docker stop buildkit && docker rm buildkit
@@ -45,3 +46,8 @@ buildx-push:
 		--build-arg PYTHON_BASE_IMAGE=$(PYTHON_BASE_IMAGE) \
 		--build-arg tag=${OCTOPRINT_VERSION} \
 		--progress plain -t ${IMG}:${IMG_TAG} .
+
+camera: 
+	@echo '[buildx]: building camera image'
+	docker build --build-arg OCTOPRINT_BASE_IMAGE=1.4.2 \
+		-t octoprint/octoprint:camera -f ./camera/Dockerfile.camera .

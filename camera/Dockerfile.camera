@@ -18,22 +18,43 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && curl -fsSLO "https://github.com/just-containers/s6-overlay/releases/download/$S6_VERSION/s6-overlay-$ARCH.tar.gz"
 
 
-FROM octoprint/octoprint:${OCTOPRINT_BASE_IMAGE}} AS build
+FROM octoprint/octoprint:${OCTOPRINT_BASE_IMAGE} AS build
+
+USER root
+
+RUN apt-get update && apt-get install -y \
+  avrdude \
+  build-essential \
+  cmake \
+  curl \
+  imagemagick \
+  fontconfig \
+  g++ \
+  git \
+  haproxy \
+  libjpeg-dev \
+  libjpeg62-turbo \
+  libprotobuf-dev \
+  libv4l-dev \
+  openssh-client \
+  v4l-utils \
+  xz-utils \
+  zlib1g-dev
 
 # unpack s6
 COPY --from=s6build /tmp /tmp
-
-RUN apt-get update && apt-get install -y \
-  xz-utils \
-  build-essential \
-  g++ \
-  make \
-  curl \
-  haproxy
-
 RUN s6tar=$(find /tmp -name "s6-overlay-*.tar.gz") \
   && tar xzf $s6tar -C / --exclude './bin' \
   && tar xzf $s6tar -C /usr ./bin
 
+# Install mjpg-streamer
+RUN curl -fsSLO --compressed --retry 3 --retry-delay 10 \
+  https://github.com/jacksonliam/mjpg-streamer/archive/master.tar.gz \
+  && mkdir /mjpg-streamer-master \
+  && tar xzf master.tar.gz -C /
+
+WORKDIR /mjpg-streamer-master/mjpg-streamer-experimental
+RUN make
+RUN make install
+
 ENTRYPOINT ["/init"]
-CMD ["nginx"]
