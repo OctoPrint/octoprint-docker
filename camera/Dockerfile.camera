@@ -56,5 +56,10 @@ WORKDIR /mjpg/mjpg-streamer-master/mjpg-streamer-experimental
 RUN make
 RUN make install
 
+# Copy services into s6 servicedir
+COPY camera /
+
+EXPOSE 8888
+
 ENTRYPOINT ["/init"]
 CMD ["octoprint", "serve", "--iknowwhatimdoing", "--host", "0.0.0.0"]
