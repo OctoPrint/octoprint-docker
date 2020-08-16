@@ -2,6 +2,8 @@ name: Build Images
 
 on:
   push:
+    paths-ignore:
+      - 'scripts'
     branches-ignore:
       - master
   pull_request:
@@ -79,7 +81,6 @@ jobs:
             --platform linux/arm64,linux/amd64,linux/arm/v7 \
             --cache-from octoprint/octoprint:cache \
             --cache-to octoprint/octoprint:cache \
-            --build-arg PYTHON_BASE_IMAGE=3.8-slim-buster \
-            --build-arg tag=${{ steps.get-octoprint-release.outputs.release }} \
+            --build-arg OCTOPRINT_BASE_IMAGE=${{ steps.get-octoprint-release.outputs.release }} \ 
             --progress plain -t octoprint/octoprint:${{ env.tag_name }} .
 
