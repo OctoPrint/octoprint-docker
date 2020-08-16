@@ -1,0 +1,3 @@
+#!/usr/bin/execlineb -P
+
+haproxy -p /tmp/haproxy.pid -f /etc/haproxy/haproxy.cfg -db
