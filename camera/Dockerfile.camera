@@ -44,16 +44,15 @@ RUN apt-get update && apt-get install -y \
 # unpack s6
 COPY --from=s6build /tmp /tmp
 RUN s6tar=$(find /tmp -name "s6-overlay-*.tar.gz") \
-  && tar xzf $s6tar -C / --exclude './bin' \
-  && tar xzf $s6tar -C /usr ./bin
+  && tar xzf $s6tar -C / 
 
 # Install mjpg-streamer
 RUN curl -fsSLO --compressed --retry 3 --retry-delay 10 \
   https://github.com/jacksonliam/mjpg-streamer/archive/master.tar.gz \
-  && mkdir /mjpg-streamer-master \
-  && tar xzf master.tar.gz -C /
+  && mkdir /mjpg \
+  && tar xzf master.tar.gz -C /mjpg
 
-WORKDIR /mjpg-streamer-master/mjpg-streamer-experimental
+WORKDIR /mjpg/mjpg-streamer-master/mjpg-streamer-experimental
 RUN make
 RUN make install
 
