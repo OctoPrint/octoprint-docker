@@ -61,7 +61,7 @@ jobs:
           repo: OctoPrint
       - name: Set up Docker Buildx
         id: buildx
-        uses: crazy-max/ghaction-docker-buildx@v3
+        uses: crazy-max/ghaction-docker-buildx@v3.0.0
         with:
           buildx-version: latest
           qemu-version: latest
