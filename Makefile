@@ -29,14 +29,14 @@ build:
 dry-run:
 	@echo '[buildx]: building image: ${IMG}:${IMG_TAG} for all architectures'
 
-buildx:
-	@echo '[buildx]: building image: ${IMG}:${IMG_TAG} for all architectures'
-	@docker buildx build --load --platform $(PLATFORMS) \
+buildx-test:
+	@echo '[buildx]: building image: ${IMG}:ci for all architectures'
+	@docker buildx build --push --platform $(PLATFORMS) \
 		--cache-from ${CACHE} \
 		--cache-to	${CACHE} \
 		--build-arg PYTHON_BASE_IMAGE=$(PYTHON_BASE_IMAGE) \
 		--build-arg tag=${OCTOPRINT_VERSION} \
-		--progress plain -t ${IMG}:${IMG_TAG} .
+		--progress plain -t ${IMG}:ci .
 
 buildx-push:
 	@echo '[buildx]: building and pushing images: ${IMG}:${IMG_TAG} for all supported architectures'

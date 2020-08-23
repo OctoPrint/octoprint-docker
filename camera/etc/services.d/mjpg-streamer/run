@@ -1,5 +1,15 @@
-#!/bin/sh
+#!/usr/bin/with-contenv sh
 
-exec /mjpg/mjpg-streamer-master/mjpg-streamer-experimental/mjpg_streamer \
-  -i "/usr/local/lib/mjpg-streamer/input_uvc.so -y -n -r 640x480 -d /dev/video0" \
+if [ -n "$STREAMER_FLAGS" ]; then
+  echo "Deprecation warning: the environment variable '\$STREAMER_FLAGS' was renamed to '\$MJPEG_STREAMER_INPUT'"
+
+  MJPEG_STREAMER_INPUT=$STREAMER_FLAGS
+fi
+
+if ! expr "$MJPEG_STREAMER_INPUT" : ".*\.so.*" > /dev/null; then
+  MJPEG_STREAMER_INPUT="input_uvc.so $MJPEG_STREAMER_INPUT"
+fi
+
+exec mjpg_streamer \
+  -i "/usr/local/lib/mjpg-streamer/$MJPEG_STREAMER_INPUT -d $CAMERA_DEV" \
   -o "/usr/local/lib/mjpg-streamer/output_http.so -w /usr/local/share/mjpg-streamer/www -p 8080"

@@ -1,37 +1,11 @@
-# OctoPrint-docker ![deploy latest with python2.7](https://github.com/OctoPrint/docker/workflows/deploy%20latest%20with%20python2.7/badge.svg)
+# OctoPrint-docker 
 
-## State of OctoPrint/docker and Notice to Docker Users
+## Tags
 
-This image is currently under development, and is by no means stable, or guaranteed
-to work. We are tracking the steps needed to get to a stable release in the 
-[Stable Automated Docker Releases](https://github.com/OctoPrint/docker/projects/1)
-project in this repository.
+- `latest`, `1.4.2`, `1.4`, `1` ([Dockerfile](Dockerfile))
+- `camera`, `1.4.2-camera`, `1.4-camera`, `1-camera` ([Dockerfile](camera/Dockerfile.camera))
 
-At the moment, we do _strongly recommend_ installing OcotPrint natively, or using
-OctoPi. Making this image work will require you use only basic OctoPrint functionality,
-or that you be a skilled docker user.
-
-** Why is this not stable?**
-
-Docker is not a VM, and is designed to isolate a process by providing all the system
-libraries and toolchains required to run that process inside a container. 
-
-This means that containers are inherently stateless, and introducing state complicates
-the ability to execute the container.
-
-Using docker, you typically update your software by deploying a new image. OctoPrint however, is designed to update itself.
-
-This is further complicated with Plugin Management, which OctoPrint manages by
-altering the host state (installs plugins).
-
-This combination of environment manipulation makes it exceedingly difficult to share
-that state with the _container's_ host (the physical machine).
-
-Additionally, things like device and gpio access have to mapped and set up in specific
-ways, and are not easily automated (which native OctoPrint can handle very well)
-
-
-## Setup and Usage
+## Setup and Usage (Default image)
 
 We recommend you use docker-compose to run octoprint via docker. 
 
