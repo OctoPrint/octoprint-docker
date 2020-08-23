@@ -1,4 +1,0 @@
-#!/usr/bin/with-contenv sh
-echo $CAMERA_DEV
-echo $MJPEG_STREAMER_AUTOSTART
-echo $MJPEG_STREAMER_INPUT
