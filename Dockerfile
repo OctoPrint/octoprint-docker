@@ -1,20 +1,5 @@
 ARG PYTHON_BASE_IMAGE=2.7-slim-buster
 
-FROM buildpack-deps:curl AS ffmpeg
-RUN apt-get update && apt-get install -y xz-utils
-RUN echo "$(dpkg --print-architecture)"
-RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
-  && case "${dpkgArch##*-}" in \
-  amd64) ARCH='amd64';; \
-  arm64) ARCH='arm64';; \
-  armhf) ARCH='armhf';; \
-  *) echo "unsupported architecture: $(dpkg --print-architecture)"; exit 1 ;; \
-  esac \
-  && set -ex \
-  && curl -fsSLO "https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-$ARCH-static.tar.xz" \
-  && mkdir -p /opt \
-  && tar -xJf "ffmpeg-release-$ARCH-static.tar.xz" --strip-components=1 -C /opt
-
 FROM python:${PYTHON_BASE_IMAGE} AS cura-compiler
 
 ARG CURA_VERSION
@@ -54,14 +39,15 @@ LABEL description="The snappy web interface for your 3D printer"
 LABEL authors="longlivechief <chief@hackerhappyhour.com>, badsmoke <dockerhub@badcloud.eu>"
 LABEL issues="github.com/OcotPrint/docker/issues"
 
-RUN apt-get update && apt-get install -y build-essential
+RUN apt-get update && apt-get install -y \
+  build-essential \
+  ffmpeg
 
 RUN groupadd --gid 1000 octoprint \
   && useradd --uid 1000 --gid octoprint -G dialout --shell /bin/bash --create-home octoprint
 
 #Install Octoprint, ffmpeg, and cura engine
 COPY --from=compiler /opt/venv /opt/venv
-COPY --from=ffmpeg /opt /opt/ffmpeg
 COPY --from=cura-compiler /opt/build /opt/cura
 
 RUN chown -R octoprint:octoprint /opt/venv
