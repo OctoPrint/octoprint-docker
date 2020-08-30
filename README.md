@@ -1,40 +1,60 @@
 # OctoPrint-docker 
 
+The primary image of `octoprint/octoprint`, is designed to work similarly, and support the
+same out of the box features as the octopi raspberry-pi machine image, using docker.
+
 ## Tags
 
 - `latest`, `1.4.2`, `1.4`, `1` ([Dockerfile](Dockerfile))
-- `camera`, `1.4.2-camera`, `1.4-camera`, `1-camera` ([Dockerfile](camera/Dockerfile.camera))
 
-## Setup and Usage (Default image)
+## Usage
 
-We recommend you use docker-compose to run octoprint via docker. 
+We recommend you use docker-compose to run octoprint via docker, and have included
+a recommended [docker-compose.yml](docker-compose.yml) file for your convenience.
 
-At the moment, we recommend that you do _not_ create a host mounted path for OctoPrint
-configuration.  Instead we recommend you create a docker volume for octoprint
-configuration, and mount that volume to the container.
+Save the contents of this file on your machine as `docker-compose.yml`, and then
+run `docker-compose up -d`.
 
-We have included a `docker-compose.yml` file in this project that will run octoprint.
-You will need to either copy that file into a directory on your machine, or clone this
-project.
+Open octoprint at `http://<octoprint_ip_or_url`
 
-After the `docker-compose.yml` file is on your machine, you'll want to open it for
-editing, and add device mappings for your serial port.
+See [Initial Setup](#initial-setup) for configuration values to use during your fist
+launch of OctoPrint using docker.
+
+### Configuration
+
+#### Initial Setup
+
+Use the following values in the webcam & timelapse settings screen of the initial setup:
+
+| Setting | Value |
+|=========|=======|
+| Stream URL | `/webcam/?action=stream` |
+| Snapshot URL |  `http://localhost:8080/?action=snapshot` |
+| Path to FFMPEG | `/usr/bin/ffmpeg` |
+
+#### Editing Config files manually
+
+This docker-compose file also contains a container based instance of vscode, accessible
+via your browser at the same url as your octoprint instance, allowing you to edit configuration
+files without needing to login to your octoprint host.
+
+To make use of this editor, just uncomment the indicated lines in your [docker-compose.yml](docker-compose.yml#20-32)
+then run the following commands:
 
 ```
-git clone https://github.com/OctoPrint/docker.git octoprint-docker && cd octoprint-docker
-
-# search for you 3D printer serial port (usually it's /dev/ttyUSB0 or /dev/ttyACM0)
-ls /dev | grep tty
-
-// edit the docker-compose file to set your 3D printer serial port
-vi docker-compose.yml
-
-docker-compose up -d
+docker-compose up -d config-editor
 ```
 
-You can then go to http://localhost
+Now go to `http://<octoprint_ip_or_url>:8443` in your browser to edit your octoprint files!
+Use the 'explorer' (accessible by clicking the hamburger menu icon) to explore folder and files to load
+into the editor workspace.
 
-You can display the log using `docker-compose logs -f`
+When you're done, we recommend you stop and rm this service/container:
+
+```
+docker-compose stop config-editor && docker-compose rm config-editor
+```
+
 
 ## Without docker-compose
 
@@ -43,6 +63,6 @@ on the host, and then start your container:
 
 ```
 docker volume create octoprint
-docker run -d -v octoprint:/home/octoprint --device /dev/ttyACM0:/dev/ttyACM0 -p 5000:5000 --name octoprint octoprint/octoprint
+docker run -d -v octoprint:/octoprint --device /dev/ttyACM0:/dev/ttyACM0 --device /dev/video0:/dev/video0 -p 80:80 --name octoprint octoprint/octoprint
 
 ```

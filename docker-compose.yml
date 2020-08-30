@@ -3,6 +3,7 @@ version: '3.7'
 services:
   octoprint:
     image: octoprint/octoprint
+    restart: unless-stopped
     ports:
       - 80:80
     # devices:
@@ -22,6 +23,7 @@ services:
   #    - 8443:8443
   #  depends_on:
   #    - octoprint
+  #  restart: unless-stopped
   #  environment:
   #    - PUID=0
   #    - GUID=0
