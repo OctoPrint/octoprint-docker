@@ -2,8 +2,6 @@ name: Build Images
 
 on:
   push:
-    paths-ignore:
-      - 'scripts'
     branches-ignore:
       - master
   pull_request:
