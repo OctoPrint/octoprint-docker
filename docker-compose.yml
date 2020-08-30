@@ -4,9 +4,10 @@ services:
   octoprint:
     image: octoprint/octoprint
     ports:
-      - 80:80
+      - 80:8888
     # devices:
     #  - /dev/ttyACM0:/dev/ttyACM0
+    # - /dev/video0:/dev/video0
     volumes:
      - octoprint:/octoprint
 
