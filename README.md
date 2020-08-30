@@ -32,6 +32,24 @@ Use the following values in the webcam & timelapse settings screen of the initia
 | Snapshot URL |  `http://localhost:8080/?action=snapshot` |
 | Path to FFMPEG | `/usr/bin/ffmpeg` |
 
+### Container Environment based configs
+
+There are configuration values that you pass using container `--environment` options.
+Listed below are the options and their defaults. These are implicit in example [docker-compose.yml](docker-compose.yml),
+and if you wish to change them, refer to the docker-compose docs on setting environment variables.
+
+| variable | default |
+|==========|=========|
+| `CAMERA_DEV` | `/dev/video0` (see [note](#devices_note)) |
+| `CAMERA_DEV` | `MJPEG_STREAMER_INPUT -y -n -r 640x48` |
+
+**note:** You will still need to declare the `device` mapping in your docker-compose file or docker command,
+even if you explicitly declare the `CAMERA_DEV`.  The value of `CAMERA_DEV` is used in starting the mjpeg-streamer
+service, whereas the `devices` mapping is used by docker to make sure the container has access to the device.
+
+For example, if you change the `CAMERA_DEV` to be `/dev/video1`, you would also need to map `/dev/video1:/dev/video1`
+in your container.
+
 #### Editing Config files manually
 
 This docker-compose file also contains a container based instance of vscode, accessible
