@@ -32,7 +32,7 @@ vi docker-compose.yml
 docker-compose up -d
 ```
 
-You can then go to http://localhost:5000
+You can then go to http://localhost
 
 You can display the log using `docker-compose logs -f`
 

@@ -4,11 +4,11 @@ services:
   octoprint:
     image: octoprint/octoprint
     ports:
-      - 5000:5000
+      - 80:80
     # devices:
     #  - /dev/ttyACM0:/dev/ttyACM0
     volumes:
-     - octoprint:/home/octoprint
+     - octoprint:/octoprint
 
 volumes:
   octoprint:
