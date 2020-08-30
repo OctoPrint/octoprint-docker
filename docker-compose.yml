@@ -10,6 +10,24 @@ services:
     # - /dev/video0:/dev/video0
     volumes:
      - octoprint:/octoprint
+  
+  ####
+  # uncomment if you wish to edit the configuration files of octoprint
+  # refer to docs on configuration editing for more information
+  ####
+
+  #config-editor:
+  #  image: linuxserver/code-server
+  #  ports:
+  #    - 8443:8443
+  #  depends_on:
+  #    - octoprint
+  #  environment:
+  #    - PUID=0
+  #    - GUID=0
+  #    - TZ=America/Chicago
+  #  volumes:
+  #    - octoprint:/octoprint
 
 volumes:
   octoprint:
