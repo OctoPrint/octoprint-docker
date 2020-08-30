@@ -1,61 +1,68 @@
-ARG PYTHON_BASE_IMAGE=2.7-slim-buster
+ARG OCTOPRINT_BASE_IMAGE
 
-FROM python:${PYTHON_BASE_IMAGE} AS cura-compiler
-
-ARG CURA_VERSION
-ENV CURA_VERSION ${CURA_VERSION:-15.04.6}
-
-RUN apt-get update && apt-get install -y g++ make curl
-RUN curl -fsSLO --compressed --retry 3 --retry-delay 10 \
-  https://github.com/Ultimaker/CuraEngine/archive/${CURA_VERSION}.tar.gz \
-  && mkdir -p /opt \
-  && tar -xzf ${CURA_VERSION}.tar.gz --strip-components=1 -C /opt --no-same-owner
-WORKDIR /opt
-RUN make
-
-# build ocotprint
-FROM python:${PYTHON_BASE_IMAGE} AS compiler
-
-ARG tag
-ENV tag ${tag:-master}
-
-RUN apt-get update && apt-get install -y build-essential curl
-
-RUN	curl -fsSLO --compressed --retry 3 --retry-delay 10 \
-  https://github.com/OctoPrint/OctoPrint/archive/${tag}.tar.gz \
-	&& mkdir -p /opt/venv \
-  && tar xzf ${tag}.tar.gz --strip-components 1 -C /opt/venv --no-same-owner
-
-#install venv            
-RUN pip install virtualenv
-RUN python -m virtualenv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-WORKDIR /opt/venv
-RUN pip install .
+FROM ubuntu AS s6build
+ARG S6_RELEASE
+ENV S6_VERSION ${S6_RELEASE:-v2.0.0.1}
+RUN apt-get update && apt-get install -y curl
+RUN echo "$(dpkg --print-architecture)"
+WORKDIR /tmp
+RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
+  && case "${dpkgArch##*-}" in \
+  amd64) ARCH='amd64';; \
+  arm64) ARCH='aarch64';; \
+  armhf) ARCH='armhf';; \
+  *) echo "unsupported architecture: $(dpkg --print-architecture)"; exit 1 ;; \
+  esac \
+  && set -ex \
+  && echo $S6_VERSION \
+  && curl -fsSLO "https://github.com/just-containers/s6-overlay/releases/download/$S6_VERSION/s6-overlay-$ARCH.tar.gz"
 
 
-FROM python:${PYTHON_BASE_IMAGE} AS build
-LABEL description="The snappy web interface for your 3D printer"
-LABEL authors="longlivechief <chief@hackerhappyhour.com>, badsmoke <dockerhub@badcloud.eu>"
-LABEL issues="github.com/OcotPrint/docker/issues"
+FROM octoprint/octoprint:${OCTOPRINT_BASE_IMAGE} AS build
+
+USER root
 
 RUN apt-get update && apt-get install -y \
+  avrdude \
   build-essential \
-  ffmpeg
+  cmake \
+  curl \
+  imagemagick \
+  fontconfig \
+  g++ \
+  git \
+  haproxy \
+  libjpeg-dev \
+  libjpeg62-turbo \
+  libprotobuf-dev \
+  libv4l-dev \
+  openssh-client \
+  v4l-utils \
+  xz-utils \
+  zlib1g-dev
 
-RUN groupadd --gid 1000 octoprint \
-  && useradd --uid 1000 --gid octoprint -G dialout --shell /bin/bash --create-home octoprint
+# unpack s6
+COPY --from=s6build /tmp /tmp
+RUN s6tar=$(find /tmp -name "s6-overlay-*.tar.gz") \
+  && tar xzf $s6tar -C / 
 
-#Install Octoprint, ffmpeg, and cura engine
-COPY --from=compiler /opt/venv /opt/venv
-COPY --from=cura-compiler /opt/build /opt/cura
+# Install mjpg-streamer
+RUN curl -fsSLO --compressed --retry 3 --retry-delay 10 \
+  https://github.com/jacksonliam/mjpg-streamer/archive/master.tar.gz \
+  && mkdir /mjpg \
+  && tar xzf master.tar.gz -C /mjpg
 
-RUN chown -R octoprint:octoprint /opt/venv
-ENV PATH="/opt/venv/bin:/opt/ffmpeg:/opt/cura:$PATH"
+WORKDIR /mjpg/mjpg-streamer-master/mjpg-streamer-experimental
+RUN make
+RUN make install
 
-EXPOSE 5000
-COPY docker-entrypoint.sh /usr/local/bin/
-USER octoprint
-VOLUME /home/octoprint
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["octoprint", "serve"]
+# Copy services into s6 servicedir and set default ENV vars
+COPY root /
+ENV CAMERA_DEV /dev/video0
+ENV MJPEG_STREAMER_INPUT -y -n -r 640x480
+
+# port to access haproxy frontend
+EXPOSE 80
+
+ENTRYPOINT ["/init"]
+CMD ["octoprint", "serve", "--iknowwhatimdoing", "--host", "0.0.0.0"]
