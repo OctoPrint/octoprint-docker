@@ -14,6 +14,7 @@ jobs:
     outputs:
       noop: ${{ steps.filter.outputs.noop }}
     steps:
+    - uses: actions/checkout@v2
     - uses: dorny/paths-filter@v2.2.1
       if: ${{ github.event_name == 'push'}}
       id: filter
