@@ -10,7 +10,7 @@ services:
     #  - /dev/ttyACM0:/dev/ttyACM0
     # - /dev/video0:/dev/video0
     volumes:
-     - octoprint:/octoprint
+     - octoprint:/home/octoprint
   
   ####
   # uncomment if you wish to edit the configuration files of octoprint
@@ -29,7 +29,7 @@ services:
   #    - GUID=0
   #    - TZ=America/Chicago
   #  volumes:
-  #    - octoprint:/octoprint
+  #    - octoprint:/home/octoprint
 
 volumes:
   octoprint:
