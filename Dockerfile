@@ -23,8 +23,6 @@ FROM python:${PYTHON_BASE_IMAGE} AS build
 ARG tag
 ENV tag ${tag:-master}
 
-USER root
-
 RUN apt-get update && apt-get install -y \
   avrdude \
   build-essential \
@@ -58,7 +56,7 @@ RUN	curl -fsSLO --compressed --retry 3 --retry-delay 10 \
 WORKDIR /opt/octoprint
 RUN pip install -r requirements.txt
 RUN python setup.py install
-RUN ls -s ~/.octoprint /octoprint
+RUN ln -s ~/.octoprint /octoprint
 
 # Install mjpg-streamer
 RUN curl -fsSLO --compressed --retry 3 --retry-delay 10 \
@@ -79,6 +77,8 @@ ENV PYTHONUSERBASE /octoprint/plugins
 
 # port to access haproxy frontend
 EXPOSE 80
+
+VOLUME /octoprint
 
 ENTRYPOINT ["/init"]
 CMD ["octoprint", "serve", "--iknowwhatimdoing", "--host", "0.0.0.0"]
