@@ -63,7 +63,7 @@ then run the following commands:
 docker-compose up -d config-editor
 ```
 
-Now go to `http://<octoprint_ip_or_url>:8443` in your browser to edit your octoprint files!
+Now go to `http://<octoprint_ip_or_url>:8443/?folder=/config` in your browser to edit your octoprint files!
 Use the 'explorer' (accessible by clicking the hamburger menu icon) to explore folder and files to load
 into the editor workspace.
 
