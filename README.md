@@ -27,7 +27,7 @@ launch of OctoPrint using docker.
 Use the following values in the webcam & timelapse settings screen of the initial setup:
 
 | Setting | Value |
-|=========|=======|
+| ------- | ----- |
 | Stream URL | `/webcam/?action=stream` |
 | Snapshot URL |  `http://localhost:8080/?action=snapshot` |
 | Path to FFMPEG | `/usr/bin/ffmpeg` |
@@ -39,7 +39,7 @@ Listed below are the options and their defaults. These are implicit in example [
 and if you wish to change them, refer to the docker-compose docs on setting environment variables.
 
 | variable | default |
-|==========|=========|
+| -------- | ------- |
 | `CAMERA_DEV` | `/dev/video0` (see [note](#devices_note)) |
 | `CAMERA_DEV` | `MJPEG_STREAMER_INPUT -y -n -r 640x48` |
 
