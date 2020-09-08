@@ -52,11 +52,11 @@ in your container.
 
 #### Editing Config files manually
 
-This docker-compose file also contains a container based instance of vscode, accessible
+This docker-compose file also contains a container based instance of [vscode][], accessible
 via your browser at the same url as your octoprint instance, allowing you to edit configuration
 files without needing to login to your octoprint host.
 
-To make use of this editor, just uncomment the indicated lines in your [docker-compose.yml](docker-compose.yml#20-32)
+To make use of this editor, just uncomment the indicated lines in your [docker-compose.yml](docker-compose.yml#L20-L32)
 then run the following commands:
 
 ```
@@ -67,12 +67,15 @@ Now go to `http://<octoprint_ip_or_url>:8443` in your browser to edit your octop
 Use the 'explorer' (accessible by clicking the hamburger menu icon) to explore folder and files to load
 into the editor workspace.
 
+The active configuration will be accessible at `/config/config.yaml`
+
 When you're done, we recommend you stop and rm this service/container:
 
 ```
 docker-compose stop config-editor && docker-compose rm config-editor
 ```
 
+For full documenation about the config editor, see the docs for the product at [github.com/cdr/code-server][code-server].
 
 ## Without docker-compose
 
@@ -84,3 +87,6 @@ docker volume create octoprint
 docker run -d -v octoprint:/octoprint --device /dev/ttyACM0:/dev/ttyACM0 --device /dev/video0:/dev/video0 -p 80:80 --name octoprint octoprint/octoprint
 
 ```
+
+[code-server]: https://github.com/cdr/code-server
+[vscode]: https://code.visualstudio.com
