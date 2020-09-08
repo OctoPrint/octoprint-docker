@@ -74,6 +74,6 @@ jobs:
             --platform linux/arm64,linux/amd64,linux/arm/v7 \
             --cache-from octoprint/octoprint:cache \
             --cache-to octoprint/octoprint:cache \
-            --build-arg OCTOPRINT_BASE_IMAGE=${{ steps.get-octoprint-release.outputs.release }} \
+            --build-arg tag=${{ env.tag_name }} \
             --progress plain -t octoprint/octoprint:${{ steps.tagging.outputs.tag }} -f Dockerfile .
 

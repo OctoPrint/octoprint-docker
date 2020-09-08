@@ -27,7 +27,7 @@ launch of OctoPrint using docker.
 Use the following values in the webcam & timelapse settings screen of the initial setup:
 
 | Setting | Value |
-|=========|=======|
+| ------- | ----- |
 | Stream URL | `/webcam/?action=stream` |
 | Snapshot URL |  `http://localhost:8080/?action=snapshot` |
 | Path to FFMPEG | `/usr/bin/ffmpeg` |
@@ -39,7 +39,7 @@ Listed below are the options and their defaults. These are implicit in example [
 and if you wish to change them, refer to the docker-compose docs on setting environment variables.
 
 | variable | default |
-|==========|=========|
+| -------- | ------- |
 | `CAMERA_DEV` | `/dev/video0` (see [note](#devices_note)) |
 | `CAMERA_DEV` | `MJPEG_STREAMER_INPUT -y -n -r 640x48` |
 
@@ -52,20 +52,22 @@ in your container.
 
 #### Editing Config files manually
 
-This docker-compose file also contains a container based instance of vscode, accessible
+This docker-compose file also contains a container based instance of [vscode][], accessible
 via your browser at the same url as your octoprint instance, allowing you to edit configuration
 files without needing to login to your octoprint host.
 
-To make use of this editor, just uncomment the indicated lines in your [docker-compose.yml](docker-compose.yml#20-32)
+To make use of this editor, just uncomment the indicated lines in your [docker-compose.yml](docker-compose.yml#L20-L32)
 then run the following commands:
 
 ```
 docker-compose up -d config-editor
 ```
 
-Now go to `http://<octoprint_ip_or_url>:8443` in your browser to edit your octoprint files!
+Now go to `http://<octoprint_ip_or_url>:8443/?folder=/config` in your browser to edit your octoprint files!
 Use the 'explorer' (accessible by clicking the hamburger menu icon) to explore folder and files to load
 into the editor workspace.
+
+The active configuration will be accessible at `/config/config.yaml`
 
 When you're done, we recommend you stop and rm this service/container:
 
@@ -73,6 +75,7 @@ When you're done, we recommend you stop and rm this service/container:
 docker-compose stop config-editor && docker-compose rm config-editor
 ```
 
+For full documenation about the config editor, see the docs for the product at [github.com/cdr/code-server][code-server].
 
 ## Without docker-compose
 
@@ -84,3 +87,6 @@ docker volume create octoprint
 docker run -d -v octoprint:/octoprint --device /dev/ttyACM0:/dev/ttyACM0 --device /dev/video0:/dev/video0 -p 80:80 --name octoprint octoprint/octoprint
 
 ```
+
+[code-server]: https://github.com/cdr/code-server
+[vscode]: https://code.visualstudio.com

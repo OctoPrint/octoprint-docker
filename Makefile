@@ -36,7 +36,7 @@ buildx-test:
 		--cache-to	${CACHE} \
 		--build-arg PYTHON_BASE_IMAGE=$(PYTHON_BASE_IMAGE) \
 		--build-arg tag=${OCTOPRINT_VERSION} \
-		--progress plain -t ${IMG}:ci .
+		--progress tty -t ${IMG}:ci .
 
 buildx-push:
 	@echo '[buildx]: building and pushing images: ${IMG}:${IMG_TAG} for all supported architectures'
