@@ -29,6 +29,7 @@ RUN apt-get update && apt-get install -y \
   cmake \
   curl \
   imagemagick \
+  ffmpeg \
   fontconfig \
   g++ \
   git \
