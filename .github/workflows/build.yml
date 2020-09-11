@@ -19,7 +19,7 @@ jobs:
     - uses: dorny/paths-filter@v2.2.1
       id: filter
       with:
-        filters: '.github/filter.yml'
+        filters: '.github/filters.yml'
 
   build:
     runs-on: ubuntu-latest
