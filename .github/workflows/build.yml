@@ -9,8 +9,22 @@ on:
       - master
 
 jobs:
+  filters:
+    runs-on: ubuntu-latest
+    outputs:
+      found_main_changes: ${{ steps.filter.outputs.main_image_files }}
+      found_minimal_changes: ${{ steps.filter.outputs.minimal_image_files }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: dorny/paths-filter@v2.2.1
+      id: filter
+      with:
+        filters: '.github/filter.yml'
+
   build:
     runs-on: ubuntu-latest
+    needs: filters
+    if: needs.filters.outputs.found_main_changes
     
     steps:
       - uses: actions/checkout@v2
