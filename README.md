@@ -1,6 +1,6 @@
 # OctoPrint-docker 
 
-The primary image of `octoprint/octoprint`. It is designed to work similarly, and support the
+This is the primary image of `octoprint/octoprint`. It is designed to work similarly, and support the
 same out of the box features as the octopi raspberry-pi machine image, using docker.
 
 ## Tags
