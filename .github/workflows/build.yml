@@ -21,10 +21,10 @@ jobs:
       with:
         filters: '.github/filters.yml'
 
-  build:
+  docker_build:
     runs-on: ubuntu-latest
     needs: filters
-    if: ${{ needs.filters.outputs.found_main_changes }}
+    if: ${{ needs.filters.outputs.found_main_changes == 'true' }}
     
     steps:
       - uses: actions/checkout@v2
