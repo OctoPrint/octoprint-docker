@@ -24,7 +24,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     needs: filters
-    if: needs.filters.outputs.found_main_changes
+    if: ${{ needs.filters.outputs.found_main_changes }}
     
     steps:
       - uses: actions/checkout@v2
