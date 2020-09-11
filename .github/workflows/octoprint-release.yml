@@ -22,7 +22,12 @@ jobs:
       if: ${{ github.event_name == 'push'}}
       id: filter
       with:
-        filters: '.github/filters.yml'
+        filters: |
+          main_image_files:
+            - 'Dockerfile'
+            - 'root/**'
+          minimal_image_files:
+            - 'minimal/**'
 
   release:
     runs-on: ubuntu-latest
