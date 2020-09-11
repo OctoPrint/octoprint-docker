@@ -19,12 +19,7 @@ jobs:
     - uses: dorny/paths-filter@v2.2.1
       id: filter
       with:
-        filters: |
-          main_image_files:
-            - 'Dockerfile'
-            - 'root/**'
-          minimal_image_files:
-            - 'minimal/**'
+        filters: '.github/filters.yml'
 
   build:
     runs-on: ubuntu-latest
