@@ -1,8 +1,9 @@
-version: '2.4'
+version: '2.2'
 
 services:
   octoprint:
     image: octoprint/octoprint
+    container_name: octoprint
     restart: unless-stopped
     ports:
       - 80:80
@@ -19,6 +20,7 @@ services:
 
   #config-editor:
   #  image: linuxserver/code-server
+  #  container_name: octoprint-code-editor
   #  ports:
   #    - 8443:8443
   #  depends_on:
