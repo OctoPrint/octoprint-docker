@@ -9,25 +9,25 @@ on:
       - master
       
 jobs:
+  # This job ensures image is only deployed when files that make up the image are changed
+  # (changing docs or build scripts won't result in a push to registry)
   changes:
     runs-on: ubuntu-latest
     outputs:
-      deploy: ${{ steps.filter.outputs.deployable }}
+      deploy_main: ${{ steps.filter.outputs.main_image_files }}
+      deploy_minimal: ${{ steps.filter.outputs.minimal_image_files }}
     steps:
     - uses: actions/checkout@v2
     - uses: dorny/paths-filter@v2.2.1
       if: ${{ github.event_name == 'push'}}
       id: filter
       with:
-        filters: |
-          deployable:
-            - 'root/**'
-            - Dockerfile
+        filters: 'deploy_rules.yml'
 
   release:
     runs-on: ubuntu-latest
     needs: changes
-    if: ${{ github.event_name == 'repository_dispatch' || needs.changes.outputs.deploy == 'true'}}
+    if: github.event_name == 'repository_dispatch' || needs.changes.outputs.deploy == 'true'
     strategy:
       matrix:
         tags: ['latest','%X%', '%X.Y%', '%X.Y.Z%']
