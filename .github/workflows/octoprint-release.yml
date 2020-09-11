@@ -36,15 +36,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Get Tag if push
-        id: get-octoprint-release
-        if: ${{ github.event_name == 'push'}}
+        id: latest-octoprint
         uses: pozetroninc/github-action-get-latest-release@master
         with:
           owner: OctoPrint
           repo: OctoPrint
       - name: Set Tag on Push
         if: ${{ github.event_name == 'push'}}
-        run: echo "::set-env name=tag_name::${{ steps.get-octoprint-release.outputs.release }}"
+        run: echo "::set-env name=tag_name::${{ steps.latest-octoprint.outputs.release }}"
       - name: Set Tag on dispatch
         if: ${{ github.event_name == 'repository_dispatch' }}
         run: echo "::set-env name=tag_name::${{ github.event.client_payload.tag_name }}"
@@ -69,6 +68,9 @@ jobs:
 
       - name: Build and Deploy
         id: build_deploy
+        #if matrix tag is latest AND tag_name is NOT equal to latest-octoprint don't build
+        # this allows rebuilds of older versions without changing 'latest' to an old release
+        if: !(env.tag_name == 'latest' && ( steps.latest-octprint.outputs.release != env.tag_name ))
         run: |
           docker buildx build --push \
             --platform linux/arm64,linux/amd64,linux/arm/v7 \
