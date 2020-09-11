@@ -22,7 +22,7 @@ jobs:
       if: ${{ github.event_name == 'push'}}
       id: filter
       with:
-        filters: 'deploy_rules.yml'
+        filters: '.github/deploy_rules.yml'
 
   release:
     runs-on: ubuntu-latest
