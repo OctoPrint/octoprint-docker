@@ -1,6 +1,6 @@
 # OctoPrint-docker 
 
-The primary image of `octoprint/octoprint`, is designed to work similarly, and support the
+The primary image of `octoprint/octoprint`. It is designed to work similarly, and support the
 same out of the box features as the octopi raspberry-pi machine image, using docker.
 
 ## Tags
@@ -65,17 +65,17 @@ docker-compose up -d config-editor
 
 Now go to `http://<octoprint_ip_or_url>:8443/?folder=/config` in your browser to edit your octoprint files!
 Use the 'explorer' (accessible by clicking the hamburger menu icon) to explore folder and files to load
-into the editor workspace.
+into the editor workspace. 
 
-The active configuration will be accessible at `/config/config.yaml`
+All configuration files are in the `/config` folder, and the active configuration will be accessible at `/config/config.yaml`
 
-When you're done, we recommend you stop and rm this service/container:
+When you're done, we recommend you stop and remove this service/container:
 
 ```
 docker-compose stop config-editor && docker-compose rm config-editor
 ```
 
-For full documenation about the config editor, see the docs for the product at [github.com/cdr/code-server][code-server].
+For full documentation about the config editor, see the docs for the product at [github.com/cdr/code-server][code-server].
 
 ## Without docker-compose
 
