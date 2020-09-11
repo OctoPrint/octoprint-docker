@@ -22,12 +22,17 @@ jobs:
       if: ${{ github.event_name == 'push'}}
       id: filter
       with:
-        filters: '.github/filters.yml'
+        filters: |
+          main_image_files:
+            - 'Dockerfile'
+            - 'root/**'
+          minimal_image_files:
+            - 'minimal/**'
 
   release:
     runs-on: ubuntu-latest
     needs: filters
-    if: github.event_name == 'repository_dispatch' || needs.filters.outputs.found_main_changes == 'true'
+    if: ${{ github.event_name == 'repository_dispatch' || needs.filters.outputs.found_main_changes == 'true' }}
     strategy:
       matrix:
         tags: ['latest','%X%', '%X.Y%', '%X.Y.Z%']
@@ -70,7 +75,7 @@ jobs:
         id: build_deploy
         #if matrix tag is latest AND tag_name is NOT equal to latest-octoprint don't build
         # this allows rebuilds of older versions without changing 'latest' to an old release
-        if: !(env.tag_name == 'latest' && ( steps.latest-octprint.outputs.release != env.tag_name ))
+        if: ${{!(env.tag_name == 'latest' && ( steps.latest-octprint.outputs.release != env.tag_name ))}}
         run: |
           docker buildx build --push \
             --platform linux/arm64,linux/amd64,linux/arm/v7 \
