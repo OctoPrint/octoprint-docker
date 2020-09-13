@@ -42,6 +42,7 @@ and if you wish to change them, refer to the docker-compose docs on setting envi
 | -------- | ------- |
 | `CAMERA_DEV` | `/dev/video0` (see [note](#devices_note)) |
 | `MJPEG_STREAMER_INPUT` | `-y -n -r 640x48` |
+| `MJPEG_STREAMER_AUTOSTART` | `false` |
 
 **note:** You will still need to declare the `device` mapping in your docker-compose file or docker command,
 even if you explicitly declare the `CAMERA_DEV`.  The value of `CAMERA_DEV` is used in starting the mjpeg-streamer
