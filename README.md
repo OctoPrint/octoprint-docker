@@ -110,8 +110,7 @@ on the host, and then start your container:
 
 ```
 docker volume create octoprint
-docker run -d -v octoprint:/octoprint --device /dev/ttyACM0:/dev/ttyACM0 --device /dev/video0:/dev/video0 -p 80:80 --name octoprint octoprint/octoprint
-
+docker run -d -v octoprint:/octoprint --device /dev/ttyACM0:/dev/ttyACM0 --device /dev/video0:/dev/video0 -e MJPEG_STREAMER_AUTOSTART=true -p 80:80 --name octoprint octoprint/octoprint
 ```
 
 [code-server]: https://github.com/cdr/code-server
