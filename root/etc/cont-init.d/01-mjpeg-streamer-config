@@ -1,9 +1,16 @@
 #!/usr/bin/with-contenv bash
 
+DISABLED_SERVICES_DIR=/etc/disabled.services.d
 : "${ENABLE_MJPEG_STREAMER:=false}"
+
 if ! $ENABLE_MJPEG_STREAMER; then
-  echo "disabling mjpeg-streamer"
-  mv /etc/services.d/mjpg-streamer /etc/disabled.services.d
+  if [ -d "${DISABLED_SERVICES_DIR}/mjpg-streamer"]; then
+    echo " - INFO - ==> mjpg-streamer service disabled"
+  else
+    echo " - INFO - ==> disabling mjpg-streamer service"
+    mv /etc/services.d/mjpg-streamer $DISABLED_SERVICES_DIR
+    echo " - INFO - ==> disable mjpg-streamer success"
+  fi
 else
-  echo "mjpeg-streamer service enabled..."
+  echo " - INFO - ==> mjpeg-streamer service enabled..."
 fi
