@@ -1,9 +1,9 @@
 #!/usr/bin/with-contenv bash
 
-ENABLE_MJPEG_STREAMER=${MJPEG_STREAMER_AUTOSTART:=false}
+: "${ENABLE_MJPEG_STREAMER:=false}"
 if ! $ENABLE_MJPEG_STREAMER; then
   echo "disabling mjpeg-streamer"
-  rm -rf /etc/services.d/mjpeg-streamer
+  mv /etc/services.d/mjpeg-streamer /etc/disabled.services.d
 else
   echo "mjpeg-streamer service enabled..."
 fi
