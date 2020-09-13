@@ -5,7 +5,7 @@ DISABLED_SERVICES_DIR=/etc/disabled.services.d
 
 # disable mjpg-streamer service
 if ! $ENABLE_MJPEG_STREAMER; then
-  if [ -d "${DISABLED_SERVICES_DIR}/mjpg-streamer"]; then
+  if [ -d $DISABLED_SERVICES_DIR/mjpg-streamer ]; then
     echo " - INFO - ==> mjpg-streamer service disabled"
   else
     echo " - INFO - ==> disabling mjpg-streamer service"
@@ -14,7 +14,7 @@ if ! $ENABLE_MJPEG_STREAMER; then
   fi
 else
   # allow user to re-enable
-  if [ ! -d "/etc/services.d/mjpg-streamer" ] && [ -d "${DISABLED_SERVICES_DIR}/mjpg-streamer" ]; then
+  if [ ! -d /etc/services.d/mjpg-streamer ] && [ -d $DISABLED_SERVICES_DIR/mjpg-streamer ]; then
     echo " - INFO - ==> re-enabling mjpg-streamer service"
     mv $DISABLED_SERVICES_DIR/mjpg-streamer /etc/services.d/mjpg-streamer
     echo " - INFO - ==> enable mjpg-streamer service ok"
