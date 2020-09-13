@@ -7,6 +7,16 @@ same out of the box features as the octopi raspberry-pi machine image, using doc
 
 - `latest`, `1.4.2`, `1.4`, `1` ([Dockerfile](Dockerfile))
 
+- [OctoPrint-docker](#octoprint-docker)
+  - [Tags](#tags)
+  - [Usage](#usage)
+    - [Configuration](#configuration)
+      - [Enabling Webcam Support with Docker](#enabling-webcam-support-with-docker)
+      - [Webcam Setup in OctoPrint](#webcam-setup-in-octoprint)
+      - [Container Environment based configs](#container-environment-based-configs)
+      - [Editing Config files manually](#editing-config-files-manually)
+  - [Without docker-compose](#without-docker-compose)
+
 ## Usage
 
 We recommend you use docker-compose to run octoprint via docker, and have included
@@ -22,7 +32,22 @@ launch of OctoPrint using docker.
 
 ### Configuration
 
-#### Initial Setup
+#### Enabling Webcam Support with Docker
+
+In order to use the webcam, you'll need to make sure the webcam service is enabled. 
+This is done by setting the environment variable `MJPEG_STREAMER_AUTOSTART=true` in your
+`docker run` command, or in the `docker-compose.yml` file.
+
+You'll also need to add `--device /dev/video0:/dev/video0` to your `docker run`, or ensure
+it's listed in the `devices` array in your `docker-compose.yml`.
+
+If you map a video device _other_ than `/dev/video0`, you will additionally need to set an
+environment variable for `CAMERA_DEV` to match the mapped device mapping.
+
+See [container environment based configs](#container-environment-based-configs) for a full
+list of webcam configuration options configured with docker.
+
+#### Webcam Setup in OctoPrint
 
 Use the following values in the webcam & timelapse settings screen of the initial setup:
 
@@ -32,7 +57,7 @@ Use the following values in the webcam & timelapse settings screen of the initia
 | Snapshot URL |  `http://localhost:8080/?action=snapshot` |
 | Path to FFMPEG | `/usr/bin/ffmpeg` |
 
-### Container Environment based configs
+#### Container Environment based configs
 
 There are configuration values that you pass using container `--environment` options.
 Listed below are the options and their defaults. These are implicit in example [docker-compose.yml](docker-compose.yml),
