@@ -3,7 +3,7 @@
 : "${ENABLE_MJPEG_STREAMER:=false}"
 if ! $ENABLE_MJPEG_STREAMER; then
   echo "disabling mjpeg-streamer"
-  mv /etc/services.d/mjpeg-streamer /etc/disabled.services.d
+  mv /etc/services.d/mjpg-streamer /etc/disabled.services.d
 else
   echo "mjpeg-streamer service enabled..."
 fi
