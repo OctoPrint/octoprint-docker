@@ -59,3 +59,17 @@ buildx-camera:
 	--cache-to ${CACHE} \
 	--build-arg OCTOPRINT_BASE_IMAGE=1.4.2 \
 	--progress plain -t octoprint/octoprint:ci-camera -f ./camera/Dockerfile.camera .
+
+test-up:
+	docker-compose -f compose.test.yml up -d
+	@docker-compose -f compose.test.yml logs -f octoprint
+
+test-stop:
+	@docker-compose -f compose.test.yml stop
+
+test-start:
+	docker-compose -f compose.test.yml start
+	@docker-compose -f compose.test.yml logs -f octoprint
+
+test-clean:
+	docker-compose -f compose.test.yml down

@@ -1,0 +1,8 @@
+#!/usr/bin/with-contenv bash
+
+: "${ENABLE_MJPG_STREAMER:=false}"
+
+# disable mjpg-streamer service if not enabled
+if ! $ENABLE_MJPG_STREAMER; then
+  rm -rf /etc/services.d/mjpg-streamer
+fi
