@@ -35,7 +35,7 @@ launch of OctoPrint using docker.
 #### Enabling Webcam Support with Docker
 
 In order to use the webcam, you'll need to make sure the webcam service is enabled. 
-This is done by setting the environment variable `ENABLE_MJPEG_STREAMER=true` in your
+This is done by setting the environment variable `ENABLE_MJPG_STREAMER=true` in your
 `docker run` command, or in the `docker-compose.yml` file.
 
 You'll also need to add `--device /dev/video0:/dev/video0` to your `docker run`, or ensure
@@ -66,11 +66,11 @@ and if you wish to change them, refer to the docker-compose docs on setting envi
 | variable | default |
 | -------- | ------- |
 | `CAMERA_DEV` | `/dev/video0` (see [note](#devices_note)) |
-| `MJPEG_STREAMER_INPUT` | `-y -n -r 640x48` |
-| `ENABLE_MJPEG_STREAMER` | `false` |
+| `MJPG_STREAMER_INPUT` | `-y -n -r 640x48` |
+| `ENABLE_MJPG_STREAMER` | `false` |
 
 **note:** You will still need to declare the `device` mapping in your docker-compose file or docker command,
-even if you explicitly declare the `CAMERA_DEV`.  The value of `CAMERA_DEV` is used in starting the mjpeg-streamer
+even if you explicitly declare the `CAMERA_DEV`.  The value of `CAMERA_DEV` is used in starting the mjpg-streamer
 service, whereas the `devices` mapping is used by docker to make sure the container has access to the device.
 
 For example, if you change the `CAMERA_DEV` to be `/dev/video1`, you would also need to map `/dev/video1:/dev/video1`
@@ -110,7 +110,7 @@ on the host, and then start your container:
 
 ```
 docker volume create octoprint
-docker run -d -v octoprint:/octoprint --device /dev/ttyACM0:/dev/ttyACM0 --device /dev/video0:/dev/video0 -e ENABLE_MJPEG_STREAMER=true -p 80:80 --name octoprint octoprint/octoprint
+docker run -d -v octoprint:/octoprint --device /dev/ttyACM0:/dev/ttyACM0 --device /dev/video0:/dev/video0 -e ENABLE_MJPG_STREAMER=true -p 80:80 --name octoprint octoprint/octoprint
 ```
 
 [code-server]: https://github.com/cdr/code-server
