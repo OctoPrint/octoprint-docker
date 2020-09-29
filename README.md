@@ -115,3 +115,7 @@ docker run -d -v octoprint:/octoprint --device /dev/ttyACM0:/dev/ttyACM0 --devic
 
 [code-server]: https://github.com/cdr/code-server
 [vscode]: https://code.visualstudio.com
+
+## Building the image yourself
+
+If you would like to build the docker image yourself, please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to do so.
