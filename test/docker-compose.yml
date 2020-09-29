@@ -1,0 +1,18 @@
+version: '2.4'
+
+services:
+  octoprint:
+    image: octoprint:latest
+    restart: unless-stopped
+    ports:
+      - 53980:80
+    #devices:
+    #  - /dev/ttyACM0:/dev/ttyACM0
+    volumes:
+     - octoprint-test:/home/octoprint
+    user: octoprint
+    environment:
+      - ENABLE_MJPG_STREAMER=true
+
+volumes:
+  octoprint-test:

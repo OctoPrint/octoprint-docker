@@ -48,17 +48,6 @@ COPY --from=s6build /tmp /tmp
 RUN s6tar=$(find /tmp -name "s6-overlay-*.tar.gz") \
   && tar xzf $s6tar -C / 
 
-# Install octoprint
-RUN	curl -fsSLO --compressed --retry 3 --retry-delay 10 \
-  https://github.com/OctoPrint/OctoPrint/archive/${tag}.tar.gz \
-	&& mkdir -p /opt/octoprint \
-  && tar xzf ${tag}.tar.gz --strip-components 1 -C /opt/octoprint --no-same-owner
-
-WORKDIR /opt/octoprint
-RUN pip install -r requirements.txt
-RUN python setup.py install
-RUN ln -s ~/.octoprint /octoprint
-
 # Install mjpg-streamer
 RUN curl -fsSLO --compressed --retry 3 --retry-delay 10 \
   https://github.com/jacksonliam/mjpg-streamer/archive/master.tar.gz \
@@ -73,13 +62,33 @@ RUN make install
 COPY root /
 ENV CAMERA_DEV /dev/video0
 ENV MJPG_STREAMER_INPUT -y -n -r 640x480
-ENV PIP_USER true
-ENV PYTHONUSERBASE /octoprint/plugins
+
+# Install octoprint
+RUN groupadd --gid 1000 octoprint \
+  && useradd --uid 1000 --gid octoprint -G dialout --shell /bin/bash --create-home octoprint
+
+
+USER octoprint
+ENV VIRTUAL_ENV=/home/octoprint
+WORKDIR $VIRTUAL_ENV
+RUN mkdir tmp
+WORKDIR ${VIRTUAL_ENV}/tmp
+RUN	curl -fsSLO --compressed --retry 3 --retry-delay 10 \
+  https://github.com/OctoPrint/OctoPrint/archive/${tag}.tar.gz \
+  && tar xzf ${tag}.tar.gz --strip-components 1 -C $VIRTUAL_ENV
+WORKDIR $VIRTUAL_ENV
+RUN rm -rf ${VIRTUAL_ENV}/tmp
+
+# activate virtual env
+RUN python -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+RUN pip install .
+
 
 # port to access haproxy frontend
 EXPOSE 80
 
-VOLUME /octoprint
+VOLUME /home/octoprint/.octoprint
 
 ENTRYPOINT ["/init"]
-CMD ["octoprint", "serve", "--iknowwhatimdoing", "--host", "0.0.0.0"]
+CMD ["octoprint", "serve", "--host", "0.0.0.0"]
