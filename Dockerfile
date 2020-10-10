@@ -55,9 +55,7 @@ RUN	curl -fsSLO --compressed --retry 3 --retry-delay 10 \
   && tar xzf ${tag}.tar.gz --strip-components 1 -C /opt/octoprint --no-same-owner
 
 WORKDIR /opt/octoprint
-RUN pip install -r requirements.txt
-RUN python setup.py install
-RUN ln -s ~/.octoprint /octoprint
+RUN pip install .
 
 # Install mjpg-streamer
 RUN curl -fsSLO --compressed --retry 3 --retry-delay 10 \
@@ -82,4 +80,4 @@ EXPOSE 80
 VOLUME /octoprint
 
 ENTRYPOINT ["/init"]
-CMD ["octoprint", "serve", "--iknowwhatimdoing", "--host", "0.0.0.0"]
+CMD ["octoprint", "serve", "--iknowwhatimdoing", "--host", "0.0.0.0", "--basedir", "/octoprint"]
