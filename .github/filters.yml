@@ -1,5 +1,5 @@
-main_image_files:
+main:
   - 'Dockerfile'
   - 'root/**'
-minimal_image_files:
+minimal:
   - 'minimal/**'

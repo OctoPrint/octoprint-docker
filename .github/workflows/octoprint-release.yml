@@ -14,20 +14,19 @@ jobs:
   filters:
     runs-on: ubuntu-latest
     outputs:
-      found_main_image_changes: ${{ steps.filter.outputs.main_image_files }}
-      found_minimal_image_changes: ${{ steps.filter.outputs.minimal_image_files }}
+      main: ${{ steps.filter.outputs.main }}
+      minimal: ${{ steps.filter.outputs.minimal }}
     steps:
     - uses: actions/checkout@v2
-    - uses: dorny/paths-filter@v2.2.1
-      if: ${{ github.event_name == 'push'}}
+    - uses: dorny/paths-filter@v2.5.0
       id: filter
       with:
         filters: '.github/filters.yml'
 
-  release:
+  release_main:
     runs-on: ubuntu-latest
     needs: filters
-    if: ${{ github.event_name == 'repository_dispatch' || needs.filters.outputs.found_main_changes == 'true' }}
+    if: needs.filters.outputs.main == 'true'
     strategy:
       matrix:
         tags: ['latest','%X%', '%X.Y%', '%X.Y.Z%']
