@@ -26,10 +26,7 @@ jobs:
   release_main:
     runs-on: ubuntu-latest
     needs: filters
-    if: needs.filters.outputs.main == 'true' || github.event_name == 'repository_displatch'
-    strategy:
-      matrix:
-        tags: ['latest','%X%', '%X.Y%', '%X.Y.Z%']
+    if: needs.filters.outputs.main == 'true' || github.event_name == 'repository_dispatch'
 
 
     steps:
@@ -46,12 +43,11 @@ jobs:
       - name: Set Tag on dispatch
         if: ${{ github.event_name == 'repository_dispatch' }}
         run: echo "::set-env name=tag_name::${{ github.event.client_payload.tag_name }}"
-      - name: Tagging strategy
-        id: tagging
-        uses: HackerHappyHour/tagging-strategy@1.0.0
+      - name: Parse semver string
+        id: semver_parser
+        uses: booxmedialtd/ws-action-parse-semver@v1
         with:
-          tag_name: "${{ env.tag_name }}"
-          pattern: "${{ matrix.tags}}"
+          input_string: "${{ env.tag_name }}"
 
       - name: Set up Docker Buildx
         id: setup
@@ -76,5 +72,9 @@ jobs:
             --cache-from octoprint/octoprint:cache \
             --cache-to octoprint/octoprint:cache \
             --build-arg tag=${{ env.tag_name }} \
-            --progress plain -t octoprint/octoprint:${{ steps.tagging.outputs.tag }} -f Dockerfile .
-
+            --progress plain \
+            --tag octoprint/octoprint:latest \
+            --tag octoprint/octoprint:${{ steps.semver_parser.outputs.major }}.${{ steps.semver_parser.outputs.minor }}.${{ steps.semver_parser.outputs.patch }} \
+            --tag octoprint/octoprint:${{ steps.semver_parser.outputs.major }}.${{ steps.semver_parser.outputs.minor }} \
+            --tag octoprint/octoprint:${{ steps.semver_parser.outputs.major }} \
+            -f Dockerfile .
