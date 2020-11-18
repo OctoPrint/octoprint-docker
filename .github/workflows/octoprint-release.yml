@@ -2,9 +2,7 @@ name: Image Deploy
 
 on:
   repository_dispatch:
-    types:
-      - released
-      - prereleased
+    types: [deploy, released, prereleased]
   push:
     branches:
       - master
@@ -40,6 +38,7 @@ jobs:
   # should not publish the 'latest' tag unless the given tag from payload is 
   # equal to the latest (stable) release tag of octoprint
   release_main_on_dispatch:
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     needs: filters
     strategy:
@@ -84,11 +83,11 @@ jobs:
   # This job should build and publish the main octoprint image from the latest,
   # stable release of octoprint, and *should* overwrite the 'latest' tag
   release_main_on_push:
-    runs-on: ubuntu-latest
-    needs: filters
     # ensures this will not run on the dispatch event, or when non-relevant files
     # are changed (such as documentation or build/workflow scripts)
     if: needs.filters.outputs.main == 'true' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    needs: filters
     strategy:
       matrix:
         tags: ['latest','%X%', '%X.Y%', '%X.Y.Z%']
