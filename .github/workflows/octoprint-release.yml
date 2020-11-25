@@ -45,7 +45,7 @@ jobs:
   # should not publish the 'latest' tag unless the given tag from payload is 
   # equal to the latest (stable) release tag of octoprint
   release_main_on_dispatch:
-    if: github.event_name != 'push' && needs.filters.outputs.repo_org = 'OctoPrint'
+    if: github.event_name != 'push' && needs.filters.outputs.repo_org == 'OctoPrint'
     needs: filters
 
     runs-on: ubuntu-latest
@@ -93,7 +93,7 @@ jobs:
   # ensures this will not run on the dispatch event, or when non-relevant files
   # are changed (such as documentation or build/workflow scripts)
   release_main_on_push:
-    if: needs.filters.outputs.main == 'true' && github.event_name == 'push'
+    if: needs.filters.outputs.main == 'true' && github.event_name == 'push' && needs.filters.outputs.repo_org == 'OctoPrint'
     needs: filters
 
     runs-on: ubuntu-latest
