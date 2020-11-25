@@ -17,7 +17,7 @@ jobs:
       main: ${{ steps.filter.outputs.main }}
       minimal: ${{ steps.filter.outputs.minimal }}
       stable_octoprint: ${{ steps.latest-octprint.outputs.release }}
-      repo_org: ${{ steps.repo-org.outputs.repo_org }}
+
     steps:
     - uses: actions/checkout@v2
 
@@ -34,50 +34,61 @@ jobs:
       id: filter
       with:
         filters: '.github/filters.yml'
-    
-    - name: GitHub Environment Variables Action
-      id: repo-org
-      uses: FranzDiebold/github-env-vars-action@v1.2.1
-      run: echo "::set-output name=repo_org::$GITHUB_REPOSITORY_OWNER"
 
 
   # this job should build and publish the main octoprint image for the given tag, but
   # should not publish the 'latest' tag unless the given tag from payload is 
   # equal to the latest (stable) release tag of octoprint
   release_main_on_dispatch:
-    if: github.event_name != 'push' && needs.filters.outputs.repo_org == 'OctoPrint'
+    if: github.event_name != 'push' && github.repository_owner == 'OctoPrint'
     needs: filters
 
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        tags: ['latest','%X%', '%X.Y%', '%X.Y.Z%']
     
     steps:
-      - uses: actions/checkout@v2
-      - name: Tagging strategy
-        id: tagging
-        uses: HackerHappyHour/tagging-strategy@1.0.0
+      - 
+        uses: actions/checkout@v2
+      -
+        name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
         with:
-          tag_name: ${{ github.event.client_payload.tag_name }}
-          pattern: ${{ matrix.tags}}
+          platforms: arm,arm64
 
-      - name: Set up Docker Buildx
-        id: setup
-        uses: crazy-max/ghaction-docker-buildx@v3
+      -
+        name: Docker Meta
+        id: docker_meta
+        uses: crazy-max/ghaction-docker-meta@v1
         with:
-          buildx-version: latest
-          qemu-version: latest
-      
-      - name: Docker Login
-        id: login
-        run: |
-          echo ${{ secrets.DOCKER_PASSWORD}} | docker login -u ${{ secrets.DOCKER_USERNAME}} --password-stdin
+          images: octprint/octoprint
+          tag-semver: |
+            {{major}}
+            {{major}}.{{minor}}
+            {{major}}.{{minor}}.{{patch}}
+
+      - 
+        name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Deploy
-        id: build_deploy
+        uses: docker/build-push-action@v2
         # make sure not to publish 'latest' if tag is a pre-release or not the latest stable octoprint release
         if: steps.tagging.outputs.tag == 'latest' && needs.filters.outputs.stable_octoprint != github.event.client_payload.tag_name
+        with:
+          push: true
+          cache-from: octoprint/octoprint:cache
+          cache-to: octoprint/octoprint:cache
+          tags: |
+            ${{}}
+          platforms: |
+            linux/amd64
+            linux/arm/v7
+            linux/arm64
+          build-args: |
+            octoprint_ref=${{  }}
         run: |
           docker buildx build --push \
             --platform linux/arm64,linux/amd64,linux/arm/v7 \
@@ -103,6 +114,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Set Tag
+        run: echo "::set-output name=tag_name::${{ needs.filters.outputs.stable_octoprint }}"
       - name: Tagging strategy
         id: tagging
         uses: HackerHappyHour/tagging-strategy@1.0.0

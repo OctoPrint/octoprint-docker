@@ -20,8 +20,8 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
 
 FROM python:${PYTHON_BASE_IMAGE} AS build
 
-ARG tag
-ENV tag ${tag:-master}
+ARG octoprint_ref
+ENV octoprint_ref ${octoprint_ref:-master}
 
 RUN apt-get update && apt-get install -y \
   avrdude \
@@ -50,9 +50,9 @@ RUN s6tar=$(find /tmp -name "s6-overlay-*.tar.gz") \
 
 # Install octoprint
 RUN	curl -fsSLO --compressed --retry 3 --retry-delay 10 \
-  https://github.com/OctoPrint/OctoPrint/archive/${tag}.tar.gz \
+  https://github.com/OctoPrint/OctoPrint/archive/${octoprint_ref}.tar.gz \
 	&& mkdir -p /opt/octoprint \
-  && tar xzf ${tag}.tar.gz --strip-components 1 -C /opt/octoprint --no-same-owner
+  && tar xzf ${octoprint_ref}.tar.gz --strip-components 1 -C /opt/octoprint --no-same-owner
 
 WORKDIR /opt/octoprint
 RUN pip install .
