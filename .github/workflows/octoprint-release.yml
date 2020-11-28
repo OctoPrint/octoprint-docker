@@ -39,6 +39,14 @@ jobs:
           owner: OctoPrint
           repo: OctoPrint
           excludes: draft
+      - 
+        name: Get latest stable Octoprint
+        id: stable-octoprint
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: OctoPrint
+          repo: OctoPrint
+          excludes: prerelease,draft
       -
         name: Set up QEMU
         id: qemu
@@ -62,8 +70,8 @@ jobs:
         uses: HackerHappyHour/tagging-strategy@2.0.0-rc3
         with:
           image_name: octprint/octoprint
-          # allows the publishing of pre-release images by turning 'latest' to false if the 
-          latest: ${{ github.event.action == 'released' }}
+          # allows the publishing of pre-release images by turning 'latest' to false if the event dispatched is a pre-released version
+          latest: ${{ github.event.action == 'released' || (github.event.client_payload.tag_name == 'deploy' && steps.stable-octoprint.outputs.release) }}
           tag_name: ${{ github.event.client_payload.tag_name }}
           tags: |
             %X%
