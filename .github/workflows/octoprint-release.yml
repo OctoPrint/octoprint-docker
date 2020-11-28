@@ -59,7 +59,7 @@ jobs:
       -
         name: Tagging Strategy
         id: tagging
-        uses: HackerHappyHour/tagging-strategy@2.0.0-rc2
+        uses: HackerHappyHour/tagging-strategy@2.0.0-rc3
         with:
           image_name: octprint/octoprint
           # allows the publishing of pre-release images by turning 'latest' to false if the 
@@ -149,7 +149,7 @@ jobs:
       -
         name: Tagging Strategy
         id: tagging
-        uses: HackerHappyHour/tagging-strategy@2.0.0-rc2
+        uses: HackerHappyHour/tagging-strategy@2.0.0-rc3
         with:
           image_name: octprint/octoprint
           latest: true
