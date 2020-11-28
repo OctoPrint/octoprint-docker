@@ -47,6 +47,8 @@ jobs:
           owner: OctoPrint
           repo: OctoPrint
           excludes: prerelease,draft
+      - 
+        run: echo ${{ steps.stable-octoprint.outputs.release }}
       -
         name: Set up QEMU
         id: qemu
