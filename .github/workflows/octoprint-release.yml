@@ -81,8 +81,8 @@ jobs:
         if: steps.tagging.outputs.tag == 'latest' && needs.filters.outputs.stable_octoprint != github.event.client_payload.tag_name
         with:
           push: true
-          cache-from: octoprint/octoprint:cache
-          cache-to: octoprint/octoprint:cache
+          cache-from: type=registry,ref=octoprint/octoprint:cache
+          cache-to: type=inline
           tags: ${{ steps.tagging.outputs.tags }}
           platforms: |
             linux/amd64
@@ -139,8 +139,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          cache-from: octoprint/octoprint:cache
-          cache-to: octoprint/octoprint:cache
+          cache-from: type=registry,ref=octoprint/octoprint:cache
+          cache-to: type=inline
           tags: ${{ steps.tagging.outputs.tags }}
           platforms: |
             linux/amd64
