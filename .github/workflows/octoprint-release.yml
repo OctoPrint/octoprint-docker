@@ -58,8 +58,6 @@ jobs:
 
       - name: Build and Deploy
         uses: docker/build-push-action@v2
-        # make sure not to publish 'latest' if tag is a pre-release or not the latest stable octoprint release
-        if: steps.tagging.outputs.tag == 'latest' && needs.filters.outputs.stable_octoprint != github.event.client_payload.tag_name
         with:
           push: true
           cache-from: type=registry,ref=octoprint/octoprint:cache
