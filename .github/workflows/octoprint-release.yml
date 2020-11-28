@@ -24,6 +24,7 @@ jobs:
   # equal to the latest (stable) release tag of octoprint
   release_main_on_dispatch:
     if: github.event_name == 'repository_dispatch' && github.repository_owner == 'OctoPrint'
+    needs: meta
 
     runs-on: ubuntu-latest
     
@@ -44,6 +45,9 @@ jobs:
         uses: docker/setup-qemu-action@v1
         with:
           platforms: arm,arm64
+      -
+        name: Set up Buildx
+        uses: docker/setup-buildx-action@v1
 
       -
         name: Tagging Strategy
@@ -103,14 +107,13 @@ jobs:
   # are changed (such as documentation or build/workflow scripts)
   release_main_on_push:
     if: needs.push_filters.outputs.main == 'true' && github.event_name == 'push' && github.repository_owner == 'OctoPrint'
-    needs: filters
+    needs: [meta, push_filters]
 
     runs-on: ubuntu-latest
 
     steps:
       - 
         uses: actions/checkout@v2
-
       # outputs: release
       - name: Get latest Octoprint
         id: latest-octoprint
@@ -125,7 +128,9 @@ jobs:
         uses: docker/setup-qemu-action@v1
         with:
           platforms: arm,arm64
-
+      -
+        name: Set up Buildx
+        uses: docker/setup-buildx-action@v1
       -
         name: Tagging Strategy
         id: tagging
@@ -138,7 +143,6 @@ jobs:
             %X%
             %X.Y%
             %X.Y.Z%
-
       -
         name: Login to DockerHub
         uses: docker/login-action@v1
