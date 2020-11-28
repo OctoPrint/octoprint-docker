@@ -69,7 +69,7 @@ jobs:
         id: tagging
         uses: HackerHappyHour/tagging-strategy@2.0.0-rc3
         with:
-          image_name: octprint/octoprint
+          image_name: octoprint/octoprint
           # allows the publishing of pre-release images by turning 'latest' to false if the event dispatched is a pre-released version
           latest: ${{ github.event.action == 'released' || (github.event.client_payload.tag_name == 'deploy' && steps.stable-octoprint.outputs.release) }}
           tag_name: ${{ github.event.client_payload.tag_name }}
@@ -159,7 +159,7 @@ jobs:
         id: tagging
         uses: HackerHappyHour/tagging-strategy@2.0.0-rc3
         with:
-          image_name: octprint/octoprint
+          image_name: octoprint/octoprint
           latest: true
           tag_name: ${{ steps.latest-octoprint.outputs.release }}
           tags: |
