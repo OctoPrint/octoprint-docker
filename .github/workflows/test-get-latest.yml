@@ -1,4 +1,4 @@
-name: Deploy Images
+name: Check Latest
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
         required: true
 
   repository_dispatch:
-    types: [getversion]
+    types: [checkversion]
 
 jobs:
   get_version:
@@ -40,5 +40,5 @@ jobs:
         with:
           token: ${{ secrets.REPO_DISPATCH_TOKEN }}
           repository: ${{ github.repository }}
-          event-type: 'deploy'
+          event-type: 'checkversion'
           client-payload: '{"tag_name": "${{ github.event.inputs.version }}"}'
