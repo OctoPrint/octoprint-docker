@@ -40,7 +40,7 @@ jobs:
   # should not publish the 'latest' tag unless the given tag from payload is 
   # equal to the latest (stable) release tag of octoprint
   release_main_on_dispatch:
-    if: github.event_name != 'push' && github.repository_owner == 'OctoPrint'
+    if: github.event_name == 'repository_dispatch' && github.repository_owner == 'OctoPrint'
     needs: filters
 
     runs-on: ubuntu-latest
@@ -83,7 +83,7 @@ jobs:
           push: true
           cache-from: octoprint/octoprint:cache
           cache-to: octoprint/octoprint:cache
-          tags: ${{ steps.tagg }}
+          tags: ${{ steps.tagging.outputs.tags }}
           platforms: |
             linux/amd64
             linux/arm/v7
@@ -98,7 +98,7 @@ jobs:
   # ensures this will not run on the dispatch event, or when non-relevant files
   # are changed (such as documentation or build/workflow scripts)
   release_main_on_push:
-    if: needs.filters.outputs.main == 'true' && github.event_name == 'push' && needs.filters.outputs.repo_org == 'OctoPrint'
+    if: needs.filters.outputs.main == 'true' && github.event_name == 'push' && github.repository_owner == 'OctoPrint'
     needs: filters
 
     runs-on: ubuntu-latest
