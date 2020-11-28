@@ -19,5 +19,5 @@ jobs:
         with:
           token: ${{ secrets.REPO_DISPATCH_TOKEN }}
           repository: ${{ github.repository }}
-          event-type: 'release'
+          event-type: 'deploy'
           client-payload: '{"tag_name": "${{ github.event.inputs.version }}"}'

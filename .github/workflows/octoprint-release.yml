@@ -1,80 +1,183 @@
-name: Image Deploy
+name: Deploy Images
 
 on:
   repository_dispatch:
-    types:
-      - release
+    types: [deploy, released, prereleased]
   push:
     branches:
       - master
       
 jobs:
-  # This job ensures image is only deployed when files that make up the image are changed
-  # (changing docs or build scripts won't result in a push to registry)
-  filters:
+  meta:
     runs-on: ubuntu-latest
     outputs:
-      main: ${{ steps.filter.outputs.main }}
-      minimal: ${{ steps.filter.outputs.minimal }}
+      labels: ${{ steps.metadata.outputs.labels }}
     steps:
-    - uses: actions/checkout@v2
-    - uses: dorny/paths-filter@v2.5.0
-      id: filter
-      with:
-        filters: '.github/filters.yml'
+      - 
+        id: metadata
+        uses: crazy-max/ghaction-docker-meta@v1
+        with:
+          images: octoprint/octoprint
 
-  release_main:
+  # this job should build and publish the main octoprint image for the given tag, but
+  # should not publish the 'latest' tag unless the given tag from payload is 
+  # equal to the latest (stable) release tag of octoprint
+  release_main_on_dispatch:
+    if: github.event_name == 'repository_dispatch' && github.repository_owner == 'OctoPrint'
+    needs: meta
+
     runs-on: ubuntu-latest
-    needs: filters
-    if: needs.filters.outputs.main == 'true' || github.event_name == 'repository_dispatch'
-    strategy:
-      matrix:
-        tags: ['latest','%X%', '%X.Y%', '%X.Y.Z%']
-
-
+    
     steps:
-      - uses: actions/checkout@v2
-      - name: Get Tag if push
+      - 
+        uses: actions/checkout@v2
+      - 
+        name: Get latest Octoprint
         id: latest-octoprint
         uses: pozetroninc/github-action-get-latest-release@master
         with:
           owner: OctoPrint
           repo: OctoPrint
-      - name: Set Tag on Push
-        if: ${{ github.event_name == 'push'}}
-        run: echo "::set-env name=tag_name::${{ steps.latest-octoprint.outputs.release }}"
-      - name: Set Tag on dispatch
-        if: ${{ github.event_name == 'repository_dispatch' }}
-        run: echo "::set-env name=tag_name::${{ github.event.client_payload.tag_name }}"
-      - name: Tagging strategy
+          excludes: draft
+      -
+        name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: arm,arm64
+      -
+        name: Set up Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Cache Docker Layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ hashfiles('**/Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      -
+        name: Tagging Strategy
         id: tagging
-        uses: HackerHappyHour/tagging-strategy@1.0.0
+        uses: HackerHappyHour/tagging-strategy@2.0.0-rc2
         with:
-          tag_name: "${{ env.tag_name }}"
-          pattern: "${{ matrix.tags}}"
+          image_name: octprint/octoprint
+          # allows the publishing of pre-release images by turning 'latest' to false if the 
+          latest: ${{ github.event.action == 'released' }}
+          tag_name: ${{ github.event.client_payload.tag_name }}
+          tags: |
+            %X%
+            %X.Y%
+            %X.Y.Z%
 
-      - name: Set up Docker Buildx
-        id: setup
-        uses: crazy-max/ghaction-docker-buildx@v3
+      - 
+        name: Login to DockerHub
+        uses: docker/login-action@v1
         with:
-          buildx-version: latest
-          qemu-version: latest
-      
-      - name: Docker Login
-        id: login
-        run: |
-          echo ${{ secrets.DOCKER_PASSWORD}} | docker login -u ${{ secrets.DOCKER_USERNAME}} --password-stdin
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and Deploy
-        id: build_deploy
-        #if matrix tag is latest AND tag_name is NOT equal to latest-octoprint don't build
-        # this allows rebuilds of older versions without changing 'latest' to an old release
-        if: ${{!(env.tag_name == 'latest' && ( steps.latest-octprint.outputs.release != env.tag_name ))}}
-        run: |
-          docker buildx build --push \
-            --platform linux/arm64,linux/amd64,linux/arm/v7 \
-            --cache-from octoprint/octoprint:cache \
-            --cache-to octoprint/octoprint:cache \
-            --build-arg tag=${{ env.tag_name }} \
-            --progress plain -t octoprint/octoprint:${{ steps.tagging.outputs.tag }} -f Dockerfile .
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+          tags: ${{ steps.tagging.outputs.tags }}
+          platforms: |
+            linux/amd64
+            linux/arm/v7
+            linux/arm64
+          build-args: |
+            octoprint_ref=${{ github.event.client_payload.tag_name }}
+          labels: ${{ needs.meta.outputs.labels }}
 
+
+
+  push_filters:
+    runs-on: ubuntu-latest
+    outputs:
+      main: ${{ steps.filter.outputs.main }}
+      minimal: ${{ steps.filter.outputs.minimal }}
+    steps:
+      - 
+        uses: actions/checkout@v2
+      - 
+        uses: dorny/paths-filter@v2.5.0
+        id: filter
+        with:
+          filters: '.github/filters.yml'
+
+  # This job should build and publish the main octoprint image from the latest,
+  # stable release of octoprint, and *should* overwrite the 'latest' tag
+  # ensures this will not run on the dispatch event, or when non-relevant files
+  # are changed (such as documentation or build/workflow scripts)
+  release_main_on_push:
+    if: needs.push_filters.outputs.main == 'true' && github.event_name == 'push' && github.repository_owner == 'OctoPrint'
+    needs: [meta, push_filters]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - 
+        uses: actions/checkout@v2
+      # outputs: release
+      - name: Get latest Octoprint
+        id: latest-octoprint
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: OctoPrint
+          repo: OctoPrint
+          excludes: prerelease,draft
+      -
+        name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: arm,arm64
+      -
+        name: Set up Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Cache Docker Layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ hashfiles('**/Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      -
+        name: Tagging Strategy
+        id: tagging
+        uses: HackerHappyHour/tagging-strategy@2.0.0-rc2
+        with:
+          image_name: octprint/octoprint
+          latest: true
+          tag_name: ${{ steps.latest-octoprint.outputs.release }}
+          tags: |
+            %X%
+            %X.Y%
+            %X.Y.Z%
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - 
+        name: Build and Deploy
+        id: build_deploy
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+          tags: ${{ steps.tagging.outputs.tags }}
+          platforms: |
+            linux/amd64
+            linux/arm/v7
+            linux/arm64
+          build-args: |
+            octoprint_ref=${{ steps.latest-octoprint.outputs.release }}
+          labels: ${{ needs.meta.outputs.labels }}

@@ -35,7 +35,7 @@ buildx-test:
 		--cache-from ${CACHE} \
 		--cache-to	${CACHE} \
 		--build-arg PYTHON_BASE_IMAGE=$(PYTHON_BASE_IMAGE) \
-		--build-arg tag=${OCTOPRINT_VERSION} \
+		--build-arg octoprint_ref=${OCTOPRINT_VERSION} \
 		--progress tty -t ${IMG}:ci .
 
 buildx-push:
@@ -44,7 +44,7 @@ buildx-push:
 		--cache-from ${CACHE} \
 		--cache-to	${CACHE} \
 		--build-arg PYTHON_BASE_IMAGE=$(PYTHON_BASE_IMAGE) \
-		--build-arg tag=${OCTOPRINT_VERSION} \
+		--build-arg octoprint_ref=${OCTOPRINT_VERSION} \
 		--progress plain -t ${IMG}:${IMG_TAG} .
 
 camera: 
