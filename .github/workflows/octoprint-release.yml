@@ -8,6 +8,17 @@ on:
       - master
       
 jobs:
+  meta:
+    runs-on: ubuntu-latest
+    outputs:
+      labels: ${{ steps.metadata.outputs.labels }}
+    steps:
+      - 
+        id: metadata
+        uses: crazy-max/ghaction-docker-meta@v1
+        with:
+          images: octoprint/octoprint
+
   # this job should build and publish the main octoprint image for the given tag, but
   # should not publish the 'latest' tag unless the given tag from payload is 
   # equal to the latest (stable) release tag of octoprint
@@ -68,6 +79,8 @@ jobs:
             linux/arm64
           build-args: |
             octoprint_ref=${{ github.event.client_payload.tag_name }}
+          labels: ${{ needs.meta.outputs.labels }}
+
 
 
   push_filters:
@@ -148,3 +161,4 @@ jobs:
             linux/arm64
           build-args: |
             octoprint_ref=${{ steps.latest-octoprint.outputs.release }}
+          labels: ${{ needs.meta.outputs.labels }}
