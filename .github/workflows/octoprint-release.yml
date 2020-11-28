@@ -56,15 +56,17 @@ jobs:
           platforms: arm,arm64
 
       -
-        name: Docker Meta
-        id: docker_meta
-        uses: crazy-max/ghaction-docker-meta@v1
+        name: Tagging Strategy
+        id: tagging
+        uses: HackerHappyHour/tagging-strategy@2.0.0-rc2
         with:
-          images: octprint/octoprint
-          tag-semver: |
-            {{major}}
-            {{major}}.{{minor}}
-            {{major}}.{{minor}}.{{patch}}
+          image_name: octprint/octoprint
+          latest: ${{ github.event.client_payload.tag_name == needs.filters.outputs.stable_octoprint }}
+          tag_name: ${{ github.event.client_payload.tag_name }}
+          tags: |
+            %X%
+            %X.Y%
+            %X.Y.Z%
 
       - 
         name: Login to DockerHub
@@ -81,21 +83,13 @@ jobs:
           push: true
           cache-from: octoprint/octoprint:cache
           cache-to: octoprint/octoprint:cache
-          tags: |
-            ${{}}
+          tags: ${{ steps.tagg }}
           platforms: |
             linux/amd64
             linux/arm/v7
             linux/arm64
           build-args: |
-            octoprint_ref=${{  }}
-        run: |
-          docker buildx build --push \
-            --platform linux/arm64,linux/amd64,linux/arm/v7 \
-            --cache-from octoprint/octoprint:cache \
-            --cache-to octoprint/octoprint:cache \
-            --build-arg tag=${{ env.tag_name }} \
-            --progress plain -t octoprint/octoprint:${{ steps.tagging.outputs.tag }} -f Dockerfile .
+            octoprint_ref=${{ github.event.client_payload.tag_name }}
 
 
 
@@ -108,43 +102,49 @@ jobs:
     needs: filters
 
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        tags: ['latest','%X%', '%X.Y%', '%X.Y.Z%']
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Set Tag
-        run: echo "::set-output name=tag_name::${{ needs.filters.outputs.stable_octoprint }}"
-      - name: Tagging strategy
+      - 
+        uses: actions/checkout@v2
+      -
+        name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: arm,arm64
+
+      -
+        name: Tagging Strategy
         id: tagging
-        uses: HackerHappyHour/tagging-strategy@1.0.0
+        uses: HackerHappyHour/tagging-strategy@2.0.0-rc2
         with:
-          tag_name: ${{ env.tag_name }}
-          pattern: ${{ matrix.tags}}
+          image_name: octprint/octoprint
+          latest: true
+          tag_name: ${{ needs.filters.outputs.stable_octoprint }}
+          tags: |
+            %X%
+            %X.Y%
+            %X.Y.Z%
 
-      - name: Set up Docker Buildx
-        id: setup
-        uses: crazy-max/ghaction-docker-buildx@v3
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v1
         with:
-          buildx-version: latest
-          qemu-version: latest
-      
-      - name: Docker Login
-        id: login
-        run: |
-          echo ${{ secrets.DOCKER_PASSWORD}} | docker login -u ${{ secrets.DOCKER_USERNAME}} --password-stdin
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Deploy
+      - 
+        name: Build and Deploy
         id: build_deploy
-        #if matrix tag is latest AND tag_name is NOT equal to latest-octoprint don't build
-        # this allows rebuilds of older versions without changing 'latest' to an old release
-        if: ${{!(env.tag_name == 'latest' && ( steps.latest-octprint.outputs.release != env.tag_name ))}}
-        run: |
-          docker buildx build --push \
-            --platform linux/arm64,linux/amd64,linux/arm/v7 \
-            --cache-from octoprint/octoprint:cache \
-            --cache-to octoprint/octoprint:cache \
-            --build-arg tag=${{ env.tag_name }} \
-            --progress plain -t octoprint/octoprint:${{ steps.tagging.outputs.tag }} -f Dockerfile .
-
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          cache-from: octoprint/octoprint:cache
+          cache-to: octoprint/octoprint:cache
+          tags: ${{ steps.tagging.outputs.tags }}
+          platforms: |
+            linux/amd64
+            linux/arm/v7
+            linux/arm64
+          build-args: |
+            octoprint_ref=${{ needs.filters.outputs.stable_octoprint }}
