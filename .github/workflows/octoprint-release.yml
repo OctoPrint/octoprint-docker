@@ -60,7 +60,7 @@ jobs:
         with:
           push: true
           cache-from: type=registry,ref=octoprint/octoprint:cache
-          cache-to: type=inline
+          cache-to: type=registry,ref=octoprint/octoprint:cache
           tags: ${{ steps.tagging.outputs.tags }}
           platforms: |
             linux/amd64
@@ -140,7 +140,7 @@ jobs:
         with:
           push: true
           cache-from: type=registry,ref=octoprint/octoprint:cache
-          cache-to: type=inline
+          cache-to: type=registry,ref=octoprint/octoprint:cache
           tags: ${{ steps.tagging.outputs.tags }}
           platforms: |
             linux/amd64
