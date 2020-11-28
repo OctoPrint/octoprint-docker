@@ -13,7 +13,6 @@ jobs:
   # equal to the latest (stable) release tag of octoprint
   release_main_on_dispatch:
     if: github.event_name == 'repository_dispatch' && github.repository_owner == 'OctoPrint'
-    needs: filters
 
     runs-on: ubuntu-latest
     
@@ -71,13 +70,26 @@ jobs:
             octoprint_ref=${{ github.event.client_payload.tag_name }}
 
 
+  push_filters:
+    runs-on: ubuntu-latest
+    outputs:
+      main: ${{ steps.filter.outputs.main }}
+      minimal: ${{ steps.filter.outputs.minimal }}
+    steps:
+      - 
+        uses: actions/checkout@v2
+      - 
+        uses: dorny/paths-filter@v2.5.0
+        id: filter
+        with:
+          filters: '.github/filters.yml'
 
   # This job should build and publish the main octoprint image from the latest,
   # stable release of octoprint, and *should* overwrite the 'latest' tag
   # ensures this will not run on the dispatch event, or when non-relevant files
   # are changed (such as documentation or build/workflow scripts)
   release_main_on_push:
-    if: needs.filters.outputs.main == 'true' && github.event_name == 'push' && github.repository_owner == 'OctoPrint'
+    if: needs.push_filters.outputs.main == 'true' && github.event_name == 'push' && github.repository_owner == 'OctoPrint'
     needs: filters
 
     runs-on: ubuntu-latest
@@ -85,12 +97,8 @@ jobs:
     steps:
       - 
         uses: actions/checkout@v2
-      # outputs: (loaded from file specified in filters)
-      - uses: dorny/paths-filter@v2.5.0
-        id: filter
-        with:
-          filters: '.github/filters.yml'
-        # outputs: release
+
+      # outputs: release
       - name: Get latest Octoprint
         id: latest-octoprint
         uses: pozetroninc/github-action-get-latest-release@master
@@ -112,7 +120,7 @@ jobs:
         with:
           image_name: octprint/octoprint
           latest: true
-          tag_name: ${{ needs.filters.outputs.stable_octoprint }}
+          tag_name: ${{ steps.latest-octoprint.outputs.release }}
           tags: |
             %X%
             %X.Y%
@@ -139,4 +147,4 @@ jobs:
             linux/arm/v7
             linux/arm64
           build-args: |
-            octoprint_ref=${{ needs.filters.outputs.stable_octoprint }}
+            octoprint_ref=${{ steps.latest-octoprint.outputs.release }}
