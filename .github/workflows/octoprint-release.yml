@@ -67,7 +67,7 @@ jobs:
       -
         name: Tagging Strategy
         id: tagging
-        uses: HackerHappyHour/tagging-strategy@2.0.0-rc3
+        uses: HackerHappyHour/tagging-strategy@v2
         with:
           image_name: octoprint/octoprint
           # allows the publishing of pre-release images by turning 'latest' to false if the event dispatched is a pre-released version
@@ -157,7 +157,7 @@ jobs:
       -
         name: Tagging Strategy
         id: tagging
-        uses: HackerHappyHour/tagging-strategy@2.0.0-rc3
+        uses: HackerHappyHour/tagging-strategy@v2
         with:
           image_name: octoprint/octoprint
           latest: true
