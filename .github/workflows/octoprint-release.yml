@@ -7,35 +7,7 @@ on:
     branches:
       - master
       
-# This job creates filters and configurations that are used by the release jobs
-# any shared configuration/conditionals should be set as outputs for this job
-# or be present in the output of one of this jobs steps
 jobs:
-  filters:
-    runs-on: ubuntu-latest
-    outputs:
-      main: ${{ steps.filter.outputs.main }}
-      minimal: ${{ steps.filter.outputs.minimal }}
-      stable_octoprint: ${{ steps.latest-octprint.outputs.release }}
-
-    steps:
-    - uses: actions/checkout@v2
-
-    # outputs: release
-    - name: Get latest Octoprint
-      id: latest-octoprint
-      uses: pozetroninc/github-action-get-latest-release@master
-      with:
-        owner: OctoPrint
-        repo: OctoPrint
-
-    # outputs: (loaded from file specified in filters)
-    - uses: dorny/paths-filter@v2.5.0
-      id: filter
-      with:
-        filters: '.github/filters.yml'
-
-
   # this job should build and publish the main octoprint image for the given tag, but
   # should not publish the 'latest' tag unless the given tag from payload is 
   # equal to the latest (stable) release tag of octoprint
@@ -48,6 +20,14 @@ jobs:
     steps:
       - 
         uses: actions/checkout@v2
+      - 
+        name: Get latest Octoprint
+        id: latest-octoprint
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: OctoPrint
+          repo: OctoPrint
+          excludes: draft
       -
         name: Set up QEMU
         id: qemu
@@ -61,7 +41,8 @@ jobs:
         uses: HackerHappyHour/tagging-strategy@2.0.0-rc2
         with:
           image_name: octprint/octoprint
-          latest: ${{ github.event.client_payload.tag_name == needs.filters.outputs.stable_octoprint }}
+          # allows the publishing of pre-release images by turning 'latest' to false if the 
+          latest: ${{ github.event.action == 'released' }}
           tag_name: ${{ github.event.client_payload.tag_name }}
           tags: |
             %X%
@@ -106,6 +87,19 @@ jobs:
     steps:
       - 
         uses: actions/checkout@v2
+      # outputs: (loaded from file specified in filters)
+      - uses: dorny/paths-filter@v2.5.0
+        id: filter
+        with:
+          filters: '.github/filters.yml'
+        # outputs: release
+      - name: Get latest Octoprint
+        id: latest-octoprint
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: OctoPrint
+          repo: OctoPrint
+          excludes: prerelease,draft
       -
         name: Set up QEMU
         id: qemu
