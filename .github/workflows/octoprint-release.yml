@@ -81,7 +81,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          cache-from: type=local,ref=src=/tmp/.buildx-cache
+          cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
           tags: ${{ steps.tagging.outputs.tags }}
           platforms: |
@@ -171,7 +171,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          cache-from: type=local,ref=src=/tmp/.buildx-cache
+          cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
           tags: ${{ steps.tagging.outputs.tags }}
           platforms: |
