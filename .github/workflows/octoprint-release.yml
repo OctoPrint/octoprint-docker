@@ -73,7 +73,7 @@ jobs:
         with:
           image_name: octoprint/octoprint
           # allows the publishing of pre-release images by turning 'latest' to false if the event dispatched is a pre-released version
-          latest: ${{ github.event.action == 'released' || (github.event.action == 'deploy' && steps.stable-octoprint.outputs.release == github.event.client_payload.tag_name) }}
+          latest: ${{ steps.stable-octoprint.outputs.release == github.event.client_payload.tag_name }}
           tag_name: ${{ github.event.client_payload.tag_name }}
           tags: |
             %X%
