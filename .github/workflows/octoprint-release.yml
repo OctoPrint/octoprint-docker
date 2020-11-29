@@ -79,7 +79,8 @@ jobs:
             %X%
             %X.Y%
             %X.Y.Z%
-
+      -
+        run: echo "tags ${{ steps.tagging.outputs.tags }}"
       - 
         name: Login to DockerHub
         uses: docker/login-action@v1
