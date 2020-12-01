@@ -80,4 +80,3 @@ EXPOSE 80
 VOLUME /octoprint
 
 ENTRYPOINT ["/init"]
-CMD ["octoprint", "serve", "--iknowwhatimdoing", "--host", "0.0.0.0", "--basedir", "/octoprint"]

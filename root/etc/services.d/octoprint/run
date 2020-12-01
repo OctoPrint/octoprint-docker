@@ -1,0 +1,3 @@
+#!/usr/bin/with-contenv sh
+
+exec octoprint serve --iknowwhatimdoing --host 0.0.0.0 --basedir /octoprint
