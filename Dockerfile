@@ -74,6 +74,9 @@ ENV MJPG_STREAMER_INPUT -y -n -r 640x480
 ENV PIP_USER true
 ENV PYTHONUSERBASE /octoprint/plugins
 
+# set WORKDIR so attaching shell goes to relevant directory
+WORKDIR /octoprint
+
 # port to access haproxy frontend
 EXPOSE 80
 
