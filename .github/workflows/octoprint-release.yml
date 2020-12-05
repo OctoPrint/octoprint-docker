@@ -82,7 +82,7 @@ jobs:
             %X.Y.Z%
           extra_tags: |
             latest::${{ steps.stable-octoprint.outputs.release == github.event.client_payload.tag_name }}
-            edge::${{ github.event.action == 'prereleased' || github.event.client_payload.tag_name == steps.latest-octoprint.outputs.release)}}
+            edge::${{ github.event.action == 'prereleased' || github.event.client_payload.tag_name == steps.latest-octoprint.outputs.release }}
             canary::${{ github.event.action == 'canary' }}
             bleeding::${{ github.event.action == 'bleeding' }}
       -
