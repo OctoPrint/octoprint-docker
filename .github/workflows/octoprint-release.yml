@@ -2,7 +2,7 @@ name: Deploy Images
 
 on:
   repository_dispatch:
-    types: [deploy, released, prereleased]
+    types: [deploy, released, prereleased, canary, bleeding]
   push:
     branches:
       - master
@@ -69,7 +69,7 @@ jobs:
       -
         name: Tagging Strategy
         id: tagging
-        uses: HackerHappyHour/tagging-strategy@v2
+        uses: HackerHappyHour/tagging-strategy@v3.0.0-rc1
         with:
           image_name: octoprint/octoprint
           # allows the publishing of pre-release images by turning 'latest' to false if the event dispatched is a pre-released version
@@ -160,15 +160,15 @@ jobs:
       -
         name: Tagging Strategy
         id: tagging
-        uses: HackerHappyHour/tagging-strategy@v2
+        uses: HackerHappyHour/tagging-strategy@v3.0.0-rc1
         with:
           image_name: octoprint/octoprint
-          latest: true
           tag_name: ${{ steps.latest-octoprint.outputs.release }}
           tags: |
             %X%
             %X.Y%
             %X.Y.Z%
+          extra_tags: 'latest'
       -
         name: Login to DockerHub
         uses: docker/login-action@v1
