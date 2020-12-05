@@ -113,6 +113,7 @@ jobs:
 
   push_filters:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     outputs:
       main: ${{ steps.filter.outputs.main }}
       minimal: ${{ steps.filter.outputs.minimal }}
