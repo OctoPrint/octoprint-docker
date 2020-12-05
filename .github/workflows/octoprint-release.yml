@@ -72,7 +72,7 @@ jobs:
       -
         name: Tagging Strategy
         id: tagging
-        uses: HackerHappyHour/tagging-strategy@3.0.0-rc1
+        uses: HackerHappyHour/tagging-strategy@3.0.0-rc2
         with:
           image_name: octoprint/octoprint
           tag_name: ${{ github.event.client_payload.tag_name }}
@@ -166,7 +166,7 @@ jobs:
       -
         name: Tagging Strategy
         id: tagging
-        uses: HackerHappyHour/tagging-strategy@3.0.0-rc1
+        uses: HackerHappyHour/tagging-strategy@3.0.0-rc2
         with:
           image_name: octoprint/octoprint
           tag_name: ${{ steps.stable-octoprint.outputs.release }}
