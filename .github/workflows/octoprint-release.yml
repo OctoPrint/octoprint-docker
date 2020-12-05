@@ -67,18 +67,24 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
       -
+        id: buildxandy
+        run: echo '::set-output name=buildxy::${{ boolean(github.event.action == 'deploy|released' && github.event.client_payload.tag_name == steps.stable-octoprint.outputs.release) }}'
+      -
         name: Tagging Strategy
         id: tagging
         uses: HackerHappyHour/tagging-strategy@v3.0.0-rc1
         with:
           image_name: octoprint/octoprint
-          # allows the publishing of pre-release images by turning 'latest' to false if the event dispatched is a pre-released version
-          latest: ${{ steps.stable-octoprint.outputs.release == github.event.client_payload.tag_name }}
           tag_name: ${{ github.event.client_payload.tag_name }}
           tags: |
-            %X%
-            %X.Y%
+            %X%::${{ steps.buildxy.outputs.buildxy }}
+            %X.Y%::${{ steps.buildxy.outputs.buildxy }}
             %X.Y.Z%
+          extra_tags: |
+            latest::${{ steps.stable-octoprint.outputs.release == github.event.client_payload.tag_name }}
+            edge::${{ github.event.action == 'prereleased' || (github.event.action == 'deploy' && github.event.client_payload.tag_name == steps.latest-octoprint.outputs.release)}}
+            canary::${{ github.event.action == 'canary' }}
+            bleeding::${{ github.event.action == 'bleeding' }}
       -
         run: echo "tags ${{ steps.tagging.outputs.tags }}"
       - 
