@@ -68,7 +68,7 @@ jobs:
             ${{ runner.os }}-buildx-
       -
         id: buildxandy
-        run: echo '::set-output name=buildxy::${{ boolean(github.event.action == 'deploy|released' && github.event.client_payload.tag_name == steps.stable-octoprint.outputs.release) }}'
+        run: echo '::set-output name=buildxy::${{ github.event.action == 'deploy|released' && github.event.client_payload.tag_name == steps.stable-octoprint.outputs.release }}'
       -
         name: Tagging Strategy
         id: tagging
