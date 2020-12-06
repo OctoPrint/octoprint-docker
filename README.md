@@ -3,12 +3,16 @@
 This is the primary image of `octoprint/octoprint`. It is designed to work similarly, and support the
 same out of the box features as the octopi raspberry-pi machine image, using docker.
 
-## Tags
+**Tags**
 
-- `latest`, `1.4.2`, `1.4`, `1` ([Dockerfile](Dockerfile))
+- `latest` - will always follow the latest _stable_ release 
+- `edge` - will always follow the latest release _including prereleases_.
+- `canary` - follows the [OctoPrint/Octoprint@maintenance](https://github.com/OctoPrint/OctoPrint/tree/maintenance) branch
+- `bleeding`- follows the [OctoPrint/Octoprint@devel](https://github.com/OctoPrint/OctoPrint/tree/devel) branch
+- `1.4.2`, `1.4`, `1` ([Dockerfile](Dockerfile))
 
+**Table of Contents**
 - [OctoPrint-docker](#octoprint-docker)
-  - [Tags](#tags)
   - [Usage](#usage)
     - [Configuration](#configuration)
       - [Enabling Webcam Support with Docker](#enabling-webcam-support-with-docker)
@@ -16,6 +20,7 @@ same out of the box features as the octopi raspberry-pi machine image, using doc
       - [Container Environment based configs](#container-environment-based-configs)
       - [Editing Config files manually](#editing-config-files-manually)
   - [Without docker-compose](#without-docker-compose)
+  - [Building the image yourself](#building-the-image-yourself)
 
 ## Usage
 
