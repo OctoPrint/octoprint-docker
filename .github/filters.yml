@@ -3,3 +3,5 @@ main:
   - 'root/**'
 minimal:
   - 'minimal/**'
+readme:
+  - 'README.md'

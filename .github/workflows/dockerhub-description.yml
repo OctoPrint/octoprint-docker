@@ -1,0 +1,32 @@
+name: DockerHub Image Description
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  filters:
+    runs-on: ubuntu-latest
+    outputs: 
+      readme: ${{ steps.filter.outputs.readme }}
+
+    steps:
+      -
+        id: filter
+        uses: dorny/paths-filter@v2.6.0
+        with:
+          filters: './github/filters.yml'
+
+  update-dockerhub-doc:
+    runs-on: ubuntu-latest
+    if: needs.push_filters.outputs.readme
+
+    steps:
+      -
+        name: Update DockerHub Description
+        uses: peter-evans/dockerhub-description@v2.4.1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_USERNAME }}
+          repository: octoprint/octoprint
