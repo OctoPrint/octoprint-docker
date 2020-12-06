@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
 
 jobs:
   filters:
@@ -22,7 +23,7 @@ jobs:
 
   update-dockerhub-doc:
     runs-on: ubuntu-latest
-    if: needs.push_filters.outputs.readme == 'true' && github.repository_owner == 'OctoPrint'
+    if: (needs.push_filters.outputs.readme == 'true' || github.event_name == 'workflow_dispatch') && github.repository_owner == 'OctoPrint'
 
     steps:
       -
