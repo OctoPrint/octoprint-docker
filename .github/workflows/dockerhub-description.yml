@@ -20,7 +20,7 @@ jobs:
 
   update-dockerhub-doc:
     runs-on: ubuntu-latest
-    if: needs.push_filters.outputs.readme
+    if: needs.push_filters.outputs.readme == 'true' && github.repository_owner == 'OctoPrint'
 
     steps:
       -
