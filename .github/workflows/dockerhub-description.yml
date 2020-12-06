@@ -13,6 +13,8 @@ jobs:
 
     steps:
       -
+        uses: actions/checkout@v2
+      -
         id: filter
         uses: dorny/paths-filter@v2.6.0
         with:
