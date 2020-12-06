@@ -140,13 +140,23 @@ jobs:
       - 
         uses: actions/checkout@v2
       # outputs: release
-      - name: Get latest Octoprint
+      - 
+        name: Get Stable Octoprint
         id: stable-octoprint
         uses: pozetroninc/github-action-get-latest-release@master
         with:
           owner: OctoPrint
           repo: OctoPrint
           excludes: prerelease,draft
+
+      - 
+        name: Get latest Octoprint
+        id: latest-octoprint
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: OctoPrint
+          repo: OctoPrint
+          excludes: draft
       -
         name: Set up QEMU
         id: qemu
@@ -199,5 +209,5 @@ jobs:
             linux/arm/v7
             linux/arm64
           build-args: |
-            octoprint_ref=${{ steps.latest-octoprint.outputs.release }}
+            octoprint_ref=${{ steps.stable-octoprint.outputs.release }}
           labels: ${{ needs.meta.outputs.labels }}
