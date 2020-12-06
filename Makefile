@@ -1,5 +1,5 @@
 build:
-	docker-compose -f compose.test.yml build .
+	docker-compose -f compose.test.yml build
 
 down:
 	docker-compose -f compose.test.yml down
