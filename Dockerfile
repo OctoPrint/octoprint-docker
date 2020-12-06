@@ -73,6 +73,8 @@ ENV CAMERA_DEV /dev/video0
 ENV MJPG_STREAMER_INPUT -y -n -r 640x480
 ENV PIP_USER true
 ENV PYTHONUSERBASE /octoprint/plugins
+# set WORKDIR 
+WORKDIR /octoprint
 
 # port to access haproxy frontend
 EXPOSE 80
@@ -80,4 +82,3 @@ EXPOSE 80
 VOLUME /octoprint
 
 ENTRYPOINT ["/init"]
-CMD ["octoprint", "serve", "--iknowwhatimdoing", "--host", "0.0.0.0", "--basedir", "/octoprint"]

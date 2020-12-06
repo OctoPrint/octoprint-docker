@@ -16,7 +16,6 @@ same out of the box features as the octopi raspberry-pi machine image, using doc
   - [Usage](#usage)
     - [Configuration](#configuration)
       - [Enabling Webcam Support with Docker](#enabling-webcam-support-with-docker)
-      - [Webcam Setup in OctoPrint](#webcam-setup-in-octoprint)
       - [Container Environment based configs](#container-environment-based-configs)
       - [Editing Config files manually](#editing-config-files-manually)
   - [Without docker-compose](#without-docker-compose)
@@ -51,16 +50,6 @@ environment variable for `CAMERA_DEV` to match the mapped device mapping.
 
 See [container environment based configs](#container-environment-based-configs) for a full
 list of webcam configuration options configured with docker.
-
-#### Webcam Setup in OctoPrint
-
-Use the following values in the webcam & timelapse settings screen of the initial setup:
-
-| Setting | Value |
-| ------- | ----- |
-| Stream URL | `/webcam/?action=stream` |
-| Snapshot URL |  `http://localhost:8080/?action=snapshot` |
-| Path to FFMPEG | `/usr/bin/ffmpeg` |
 
 #### Container Environment based configs
 
