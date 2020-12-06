@@ -16,7 +16,7 @@ jobs:
         id: filter
         uses: dorny/paths-filter@v2.6.0
         with:
-          filters: './github/filters.yml'
+          filters: '.github/filters.yml'
 
   update-dockerhub-doc:
     runs-on: ubuntu-latest
