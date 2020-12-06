@@ -9,7 +9,6 @@ same out of the box features as the octopi raspberry-pi machine image, using doc
 - `edge` - will always follow the latest release _including prereleases_.
 - `canary` - follows the [OctoPrint/Octoprint@maintenance](https://github.com/OctoPrint/OctoPrint/tree/maintenance) branch
 - `bleeding`- follows the [OctoPrint/Octoprint@devel](https://github.com/OctoPrint/OctoPrint/tree/devel) branch
-- `1.4.2`, `1.4`, `1` ([Dockerfile](Dockerfile))
 
 **Table of Contents**
 - [OctoPrint-docker](#octoprint-docker)
