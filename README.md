@@ -83,11 +83,11 @@ then run the following commands:
 docker-compose up -d config-editor
 ```
 
-Now go to `http://<octoprint_ip_or_url>:8443/?folder=/config` in your browser to edit your octoprint files!
+Now go to `http://<octoprint_ip_or_url>:8443/?folder=/octoprint` in your browser to edit your octoprint files!
 Use the 'explorer' (accessible by clicking the hamburger menu icon) to explore folder and files to load
 into the editor workspace. 
 
-All configuration files are in the `/config` folder, and the active configuration will be accessible at `/config/config.yaml`
+All configuration files are in the `octoprint` folder, and the active configuration will be accessible at `/octoprint/octoprint/config.yaml`
 
 When you're done, we recommend you stop and remove this service/container:
 
