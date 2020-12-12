@@ -1,8 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
-[[ -d /octoprint/data ]] && \
+if [[ -d /octoprint/data ]]; then
   echo "Migrating to octoprint-docker v3 directory structure..." && \
-  mv /octoprint/* /octoprint/octoprint && \
-  mv /octoprint/octoprint/plugins/bin /octoprint/plugins && \
-  mv /octoprint/octoprint/plugins/lib /octoprint/plugins && \
+  mv /octoprint/* /octoprint/octoprint
+
+  [[ -d /octoprint/octoprint/plugins/bin ]] && mv /octoprint/octoprint/plugins/bin /octoprint/plugins
+  [[ -d /octoprint/octoprint/plugins/lib ]] && mv /octoprint/octoprint/plugins/lib /octoprint/plugins
+
   echo "v3 octoprint-docker image migration complete!"
+fi
