@@ -5,7 +5,7 @@ services:
     build: 
       context: ../
       args:
-        octoprint_ref: 1.5.1
+        octoprint_ref: 1.5.2
     image: octoprint/octoprint:test
     ports:
       - 53333:80
