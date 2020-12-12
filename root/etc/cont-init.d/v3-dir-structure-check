@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/with-contenv bash
 
-if [[ -d /octoprint/data ]]; then
+if [[ -d "/octoprint/data" ]] || [[ -f "/octoprint/config.yaml" ]]; then
   echo "Migrating to octoprint-docker v3 directory structure..." && \
   mv /octoprint/* /octoprint/octoprint
 
-  [[ -d /octoprint/octoprint/plugins/bin ]] && mv /octoprint/octoprint/plugins/bin /octoprint/plugins
-  [[ -d /octoprint/octoprint/plugins/lib ]] && mv /octoprint/octoprint/plugins/lib /octoprint/plugins
+  [[ -d "/octoprint/octoprint/plugins/bin" ]] && mv /octoprint/octoprint/plugins/bin $PYTHONUSERBASE
+  [[ -d "/octoprint/octoprint/plugins/lib" ]] && mv /octoprint/octoprint/plugins/lib $PYTHONUSERBASE
 
   echo "v3 octoprint-docker image migration complete!"
 fi
