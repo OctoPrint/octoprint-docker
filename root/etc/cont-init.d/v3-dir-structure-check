@@ -6,6 +6,9 @@ if [[ -d "/octoprint/data" ]] || [[ -f "/octoprint/config.yaml" ]]; then
 
   [[ -d "/octoprint/octoprint/plugins/bin" ]] && mv /octoprint/octoprint/plugins/bin $PYTHONUSERBASE
   [[ -d "/octoprint/octoprint/plugins/lib" ]] && mv /octoprint/octoprint/plugins/lib $PYTHONUSERBASE
+  [[ -d "/octoprint/octoprint/plugins/include" ]] && mv /octoprint/octoprint/plugins/include $PYTHONUSERBASE
+  [[ -d "/octoprint/octoprint/plugins/local" ]] && mv /octoprint/octoprint/plugins/local $PYTHONUSERBASE
+  [[ -d "/octoprint/octoprint/plugins/share" ]] && mv /octoprint/octoprint/plugins/share $PYTHONUSERBASE
 
   echo "v3 octoprint-docker image migration complete!"
 fi
