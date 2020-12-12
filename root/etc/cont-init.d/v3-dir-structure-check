@@ -1,0 +1,8 @@
+#!/bin/sh
+
+[[ -d /octoprint/data ]] && \
+  echo "Migrating to octoprint-docker v3 directory structure..." && \
+  mv /octoprint/* /octoprint/octoprint && \
+  mv /octoprint/octoprint/plugins/bin /octoprint/plugins && \
+  mv /octoprint/octoprint/plugins/lib /octoprint/plugins && \
+  echo "v3 octoprint-docker image migration complete!"
