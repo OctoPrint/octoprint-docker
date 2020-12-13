@@ -3,8 +3,10 @@
 : "${AUTOMIGRATE:=false}"
 
 if $AUTOMIGRATE; then
+  echo "AUTOMIGATE enabled...."
   if [[ -d "/octoprint/data" ]] || [[ -f "/octoprint/config.yaml" ]]; then
-    echo "Migrating to octoprint-docker v3 directory structure..." && \
+    echo "octoprint-docker v2 directory structure detected...."
+    echo "migrating to octoprint-docker v3 directory structure..."
     mkdir -p /octoprint/octoprint /octoprint/plugins
     mv /octoprint/* /octoprint/octoprint
 
@@ -14,11 +16,12 @@ if $AUTOMIGRATE; then
     [[ -d "/octoprint/octoprint/plugins/local" ]] && mv /octoprint/octoprint/plugins/local $PYTHONUSERBASE
     [[ -d "/octoprint/octoprint/plugins/share" ]] && mv /octoprint/octoprint/plugins/share $PYTHONUSERBASE
 
-    echo "v2 -> v3 octoprint-docker image migration complete!"
+    echo "v2 -> v3 octoprint-docker auto-migration migration complete!"
   fi
 
   if [[ -d "/root/.octoprint" ]]; then
-    echo "octoprint-docker v1 directory structure detected, migrating to octoprint-docker v3 directory structure..."
+    echo "octoprint-docker v1 directory structure detected...."
+    echo "migrating to octoprint-docker v3 directory structure..."
 
     mkdir -p /octoprint/octoprint /octoprint/plugins
     mv /root/.octoprint/* /octoprint/octoprint
@@ -29,7 +32,7 @@ if $AUTOMIGRATE; then
     [[ -d "/octoprint/octoprint/plugins/local" ]] && mv /octoprint/octoprint/plugins/local $PYTHONUSERBASE
     [[ -d "/octoprint/octoprint/plugins/share" ]] && mv /octoprint/octoprint/plugins/share $PYTHONUSERBASE
 
-    echo "v1 -> v3 octoprint-docker image migration complete!"
+    echo "v1 -> v3 octoprint-docker auto-migration complete!"
   fi
 
 fi
