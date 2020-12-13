@@ -1,4 +1,17 @@
+## 3.1.0 
+December 13, 2020
+
+As a result of the breaking changes in 3.0.0, we have introduced a script that will attempt to detect
+and auto-migrate filesystem structures from previous octoprint-docker release versions to the current version,
+by utilizing an optional environment variable you can set
+
+This feature was impossible to test for all condidtions, and as such is
+defaulted to `false`. We highly recommend you use the OctoPrint backup feature, or use this
+[docker based method of backing up your container volume][container-backup] before attempting auto-migration.
+To attempt auto-migration, set a container environment variable of `AUTOMIGRATE=true`.
+
 ## Version 3.0.0 Changelog
+December 9, 2020
 
 - plugins will now persist in the `/octoprint` volume (see #71 and #44)
 - Settings unique to docker (such as restarting octoprint and webcam configs), are now pre-configured (implemented in #132)
@@ -8,10 +21,6 @@
 ### Breaking changes
 
 PR #135 introduced a change that will not affect most users, but may be a breaking change for existing users that are using a volume mounting strategy other than the recommended strategy. 
-
-We have introduced an optional environment variable you can set to attempt to automigrate the file structures, but this feature was impossible to test for all condidtions, and as such is
-defaulted to `false`.  We highly recommend you use the OctoPrint backup feature, or use this [docker based method of backing up your container volume][container-backup] before attempting auto-migration. 
-To attempt auto-migration, set a container environment variable of `AUTOMIGRATE=true`.
 
 Details of breaking changes follow:
 
