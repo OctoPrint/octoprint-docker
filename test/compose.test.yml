@@ -11,6 +11,8 @@ services:
       - 53333:80
     volumes:
       - octoprint:/octoprint
+    environment:
+      - AUTOMIGRATE=true
 
   config-editor:
     image: linuxserver/code-server
