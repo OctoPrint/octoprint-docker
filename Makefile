@@ -1,11 +1,11 @@
 build:
-	docker-compose -f compose.test.yml build
+	docker-compose -f test/compose.test.yml build
 
 down:
-	docker-compose -f compose.test.yml down
+	docker-compose -f test/compose.test.yml down
 
 up:
-	docker-compose -f compose.test.yml up
+	docker-compose -f test/compose.test.yml up
 
 clean:
-	docker-compose -f compose.test.yml down --rmi local -v
+	docker-compose -f test/compose.test.yml down --rmi local -v
