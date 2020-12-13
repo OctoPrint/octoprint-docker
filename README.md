@@ -3,6 +3,18 @@
 This is the primary image of `octoprint/octoprint`. It is designed to work similarly, and support the
 same out of the box features as the octopi raspberry-pi machine image, using docker.
 
+The `octoprint/octoprint` image uses semantic versioning, but the tags for `octoprint/octoprint` follow the
+version of octoprint contained in the image. As a result we recommend you always check the [CHANGELOG](CHANGELOG.md)
+or [Releases](https://github.com/OctoPrint/octoprint-docker/releases) before pulling an image, _even if you are pulling the same tag_.
+
+You can subscribe to be notified of releases as well, by selecting the Watch button in the upper right corner, 
+choosing "Custom", and checking "Releases".
+
+In addition, we know that OctoPrint is not the best suited type of application for containerization, but we're
+working hard to make it as compatible as possible. Please check out our [Roadmap](https://github.com/OctoPrint/octoprint-docker/projects/4),
+or join the discussion in the `#dev-docker` or `#support-docker` channels on the official OctoPrint Discord
+[discord.octoprint.org](https://discord.octoprint.org).
+
 **Tags**
 
 - `latest` - will always follow the latest _stable_ release 
@@ -57,11 +69,12 @@ There are configuration values that you pass using container `--environment` opt
 Listed below are the options and their defaults. These are implicit in example [docker-compose.yml](docker-compose.yml),
 and if you wish to change them, refer to the docker-compose docs on setting environment variables.
 
-| variable | default |
-| -------- | ------- |
-| `CAMERA_DEV` | `/dev/video0` (see [note](#devices_note)) |
-| `MJPG_STREAMER_INPUT` | `-y -n -r 640x480` |
-| `ENABLE_MJPG_STREAMER` | `false` |
+| variable | default | description |
+| -------- | ------- | ----------- |
+| `CAMERA_DEV` | `/dev/video0` | (see [note](#devices_note)) |
+| `MJPG_STREAMER_INPUT` | `-y -n -r 640x480` | params for mjpg-streamer |
+| `ENABLE_MJPG_STREAMER` | `false` | enable or disable mjpg-streamer
+| `AUTOMIGRATE` | `false` | Will attempt to detect and migrate filesystems structures from previous versions of this image to be compatible with the latest release version. recommend you backup before trying this as this is a new feature that has been difficult to test fully |
 
 **note:** You will still need to declare the `device` mapping in your docker-compose file or docker command,
 even if you explicitly declare the `CAMERA_DEV`.  The value of `CAMERA_DEV` is used in starting the mjpg-streamer
