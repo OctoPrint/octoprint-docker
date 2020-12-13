@@ -22,6 +22,10 @@ December 9, 2020
 
 PR #135 introduced a change that will not affect most users, but may be a breaking change for existing users that are using a volume mounting strategy other than the recommended strategy. 
 
+As a result of the breaking changes in 3.0.0, we have introduced a script that will attempt to detect and auto-migrate filesystem structures from previous octoprint-docker release versions to the current version, by utilizing an optional environment variable you can set
+
+This feature was impossible to test for all condidtions, and as such is defaulted to false. We highly recommend you use the OctoPrint backup feature, or use this docker based method of backing up your container volume before attempting auto-migration. To attempt auto-migration, set a container environment variable of AUTOMIGRATE=true.
+
 Details of breaking changes follow:
 
 - `/octoprint/octoprint` and `/octoprint/plugins` folders are now explicitly created during docker build
