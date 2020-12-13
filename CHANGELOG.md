@@ -7,9 +7,15 @@
 
 ### Breaking changes
 
-PR #135 introduced a change that will not affect most users, but may be a breaking change for existing users that are using a volume mounting strategy other than the recommended strategy. Details follow: 
+PR #135 introduced a change that will not affect most users, but may be a breaking change for existing users that are using a volume mounting strategy other than the recommended strategy. 
 
--  `/octoprint/octoprint` and `/octoprint/plugins` folders are now explicitly created during docker build
+We have introduced an optional environment variable you can set to attempt to automigrate the file structures, but this feature was impossible to test for all condidtions, and as such is
+defaulted to `false`.  We highly recommend you use the OctoPrint backup feature, or use this [docker based method of backing up your container volume][container-backup] before attempting auto-migration. 
+To attempt auto-migration, set a container environment variable of `AUTOMIGRATE=true`.
+
+Details of breaking changes follow:
+
+- `/octoprint/octoprint` and `/octoprint/plugins` folders are now explicitly created during docker build
 - octoprint service basedir is now `/octoprint/octoprint` (was previously `/octoprint`)
 - the recommended mount path for the `config-editor` container to has been changed to `octoprint:/octoprint`. See updated examples and usage info in `docker-compose.yml` and `README`.
 
@@ -92,6 +98,8 @@ existed in the `/octoprint/plugins` folder, polluting it's purpose.
 This new method will allow savvy users to create distinct volumes for plugin binaries and
 octoprint configuration data, giving them more ability to selectively control how state and
 memory consumption are utilized in their octoprint image usage/distribution strategies.
+
+[container-backup]: https://docs.docker.com/storage/volumes/#backup-a-container
 
 ## 2.0.0
 
