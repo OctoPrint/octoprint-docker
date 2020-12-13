@@ -3,7 +3,7 @@ version: '2.4'
 services:
   octoprint:
     build: 
-      context: ./
+      context: ../
       args:
         octoprint_ref: 1.5.1
     image: octoprint/octoprint:test
