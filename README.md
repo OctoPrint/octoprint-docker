@@ -24,7 +24,7 @@ or join the discussion in the `#dev-docker` or `#support-docker` channels on the
 - `X`,`X.Y`,`X.Y.Z`,`X.Y.Z-rc` - these tags will follow the latest build that matches the tag
 
 **Table of Contents**
-- [OctoPrint-docker](#octoprint-docker)
+- [OctoPrint-docker ![Chat](https://discord.octoprint.org)](#octoprint-docker-)
   - [Usage](#usage)
     - [Configuration](#configuration)
       - [Enabling Webcam Support with Docker](#enabling-webcam-support-with-docker)
@@ -32,6 +32,7 @@ or join the discussion in the `#dev-docker` or `#support-docker` channels on the
       - [Editing Config files manually](#editing-config-files-manually)
   - [Without docker-compose](#without-docker-compose)
   - [Building the image yourself](#building-the-image-yourself)
+  - [Contributions Welcome](#contributions-welcome)
 
 ## Usage
 
@@ -125,4 +126,8 @@ docker run -d -v octoprint:/octoprint --device /dev/ttyACM0:/dev/ttyACM0 --devic
 
 ## Building the image yourself
 
-If you would like to build the docker image yourself, please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to do so.
+If you would like to build the docker image yourself, please read [docs/building-an-octoprint-image](docs/building-an-octoprint-image.md)
+
+## Contributions Welcome
+
+We are welcoming contributions, and looking to add maintainers to the team. View [CONTRIBUTING.md](CONTRIBUTING.md) for more info!
