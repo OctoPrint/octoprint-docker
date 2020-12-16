@@ -1,4 +1,4 @@
-## Docker build error on Raspbian OS
+## Docker build error on Raspberry Pi OS
 
 If you attempt to build the docker image on raspbian you may encounter the following error, this is resolved by the steps below.
 
