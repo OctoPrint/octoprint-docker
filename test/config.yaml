@@ -1,0 +1,50 @@
+accessControl:
+    salt: r4QNvkuFVg8m3NB06DqLwcqnO1POznVT
+    userfile: /octoprint/octoprint/users.yaml
+api:
+    key: 80370CA715EB43D8A7ADA92514B156F5
+plugins:
+    announcements:
+        _config_version: 1
+    discovery:
+        upnpUuid: 171ba419-b35b-47bb-9036-90ae083d3ef9
+    errortracking:
+        unique_id: aa419b3c-4095-40fb-a404-d5e9acc52c46
+    gcodeviewer:
+        _config_version: 1
+    softwareupdate:
+        _config_version: 9
+    tracking:
+        enabled: false
+        unique_id: b1479d5a-1633-448c-b3e3-c1f9897415d9
+    virtual_printer:
+        _config_version: 1
+printerProfiles:
+    default: _default
+server:
+    commands:
+        serverRestartCommand: s6-svc -r /var/run/s6/services/octoprint
+    firstRun: false
+    onlineCheck:
+        enabled: true
+    pluginBlacklist:
+        enabled: false
+    secretKey: uLF9pjbC59vwhFnbIVDcllLJDBhKjVqU
+    seenWizards:
+        backup: null
+        corewizard: 4
+        tracking: null
+temperature:
+    profiles:
+    -   bed: 100
+        chamber: null
+        extruder: 210
+        name: ABS
+    -   bed: 60
+        chamber: null
+        extruder: 180
+        name: PLA
+webcam:
+    ffmpeg: /usr/bin/ffmpeg
+    snapshot: http://localhost:8080/?action=snapshot
+    stream: /webcam/?action=stream
