@@ -7,9 +7,22 @@ and reviewing PR's? Let us know!
 If this sounds like you, join the [OctoPrint Discord][] and message `@CHIEFdotJS` in the `#dev-docker` channel.
 
 - [Contributing to the official octoprint Docker image](#contributing-to-the-official-octoprint-docker-image)
+  - [Pull Requests](#pull-requests)
   - [Building images](#building-images)
     - [Simple test images](#simple-test-images)
     - [Testing your changes on all architectures](#testing-your-changes-on-all-architectures)
+
+## Pull Requests
+
+- Pull Requests that are intended to fix a bug should have a related issue. It is acceptable to create the issue
+at the time you open the PR.
+  - Pull Requests that are for fixing typos, updating docs, or adding features/enhancements can be submitted without a related issue
+  - Pull Requests that add enhancements should have an adequate description, and should make any relevant changes to documentation
+- Pull Requests that will result in new images being published must build on all supported architectures (`arm64,arm/v7,amd64`) (see [Testing your changes on all architectures](#testing-your-changes-on-all-architectures))
+- any documentation should be exclusive to this project, or affect the majority of users/contributors.
+- any packages/dependencies added to the image should be available on all supported architectures, AND:
+  - should be required by the majority of users or plugins OR
+  - be bundled by OctoPi (try to increase parity with usage docs of OctoPi whenever possible)
 
 ## Building images
 
