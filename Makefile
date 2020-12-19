@@ -1,5 +1,5 @@
 builddir=.build
-cachedir=$(builddir)/.cache
+cachedir=.cache
 octoprint_ref?= $(shell ./scripts/version.sh "OctoPrint/OctoPrint")
 platforms?="linux/arm/v7,linux/arm64,linux/amd64"
 
@@ -21,10 +21,10 @@ clean:
 setup-multi-arch:
 	docker run --privileged --rm tonistiigi/binfmt --install arm64,arm/v7,amd64
 
-multi-build-test:
+test:
 	./scripts/buildx_check.sh
 	@echo '[buildx]: building .Dockerfile for all supported architectures and caching locally'
-	mkdir -p $cachedir
+	mkdir -p ${cachedir} ${builddir}
 	docker buildx build \
 		--platform ${platforms} \
 		--cache-from type=registry,ref=docker.io/octoprint/octoprint:${octoprint_ref} \
