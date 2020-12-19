@@ -6,10 +6,10 @@ platforms?="linux/arm/v7,linux/arm64,linux/amd64"
 .PHONY: test
 
 build:
-	docker-compose -f test/docker-compose.test.yml build
+	docker-compose -f test/docker-compose.yml build
 
 down:
-	docker-compose -f test/docker-compose.test.yml down
+	docker-compose -f test/docker-compose.yml down
 
 up:
 	docker-compose -f test/docker-compose.yml up
