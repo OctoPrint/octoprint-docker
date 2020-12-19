@@ -43,7 +43,7 @@ make build && make up
 ```
 
 This will build the image from the main Dockerfile, and stand it up, with the logs running in the terminal.
-Octoprint will be accessible on [http://localhost:53113](), and the config-editor will be stood up on [http://localhost:8443]()
+Octoprint will be accessible on [http://localhost:53333](), and the config-editor will be stood up on [http://localhost:8443]()
 
 ### Testing your changes on all architectures
 
