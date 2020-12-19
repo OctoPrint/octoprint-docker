@@ -6,8 +6,13 @@ and reviewing PR's? Let us know!
 
 If this sounds like you, join the [OctoPrint Discord][] and message `@CHIEFdotJS` in the `#dev-docker` channel.
 
-## The remainder of this doc is a WIP
+- [Contributing to the official octoprint Docker image](#contributing-to-the-official-octoprint-docker-image)
+  - [Building images](#building-images)
 
-see https://github.com/OctoPrint/octoprint-docker/issues/144#issuecomment-744482436
+## Building images
+
+Prerequisites:
+
+- docker and its dependencies installed and up to date
 
 [OctoPrint Discord]: https://discord.octoprint.org
