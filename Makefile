@@ -6,16 +6,16 @@ platforms?="linux/arm/v7,linux/arm64,linux/amd64"
 .PHONY: test
 
 build:
-	docker-compose -f test/compose.test.yml build
+	docker-compose -f test/docker-compose.test.yml build
 
 down:
-	docker-compose -f test/compose.test.yml down
+	docker-compose -f test/docker-compose.test.yml down
 
 up:
-	docker-compose -f test/compose.test.yml up
+	docker-compose -f test/docker-compose.yml up
 
 clean:
-	docker-compose -f test/compose.test.yml down --rmi local -v
+	docker-compose -f test/docker-compose.yml down --rmi local -v
 	rm -rf ${builddir}
 
 setup-multi-arch:
