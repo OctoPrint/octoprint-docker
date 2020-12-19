@@ -29,7 +29,7 @@ multi-build-test:
 		--platform ${platforms} \
 		--cache-from type=registry,ref=docker.io/octoprint/octoprint:${octoprint_ref} \
 		--cache-from type=local,src=${cachedir} \
-		--cache-to type=local,dest=${cachedir},mode=max \
+		--cache-to type=local,dest=${cachedir} \
 		--build-arg octoprint_ref=${octoprint_ref} \
 		--output type=local,dest=${builddir} \
 		--progress tty -t octoprint/octoprint:test .
