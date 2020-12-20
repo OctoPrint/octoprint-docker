@@ -11,6 +11,7 @@ services:
       - 53333:80
     volumes:
       - octoprint:/octoprint
+      - ./config.yaml:/octoprint/octoprint/config.yaml
     environment:
       - AUTOMIGRATE=true
 
