@@ -7,8 +7,12 @@ builds. Here are a few common scenarios you might find yourself wanting to do th
 - you require additional OS packages for plugins
 - you want to distribute your own special version of OctoPrint 
 - you want a common set of plugins installed for a distributable image
+- you want to [preconfigure your octoprint instance](preconfigure-your-octoprint.md)
 
-Docs coming soon, but this will follow common Docker usage, and here are a few good
-resources:
+Helpful resources on building with docker:
 
 - [Dockerfile Tutorial with Example | Creating your First Dockerfile | Docker Training | Edureka](https://www.youtube.com/watch?v=2lU9zdrs9bM)
+
+## Configuring Docker
+
+We recommend enabling experimental support for your docker engine. The examples used in these docs all 
