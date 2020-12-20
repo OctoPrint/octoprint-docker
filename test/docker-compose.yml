@@ -26,7 +26,7 @@ services:
       - GUID=0
       - TZ=America/Chicago
     volumes:
-      - octoprint:/data
+      - octoprint:/octoprint
 
 volumes:
   octoprint:
