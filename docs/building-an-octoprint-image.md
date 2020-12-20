@@ -15,4 +15,14 @@ Helpful resources on building with docker:
 
 ## Configuring Docker
 
-We recommend enabling experimental support for your docker engine. The examples used in these docs all 
+We recommend using docker 19.03 or higher, and enabling experimental support for your docker engine.
+The examples used in these docs will all use experimental features enabled.
+
+1. Open `/etc/docker/daemon.json`
+2. Add the experimental true setting:
+
+```json
+{
+  "experimental": true
+}
+```
