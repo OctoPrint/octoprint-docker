@@ -33,3 +33,11 @@ test:
 		--build-arg octoprint_ref=${octoprint_ref} \
 		--output type=local,dest=${builddir} \
 		--progress tty -t octoprint/octoprint:test .
+
+e2e:
+	@echo '[buildx]: building with test structures and running e2e tests'
+	docker build \
+		--secret id=password,src=./test/password.txt \
+		--file ./test/Dockerfile \
+		--progress tty -t octoprint/octoprint:e2e ./test
+	docker-compose -f test/e2e-compose.yml up	
