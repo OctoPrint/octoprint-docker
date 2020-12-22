@@ -1,0 +1,2 @@
+accessControl:
+    userfile: /octoprint/octoprint/users.yaml
