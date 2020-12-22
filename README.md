@@ -22,6 +22,8 @@ or join the discussion in the `#dev-docker` or `#support-docker` channels on the
 - `canary` - follows the [OctoPrint/Octoprint@maintenance](https://github.com/OctoPrint/OctoPrint/tree/maintenance) branch
 - `bleeding`- follows the [OctoPrint/Octoprint@devel](https://github.com/OctoPrint/OctoPrint/tree/devel) branch
 - `X`,`X.Y`,`X.Y.Z`,`X.Y.Z-rc` - these tags will follow the latest build that matches the tag
+- `minimal` - This is built whenever `latest` is built, but uses the [minimal image](docs/using_the_minimal_image.md)
+- `latest|edge|canary|bleeding|X.Y.Z-minimal` - a minimal version of each of the tags described above, published under the same condition but from the [minimal image](docs/using_the_minimal_image.md)
 
 **Table of Contents**
 - [OctoPrint-docker ![Chat](https://discord.octoprint.org)](#octoprint-docker-)

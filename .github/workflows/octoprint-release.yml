@@ -109,7 +109,94 @@ jobs:
             octoprint_ref=${{ github.event.client_payload.tag_name }}
           labels: ${{ needs.meta.outputs.labels }}
 
+  release_minimal_on_dispatch:
+    if: github.event_name == 'repository_dispatch' && github.repository_owner == 'OctoPrint'
+    needs: meta
 
+    runs-on: ubuntu-latest
+    
+    steps:
+      - 
+        uses: actions/checkout@v2
+      - 
+        name: Get latest Octoprint
+        id: latest-octoprint
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: OctoPrint
+          repo: OctoPrint
+          excludes: draft
+      - 
+        name: Get latest stable Octoprint
+        id: stable-octoprint
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: OctoPrint
+          repo: OctoPrint
+          excludes: prerelease,draft
+      - 
+        run: echo "latest stable release ${{ steps.stable-octoprint.outputs.release }}"
+      -
+        name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: arm,arm64
+      -
+        name: Set up Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Cache Docker Layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ hashfiles('**/Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      -
+        id: buildxy
+        run: echo '::set-output name=buildxy::${{ (github.event.action == 'deploy'|| github.event.action == 'released') && github.event.client_payload.tag_name == steps.stable-octoprint.outputs.release }}'
+      -
+        name: Tagging Strategy
+        id: tagging
+        uses: HackerHappyHour/tagging-strategy@v3
+        with:
+          image_name: octoprint/octoprint
+          tag_name: ${{ github.event.client_payload.tag_name }}
+          tags: |
+            %X%-minimal::${{ steps.buildxy.outputs.buildxy }}
+            %X.Y%-minimal::${{ steps.buildxy.outputs.buildxy }}
+            %X.Y.Z%-minimal
+          extra_tags: |
+            minimal::${{ steps.stable-octoprint.outputs.release == github.event.client_payload.tag_name }}
+            edge-minimal::${{ github.event.action == 'prereleased' || github.event.client_payload.tag_name == steps.latest-octoprint.outputs.release }}
+            canary-minimal::${{ github.event.action == 'canary' }}
+            bleeding-minimal::${{ github.event.action == 'bleeding' }}
+      -
+        run: echo "tags ${{ steps.tagging.outputs.tags }}"
+      - 
+        name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build and Deploy
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          context: ./minimal
+          file: ./minimal/Dockerfile
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+          tags: ${{ steps.tagging.outputs.tags }}
+          platforms: |
+            linux/amd64
+            linux/arm/v7
+            linux/arm64
+          build-args: |
+            octoprint_ref=${{ github.event.client_payload.tag_name }}
+          labels: ${{ needs.meta.outputs.labels }
 
   push_filters:
     runs-on: ubuntu-latest
@@ -201,6 +288,90 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+          tags: ${{ steps.tagging.outputs.tags }}
+          platforms: |
+            linux/amd64
+            linux/arm/v7
+            linux/arm64
+          build-args: |
+            octoprint_ref=${{ steps.stable-octoprint.outputs.release }}
+          labels: ${{ needs.meta.outputs.labels }}
+
+  release_minimal_on_push:
+    if: needs.push_filters.outputs.minimal == 'true' && github.event_name == 'push' && github.repository_owner == 'OctoPrint'
+    needs: [meta, push_filters]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - 
+        uses: actions/checkout@v2
+      # outputs: release
+      - 
+        name: Get Stable Octoprint
+        id: stable-octoprint
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: OctoPrint
+          repo: OctoPrint
+          excludes: prerelease,draft
+
+      - 
+        name: Get latest Octoprint
+        id: latest-octoprint
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: OctoPrint
+          repo: OctoPrint
+          excludes: draft
+      -
+        name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: arm,arm64
+      -
+        name: Set up Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Cache Docker Layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ hashfiles('**/Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      -
+        name: Tagging Strategy
+        id: tagging
+        uses: HackerHappyHour/tagging-strategy@v3
+        with:
+          image_name: octoprint/octoprint
+          tag_name: ${{ steps.stable-octoprint.outputs.release }}
+          tags: |
+            %X%-minimal
+            %X.Y%-minimal
+            %X.Y.Z%-minimal
+          extra_tags: |
+            minimal
+            edge-minimal::${{ steps.stable-octoprint.outputs.release == steps.latest-octoprint.outputs.release }}
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - 
+        name: Build and Deploy
+        id: build_deploy
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          context: ./minimal
+          file: ./minimal/Dockerfile
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
           tags: ${{ steps.tagging.outputs.tags }}
