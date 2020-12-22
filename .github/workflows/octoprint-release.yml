@@ -196,7 +196,7 @@ jobs:
             linux/arm64
           build-args: |
             octoprint_ref=${{ github.event.client_payload.tag_name }}
-          labels: ${{ needs.meta.outputs.labels }
+          labels: ${{ needs.meta.outputs.labels }}
 
   push_filters:
     runs-on: ubuntu-latest
