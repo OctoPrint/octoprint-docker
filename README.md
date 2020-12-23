@@ -15,7 +15,9 @@ working hard to make it as compatible as possible. Please check out our [Roadmap
 or join the discussion in the `#dev-docker` or `#support-docker` channels on the official OctoPrint Discord
 [discord.octoprint.org](https://discord.octoprint.org).
 
-**Tags**
+**Tags and platforms**
+
+All images for the `octoprint/octoprint` image are multi-arch images, and we publish for `arm64`, `arm/v7`, and `amd64` using the below tags:
 
 - `latest` - will always follow the latest _stable_ release 
 - `edge` - will always follow the latest release _including prereleases_.
