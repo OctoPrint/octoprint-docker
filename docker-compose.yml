@@ -6,6 +6,10 @@ services:
     restart: unless-stopped
     ports:
       - 80:80
+    #device_cgroup_rules: # see docs/using_dynamic_usb_and_video.md
+    #  - "166:* rmw"
+    #  - "188:* rmw"
+    #  - "81:* rmw"
     # devices:
     #  - /dev/ttyACM0:/dev/ttyACM0
     #  - /dev/video0:/dev/video0

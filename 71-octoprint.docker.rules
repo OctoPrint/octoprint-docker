@@ -1,0 +1,6 @@
+# allow usage/start of the container regardless of whether printer is connected
+# see https://github.com/OctoPrint/octoprint-docker/tree/master/docs/using_dynamic_usb_and_video.md
+SUBSYSTEM!="tty", GOTO="end_octoprint_printers"
+ACTION=="add|change", SUBSYSTEM=="tty", KERNEL=="ttyUSB[0-9]|ttyACM[0-9]", RUN+="/usr/bin/docker exec octoprint rm -rf /dev/octoprinter && mknod /dev/octoprinter c %M %m"
+ACTION=="remove", SUBSYSTEM=="tty", KERNEL=="ttyUSB[0-9]|ttyACM[0-9]", RUN+="/usr/bin/docker exec octoprint rm -rf /dev/octoprinter"
+LABEL="end_octoprint_printers"
