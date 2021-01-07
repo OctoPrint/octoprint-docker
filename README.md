@@ -77,7 +77,7 @@ and if you wish to change them, refer to the docker-compose docs on setting envi
 | variable | default | description |
 | -------- | ------- | ----------- |
 | `CAMERA_DEV` | `/dev/video0` | (see [note](#devices_note)) |
-| `MJPG_STREAMER_INPUT` | `-y -n -r 640x480` | params for mjpg-streamer |
+| `MJPG_STREAMER_INPUT` | `-n -r 640x480` | params for mjpg-streamer |
 | `ENABLE_MJPG_STREAMER` | `false` | enable or disable mjpg-streamer
 | `AUTOMIGRATE` | `false` | Will attempt to detect and migrate filesystems structures from previous versions of this image to be compatible with the latest release version. recommend you backup before trying this as this is a new feature that has been difficult to test fully |
 
