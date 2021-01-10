@@ -15,6 +15,10 @@ This template is for bug reports only, and issues from this template will be clo
 **Describe the bug**
 A clear and concise description of what the bug is.
 
+**Container Details**
+
+please run `docker inspect --format '{{ index .Config.Labels "org.opencontainers.image.created"}}' octoprint/octoprint:<tag_you_are_using>' and list the date returned.
+
 **To Reproduce**
 Steps to reproduce the behavior:
 1. Go to '...'
