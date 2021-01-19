@@ -33,9 +33,10 @@ All images for the `octoprint/octoprint` image are multi-arch images, and we pub
     - [Configuration](#configuration)
       - [Enabling Webcam Support with Docker](#enabling-webcam-support-with-docker)
       - [Container Environment based configs](#container-environment-based-configs)
+      - [Restarting OctoPrint](#restarting-octoprint)
       - [Editing Config files manually](#editing-config-files-manually)
   - [Without docker-compose](#without-docker-compose)
-  - [Building the image yourself](#building-the-image-yourself)
+  - [Building your own OctoPrint Image](docs/README.md#building-your-own-octoprint-image)
   - [Contributions Welcome](#contributions-welcome)
 
 ## Usage
@@ -87,6 +88,14 @@ service, whereas the `devices` mapping is used by docker to make sure the contai
 
 For example, if you change the `CAMERA_DEV` to be `/dev/video1`, you would also need to map `/dev/video1:/dev/video1`
 in your container.
+
+#### Restarting OctoPrint
+
+Whilst the container should be pre-configured to allow for OctoPrint to be restarted within the container, there are still some edge cases where this pre-configuration does not take effect. If the option to restart OctopPrint is not present in the user interface, ensure the following command is present in the `Restart OctoPrint` field under the Server section of the OctoPrint Settings.
+
+```text
+s6-svc -r /var/run/s6/services/octoprint
+```
 
 #### Editing Config files manually
 
