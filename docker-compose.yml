@@ -4,13 +4,16 @@ services:
   octoprint:
     image: octoprint/octoprint
     restart: unless-stopped
+    #Internally Octoprint is running on port 80, substitute the external port with something that suits you, preferably use a reverse proxy outside to handle traffic
     ports:
       - 80:80
+    #Pass through any needed devices, use persistent devices outside the container i.e /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0 not /dev/ttyACM0 
     # devices:
-    #  - /dev/ttyACM0:/dev/ttyACM0
+    #  - /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyACM0
     #  - /dev/video0:/dev/video0
+    #Preferably use persistent volumes with absolute paths for easier backup and migration of config from one system to another i.e /docker/octoprint not octoprint
     volumes:
-     - octoprint:/octoprint
+     - /docker/octoprint:/octoprint/octoprint
     # uncomment the lines below to ensure camera streaming is enabled when
     # you add a video device
     #environment:
