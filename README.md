@@ -35,6 +35,7 @@ All images for the `octoprint/octoprint` image are multi-arch images, and we pub
       - [Container Environment based configs](#container-environment-based-configs)
       - [Restarting OctoPrint](#restarting-octoprint)
       - [Editing Config files manually](#editing-config-files-manually)
+      - [Migration From Venv](#migration-from-venv)
   - [Without docker-compose](#without-docker-compose)
   - [Building your own OctoPrint Image](docs/README.md#building-your-own-octoprint-image)
   - [Contributions Welcome](#contributions-welcome)
@@ -123,6 +124,26 @@ docker-compose stop config-editor && docker-compose rm config-editor
 ```
 
 For full documentation about the config editor, see the docs for the product at [github.com/cdr/code-server][code-server].
+
+#### Migration from venv
+
+If you are currently running in a venv it is easy to migrate to a docker container by copying the existing venv data to a docker mapped persistent volume.
+
+e.g
+
+```
+cp -r /home/octoprint/.octoprint/. /docker/octoprint
+```
+
+Remember to stop and disable the service for your venv
+
+```
+systemctl stop octoprint.service
+systemctl disable octoprint.service
+```
+
+Then map your copied folder to the right location inside the container (by default this is /octoprint/octoprint/) and start the container.
+Remember to also map the serial \ usb device as a persistent name, not dynamic names
 
 ## Without docker-compose
 
