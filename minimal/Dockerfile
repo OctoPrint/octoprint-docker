@@ -5,7 +5,7 @@ FROM python:${PYTHON_BASE_IMAGE} AS build
 ARG octoprint_ref 
 ENV octoprint_ref ${octoprint_ref:-master}
 
-RUN apt-get update && apt-get install --no-install-recommends -y \
+RUN apt-get update && apt-get install -y \
   build-essential \
   curl \
   ffmpeg
@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 RUN groupadd --gid 1000 octoprint \
   && useradd --uid 1000 --gid octoprint -G dialout --shell /bin/bash -m octoprint \
   && mkdir -p /octoprint/octoprint /octoprint/plugins \
-  && chown -R octoprint:octoprint /octoprint  
+  && chown -R octoprint:octoprint /octoprint
 
 COPY docker-entrypoint.sh /usr/local/bin
 
@@ -35,11 +35,6 @@ WORKDIR /octoprint
 COPY config.yaml /octoprint/octoprint
 RUN rm -rf /home/octoprint/tmp
 
-# clean build dependencies
-USER root
-RUN  apt remove -y build-essential curl && apt autoremove -y
-
-USER octoprint
 VOLUME /octoprint
 EXPOSE 5000
 
