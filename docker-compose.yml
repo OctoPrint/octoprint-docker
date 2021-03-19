@@ -6,6 +6,9 @@ services:
     restart: unless-stopped
     ports:
       - 80:80
+    # if you are consider enabling the following lines
+    # take a look at docker composer version 3 and privileged flag
+    # otherwise your container is not going to run until you don't have the devices connected
     # devices:
     #  - /dev/ttyACM0:/dev/ttyACM0
     #  - /dev/video0:/dev/video0
