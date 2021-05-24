@@ -7,6 +7,7 @@ services:
     ports:
       - 80:80
     # devices:
+    # use `python -m serial.tools.miniterm` to see what the name is of the printer
     #  - /dev/ttyACM0:/dev/ttyACM0
     #  - /dev/video0:/dev/video0
     volumes:
