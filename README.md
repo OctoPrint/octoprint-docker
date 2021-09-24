@@ -66,6 +66,16 @@ it's listed in the `devices` array in your `docker-compose.yml`.
 If you map a video device _other_ than `/dev/video0`, you will additionally need to set an
 environment variable for `CAMERA_DEV` to match the mapped device mapping.
 
+Make sure you use the following internal configuration (Settings » Webcam & Timelapse):
+        Stream URL: `/webcam/?action=stream`
+        Snapshot URL: `http://localhost:8080/?action=snapshot`
+        Path to FFMPEG: `/usr/bin/ffmpeg`
+
+URLs for reaching the camera from outside the container are:
+        Stream: `http://dockerIP:dockerport/webcam/?action=stream`
+        Snapshot: `http://dockerport:dockerport/webcam/?action=snapshot`
+
+
 See [container environment based configs](#container-environment-based-configs) for a full
 list of webcam configuration options configured with docker.
 
