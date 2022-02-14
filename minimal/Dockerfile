@@ -21,19 +21,19 @@ USER octoprint
 
 WORKDIR /home/octoprint
 
-RUN	mkdir tmp && curl -fsSLO --compressed --retry 3 --retry-delay 10 \
-  https://github.com/OctoPrint/OctoPrint/archive/${octoprint_ref}.tar.gz \
-  && tar xzf ${octoprint_ref}.tar.gz --strip-components 1 -C tmp
-
 ENV PYTHONUSERBASE /octoprint/plugins
 ENV PIP_USER true
 ENV PATH "${PYTHONUSERBASE}/bin:${PATH}"
 
-WORKDIR /home/octoprint/tmp
-RUN pip install .
+RUN	mkdir tmp && curl -fsSLO --compressed --retry 3 --retry-delay 10 \
+  https://github.com/OctoPrint/OctoPrint/archive/${octoprint_ref}.tar.gz \
+  && tar xzf ${octoprint_ref}.tar.gz --strip-components 1 -C tmp \
+  && cd /home/octoprint/tmp \
+  && pip install . \
+  && rm -rf /home/octoprint/tmp
+
 WORKDIR /octoprint
 COPY config.yaml /octoprint/octoprint
-RUN rm -rf /home/octoprint/tmp
 
 VOLUME /octoprint
 EXPOSE 5000
