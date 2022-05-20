@@ -37,6 +37,8 @@ RUN apt-get update && apt-get install -y \
   libjpeg-dev \
   libjpeg62-turbo \
   libprotobuf-dev \
+  libudev-dev \
+  libusb-1.0-0-dev \
   libv4l-dev \
   openssh-client \
   v4l-utils \
