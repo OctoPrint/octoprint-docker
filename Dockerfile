@@ -43,7 +43,8 @@ RUN apt-get update && apt-get install -y \
   openssh-client \
   v4l-utils \
   xz-utils \
-  zlib1g-dev
+  zlib1g-dev \
+  x265
 
 # unpack s6
 COPY --from=s6build /tmp /tmp
