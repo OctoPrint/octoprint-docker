@@ -38,7 +38,7 @@ customizations. Here are a few common scenarios you might find yourself wanting 
 - you require additional OS packages for plugins
 - you want to distribute your own special version of OctoPrint 
 - you want a common set of plugins installed for a distributable image
-- you want to [preconfigure your octoprint instance](preconfigure-your-octoprint.md)
+- you want to [preconfigure your octoprint instance](#preconfiguring-your-octoprint-container)
 
 ## Preconfiguring Your OctoPrint Container
 
