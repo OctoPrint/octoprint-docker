@@ -34,6 +34,7 @@ RUN apt-get update && apt-get install -y \
   g++ \
   git \
   haproxy \
+  libffi-dev \
   libjpeg-dev \
   libjpeg62-turbo \
   libprotobuf-dev \
