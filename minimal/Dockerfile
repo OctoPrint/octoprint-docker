@@ -8,7 +8,8 @@ ENV octoprint_ref ${octoprint_ref:-master}
 RUN apt-get update && apt-get install -y \
   build-essential \
   curl \
-  ffmpeg
+  ffmpeg \
+  libffi-dev
 
 RUN groupadd --gid 1000 octoprint \
   && useradd --uid 1000 --gid octoprint -G dialout --shell /bin/bash -m octoprint \
