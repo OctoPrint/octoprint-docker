@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv sh
+#!/usr/bin/with-contenv bash
 
 if [ -n "$MJPEG_STREAMER_INPUT" ]; then
   echo "Deprecation warning: the environment variable '\$MJPEG_STREAMER_INPUT' was renamed to '\$MJPG_STREAMER_INPUT'"
@@ -6,10 +6,21 @@ if [ -n "$MJPEG_STREAMER_INPUT" ]; then
   MJPG_STREAMER_INPUT=$MJPEG_STREAMER_INPUT
 fi
 
-if ! expr "$MJPG_STREAMER_INPUT" : ".*\.so.*" > /dev/null; then
+if ! expr "$MJPG_STREAMER_INPUT" : ".*\.so.*" >/dev/null; then
   MJPG_STREAMER_INPUT="input_uvc.so $MJPG_STREAMER_INPUT"
 fi
 
-exec mjpg_streamer \
-  -i "/usr/local/lib/mjpg-streamer/$MJPG_STREAMER_INPUT -d $CAMERA_DEV" \
-  -o "/usr/local/lib/mjpg-streamer/output_http.so -w /usr/local/share/mjpg-streamer/www -p 8080"
+# Loop through all camera devices and start mjpg_streamer for each
+IFS=',' read -ra CAMERA_DEVS <<<"$CAMERA_DEV"
+COUNTER=0
+for CAMERA in "${CAMERA_DEVS[@]}"; do
+  # start from port 8080 and increment for each camera
+  ((COUNTER++))
+  PORT=$((8080 + "$COUNTER"))
+  echo "Starting mjpg_streamer for camera device $CAMERA on port $PORT"
+
+  # Start mjpg_streamer
+  mjpg_streamer -b \
+    -i "/usr/local/lib/mjpg-streamer/${MJPG_STREAMER_INPUT} -d ${CAMERA}" \
+    -o "/usr/local/lib/mjpg-streamer/output_http.so -w /usr/local/share/mjpg-streamer/www -p ${PORT}"
+done
