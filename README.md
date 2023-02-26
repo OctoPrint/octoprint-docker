@@ -12,7 +12,7 @@ In addition, we know that OctoPrint is not the best suited type of application f
 
 All images for the `octoprint/octoprint` image are multi-arch images, and we publish for `arm64`, `arm/v7`, and `amd64` using the below tags:
 
-- `latest` - will always follow the latest _stable_ release 
+- `latest` - will always follow the latest _stable_ release
 - `edge` - will always follow the latest release _including prereleases_.
 - `canary` - follows the [OctoPrint/Octoprint@maintenance](https://github.com/OctoPrint/OctoPrint/tree/maintenance) branch
 - `bleeding`- follows the [OctoPrint/Octoprint@devel](https://github.com/OctoPrint/OctoPrint/tree/devel) branch
@@ -21,15 +21,16 @@ All images for the `octoprint/octoprint` image are multi-arch images, and we pub
 - `latest|edge|canary|bleeding|X.Y.Z-minimal` - a minimal version of each of the tags described above, published under the same condition but from the [minimal image](docs/using_the_minimal_image.md)
 
 **Table of Contents**
-- [OctoPrint-docker ![Chat](https://discord.octoprint.org)](#octoprint-docker-)
+
+- [OctoPrint-docker ](#octoprint-docker-)
   - [Usage](#usage)
     - [Configuration](#configuration)
       - [Enabling Webcam Support with Docker](#enabling-webcam-support-with-docker)
-      - [Container Environment based configs](#container-environment-based-configs)
+      - [Container Environment Variables](#container-environment-variables)
       - [Restarting OctoPrint](#restarting-octoprint)
       - [Editing Config files manually](#editing-config-files-manually)
   - [Without docker-compose](#without-docker-compose)
-  - [Building your own OctoPrint Image](docs/README.md#building-your-own-octoprint-image)
+  - [Extended Documentation](#extended-documentation)
   - [Contributions Welcome](#contributions-welcome)
 
 ## Usage
@@ -40,13 +41,11 @@ Save the contents of this file on your machine as `docker-compose.yml`, and then
 
 Open octoprint at `http://<octoprint_ip_or_url`
 
-See [Initial Setup](#initial-setup) for configuration values to use during your fist launch of OctoPrint using docker.
-
 ### Configuration
 
 #### Enabling Webcam Support with Docker
 
-In order to use the webcam, you'll need to make sure the webcam service is enabled. 
+In order to use the webcam, you'll need to make sure the webcam service is enabled.
 This is done by setting the environment variable `ENABLE_MJPG_STREAMER=true` in your`docker run` command, or in the `docker-compose.yml` file.
 
 You'll also need to add `--device /dev/video0:/dev/video0` to your `docker run`, or ensure it's listed in the `devices` array in your `docker-compose.yml`.
@@ -54,38 +53,51 @@ You'll also need to add `--device /dev/video0:/dev/video0` to your `docker run`,
 If you map a video device _other_ than `/dev/video0`, you will additionally need to set an environment variable for `CAMERA_DEV` to match the mapped device mapping.
 
 Make sure you use the following internal configuration (Settings » Webcam & Timelapse):
+
 - Stream URL: `/webcam/?action=stream`
 - Snapshot URL: `http://localhost:8080/?action=snapshot`
 - Path to FFMPEG: `/usr/bin/ffmpeg`
 
 URLs for reaching the camera from outside the container are:
+
 - Stream: `http://dockerIP:dockerport/webcam/?action=stream`
 - Snapshot: `http://dockerport:dockerport/webcam/?action=snapshot`
 
+See [container Environment Variables](#container-environment-variables) for a full list of webcam configuration options configured with docker.
 
-See [container environment based configs](#container-environment-based-configs) for a fulllist of webcam configuration options configured with docker.
-
-#### Container Environment based configs
+#### Container Environment Variables
 
 There are configuration values that you pass using container `--environment` options.
 Listed below are the options and their defaults. These are implicit in example [docker-compose.yml](docker-compose.yml), and if you wish to change them, refer to the docker-compose docs on setting environment variables.
 
-| variable | default | description |
-| -------- | ------- | ----------- |
-| `CAMERA_DEV` | `/dev/video0` | (see [note](#devices_note)) |
-| `MJPG_STREAMER_INPUT` | `-n -r 640x480` | params for mjpg-streamer |
-| `ENABLE_MJPG_STREAMER` | `false` | enable or disable mjpg-streamer
-| `AUTOMIGRATE` | `false` | Will attempt to detect and migrate filesystems structures from previous versions of this image to be compatible with the latest release version. recommend you backup before trying this as this is a new feature that has been difficult to test fully |
+| variable               | default         | description                                                                                                                                                                                                                                             |
+| ---------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CAMERA_DEV`           | `/dev/video0`   | The camera device(s) inside the container. (See [Camera Devices](#camera-devices) note below)                                                                                                                                                           |
+| `MJPG_STREAMER_INPUT`  | `-n -r 640x480` | params for mjpg-streamer                                                                                                                                                                                                                                |
+| `ENABLE_MJPG_STREAMER` | `false`         | enable or disable mjpg-streamer                                                                                                                                                                                                                         |
+| `AUTOMIGRATE`          | `false`         | Will attempt to detect and migrate filesystems structures from previous versions of this image to be compatible with the latest release version. recommend you backup before trying this as this is a new feature that has been difficult to test fully |
 
-**note:** You will still need to declare the `device` mapping in your docker-compose file or docker command, even if you explicitly declare the `CAMERA_DEV`.  The value of `CAMERA_DEV` is used in starting the mjpg-streamer service, whereas the `devices` mapping is used by docker to make sure the container has access to the device.
+##### Camera Devices
+
+You will still need to declare the `device` mapping in your docker-compose file or docker command, even if you explicitly declare the `CAMERA_DEV`.
+The value of `CAMERA_DEV` is used in starting the mjpg-streamer service, whereas the `devices` mapping is used by docker to make sure the container has access to the device.
 
 For example, if you change the `CAMERA_DEV` to be `/dev/video1`, you would also need to map `/dev/video1:/dev/video1` in your container.
+
+###### Multiple Cameras
+
+You may optionally provide a comma separated list of devices such as `/dev/video0,/dev/video1` to map multiple devices.
+Remember to map them all to the container in the `devices` array.
+
+MJPG Streamer will be started for each device, and the stream URL will be `/webcam/<device_name>/?action=stream` where `<device_name>` is the name of the device, e.g. `video0`.
+
+Within the container the MJPG port will start at 8080 and increment for each device, e.g. 8080, 8081, 8082, etc.
 
 #### Restarting OctoPrint
 
 Whilst the container should be pre-configured to allow for OctoPrint to be restarted within the container, there are still some edge cases where this pre-configuration does not take effect. If the option to restart OctopPrint is not present in the user interface, ensure the following command is present in the `Restart OctoPrint` field under the Server section of the OctoPrint Settings.
 
-```text
+```shell
 s6-svc -r /var/run/s6/services/octoprint
 ```
 
@@ -95,18 +107,18 @@ This docker-compose file also contains a container based instance of [vscode][],
 
 To make use of this editor, just uncomment the indicated lines in your [docker-compose.yml](docker-compose.yml#L20-L32) then run the following commands:
 
-```
+```shell
 docker-compose up -d config-editor
 ```
 
 Now go to `http://<octoprint_ip_or_url>:8443/?folder=/octoprint` in your browser to edit your octoprint files!
-Use the 'explorer' (accessible by clicking the hamburger menu icon) to explore folder and files to load into the editor workspace. 
+Use the 'explorer' (accessible by clicking the hamburger menu icon) to explore folder and files to load into the editor workspace.
 
 All configuration files are in the `octoprint` folder, and the active configuration will be accessible at `/octoprint/octoprint/config.yaml`
 
 When you're done, we recommend you stop and remove this service/container:
 
-```
+```shell
 docker-compose stop config-editor && docker-compose rm config-editor
 ```
 
@@ -116,7 +128,7 @@ For full documentation about the config editor, see the docs for the product at 
 
 If you prefer to run without docker-compose, first create an `octoprint` docker volume on the host, and then start your container:
 
-```
+```shell
 docker volume create octoprint
 docker run -d -v octoprint:/octoprint --device /dev/ttyACM0:/dev/ttyACM0 --device /dev/video0:/dev/video0 -e ENABLE_MJPG_STREAMER=true -p 80:80 --name octoprint octoprint/octoprint
 ```
