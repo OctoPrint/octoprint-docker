@@ -15,8 +15,8 @@ IFS=',' read -ra CAMERA_DEVS <<<"$CAMERA_DEV"
 COUNTER=0
 for CAMERA in "${CAMERA_DEVS[@]}"; do
   # start from port 8080 and increment for each camera
-  ((COUNTER++))
   PORT=$((8080 + "$COUNTER"))
+  ((COUNTER++))
   echo "Starting mjpg_streamer for camera device $CAMERA on port $PORT"
 
   # Start mjpg_streamer
