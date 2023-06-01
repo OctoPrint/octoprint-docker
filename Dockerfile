@@ -1,4 +1,4 @@
-ARG PYTHON_BASE_IMAGE=3.8-slim-buster
+ARG PYTHON_BASE_IMAGE=3.10-slim-bullseye
 
 FROM ubuntu AS s6build
 ARG S6_RELEASE
