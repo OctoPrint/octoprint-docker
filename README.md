@@ -61,7 +61,7 @@ Make sure you use the following internal configuration (Settings » Webcam & Tim
 URLs for reaching the camera from outside the container are:
 
 - Stream: `http://dockerIP:dockerport/webcam/?action=stream`
-- Snapshot: `http://dockerport:dockerport/webcam/?action=snapshot`
+- Snapshot: `http://dockerIP:dockerport/webcam/?action=snapshot`
 
 See [container Environment Variables](#container-environment-variables) for a full list of webcam configuration options configured with docker.
 
