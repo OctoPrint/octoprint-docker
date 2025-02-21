@@ -53,10 +53,11 @@ You'll also need to add `--device /dev/video0:/dev/video0` to your `docker run`,
 If you map a video device _other_ than `/dev/video0`, you will additionally need to set an environment variable for `CAMERA_DEV` to match the mapped device mapping.
 
 Make sure you use the following internal configuration (Settings » Webcam & Timelapse):
+- Path to FFMPEG: `/usr/bin/ffmpeg`
 
+Additionally, also use the following plugin configuration (Settings » Classic Webcam):
 - Stream URL: `/webcam/?action=stream`
 - Snapshot URL: `http://localhost:8080/?action=snapshot`
-- Path to FFMPEG: `/usr/bin/ffmpeg`
 
 URLs for reaching the camera from outside the container are:
 
