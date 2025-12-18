@@ -1,6 +1,8 @@
-ARG PYTHON_BASE_IMAGE=3-slim-buster
+ARG PYTHON_BASE_IMAGE=3.13-slim-trixie
 
 FROM python:${PYTHON_BASE_IMAGE} AS build
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
   build-essential \
@@ -19,12 +21,12 @@ USER octoprint
 
 WORKDIR /home/octoprint
 
-ENV PYTHONUSERBASE /octoprint/plugins
-ENV PIP_USER true
-ENV PATH "${PYTHONUSERBASE}/bin:${PATH}"
+ENV PYTHONUSERBASE=/octoprint/plugins
+ENV PIP_USER=true
+ENV PATH="${PYTHONUSERBASE}/bin:${PATH}"
 
 ARG octoprint_ref 
-ENV octoprint_ref ${octoprint_ref:-master}
+ENV octoprint_ref=${octoprint_ref:-master}
 
 RUN	mkdir tmp && curl -fsSLO --compressed --retry 3 --retry-delay 10 \
   https://github.com/OctoPrint/OctoPrint/archive/${octoprint_ref}.tar.gz \
