@@ -48,6 +48,11 @@ Open octoprint at `http://<octoprint_ip_or_url`
 In order to use the webcam, you'll need to make sure the webcam service is enabled.
 This is done by setting the environment variable `ENABLE_MJPG_STREAMER=true` in your`docker run` command, or in the `docker-compose.yml` file.
 
+> [!IMPORTANT]
+> If you are running octoprint with docker compose and you had already started the compose file without the enabled mjpeg streamer you need to recreate the container with `docker compose down` and `docker compose up -d`.
+> Otherwise the streamer will not start.
+
+
 You'll also need to add `--device /dev/video0:/dev/video0` to your `docker run`, or ensure it's listed in the `devices` array in your `docker-compose.yml`.
 
 If you map a video device _other_ than `/dev/video0`, you will additionally need to set an environment variable for `CAMERA_DEV` to match the mapped device mapping.
