@@ -1,4 +1,4 @@
-ARG PYTHON_BASE_IMAGE=3.10-slim-bullseye
+ARG PYTHON_BASE_IMAGE=3.13-slim-trixie
 
 FROM ubuntu AS s6build
 ARG S6_RELEASE
@@ -50,7 +50,8 @@ RUN apt-get update && apt-get install -y \
 # unpack s6
 COPY --from=s6build /tmp /tmp
 RUN s6tar=$(find /tmp -name "s6-overlay-*.tar.gz") \
-  && tar xzf $s6tar -C / 
+ && tar xzf $s6tar -C / --exclude="./bin" \
+ && tar xzf $s6tar -C /usr ./bin
 
 # Install octoprint
 RUN	curl -fsSLO --compressed --retry 3 --retry-delay 10 \
@@ -59,7 +60,8 @@ RUN	curl -fsSLO --compressed --retry 3 --retry-delay 10 \
   && tar xzf ${octoprint_ref}.tar.gz --strip-components 1 -C /opt/octoprint --no-same-owner
 
 WORKDIR /opt/octoprint
-RUN pip install .
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
+ && pip install --no-cache-dir .
 RUN mkdir -p /octoprint/octoprint /octoprint/plugins
 
 # Install mjpg-streamer
@@ -75,11 +77,11 @@ RUN make install
 
 # Copy services into s6 servicedir and set default ENV vars
 COPY root /
-ENV CAMERA_DEV /dev/video0
-ENV MJPG_STREAMER_INPUT -n -r 640x480
-ENV PIP_USER true
-ENV PYTHONUSERBASE /octoprint/plugins
-ENV PATH "${PYTHONUSERBASE}/bin:${PATH}"
+ENV CAMERA_DEV=/dev/video0
+ENV MJPG_STREAMER_INPUT="-n -r 640x480"
+ENV PIP_USER=true
+ENV PYTHONUSERBASE=/octoprint/plugins
+ENV PATH="${PYTHONUSERBASE}/bin:${PATH}"
 # set WORKDIR 
 WORKDIR /octoprint
 
