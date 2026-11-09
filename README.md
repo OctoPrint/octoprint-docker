@@ -137,6 +137,16 @@ docker run -d -v octoprint:/octoprint --device /dev/ttyACM0:/dev/ttyACM0 --devic
 [code-server]: https://github.com/cdr/code-server
 [vscode]: https://code.visualstudio.com
 
+## Easypanel
+
+[Easypanel](https://easypanel.io) is a self-hosted Docker deployment platform, and the `octoprint/octoprint` image has a one-click deployment template there.
+
+[![Deploy on Easypanel][easypanel-btn]][easypanel-deploy]
+
+[easypanel-btn]: https://easypanel.io/img/deploy-on-easypanel-40.svg
+[easypanel-deploy]: https://easypanel.io/templates/octoprint
+
+
 ## Extended Documentation
 
 We are in the process of creating more extensive documentation for using the octoprint/octprint image. Check out the [docs](docs/README.md)
