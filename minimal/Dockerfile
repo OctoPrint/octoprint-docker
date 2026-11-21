@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
   curl \
   ffmpeg \
   libffi-dev \
+  libjpeg-dev \
   zlib1g-dev
 
 RUN groupadd --gid 1000 octoprint \
