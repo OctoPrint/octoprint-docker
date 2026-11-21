@@ -6,7 +6,8 @@ RUN apt-get update && apt-get install -y \
   build-essential \
   curl \
   ffmpeg \
-  libffi-dev
+  libffi-dev \
+  zlib1g-dev
 
 RUN groupadd --gid 1000 octoprint \
   && useradd --uid 1000 --gid octoprint -G dialout --shell /bin/bash -m octoprint \
