@@ -1,11 +1,9 @@
-version: '2.4'
-
 services:
   octoprint:
     build: 
       context: ../
       args:
-        octoprint_ref: 1.5.2
+        octoprint_ref: 2.0.1
     image: octoprint/octoprint:test
     ports:
       - 53333:80
