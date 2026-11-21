@@ -8,7 +8,7 @@ RUN echo "$(dpkg --print-architecture)"
 WORKDIR /tmp
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && case "${dpkgArch##*-}" in \
-  amd64) ARCH='amd64';; \
+  amd64) ARCH='x86_64';; \
   arm64) ARCH='aarch64';; \
   armhf) ARCH='armhf';; \
   *) echo "unsupported architecture: $(dpkg --print-architecture)"; exit 1 ;; \
