@@ -1,6 +1,6 @@
 services:
   octoprint:
-    image: octoprint/octoprint
+    image: octoprint/octoprint:test
     restart: unless-stopped
     ports:
       - 80:80

@@ -15,7 +15,10 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   esac \
   && set -ex \
   && echo $S6_VERSION \
-  && curl -fsSLO "https://github.com/just-containers/s6-overlay/releases/download/$S6_VERSION/s6-overlay-$ARCH.tar.xz"
+  && curl -fsSLO "https://github.com/just-containers/s6-overlay/releases/download/$S6_VERSION/s6-overlay-noarch.tar.xz" \
+  && curl -fsSLo /tmp/s6-overlay-arch.tar.xz "https://github.com/just-containers/s6-overlay/releases/download/$S6_VERSION/s6-overlay-$ARCH.tar.xz" \
+  && curl -fsSLO "https://github.com/just-containers/s6-overlay/releases/download/$S6_VERSION/s6-overlay-symlinks-noarch.tar.xz" \
+  && curl -fsSLO "https://github.com/just-containers/s6-overlay/releases/download/$S6_VERSION/s6-overlay-symlinks-arch.tar.xz"
 
 
 FROM python:${PYTHON_BASE_IMAGE} AS build
@@ -49,11 +52,16 @@ RUN apt-get update && apt-get install -y \
 
 # updated to use .tar.xz source
 COPY --from=s6build /tmp /tmp
-RUN s6tar=$(find /tmp -name "s6-overlay-*.tar.xz") \
-    && if [ "$(readlink -f /bin)" = /usr/bin ]; then \
-         tar xJf "$s6tar" --keep-directory-symlink --exclude='./usr/bin/execlineb' -C /; \
+RUN if [ "$(readlink -f /bin)" = /usr/bin ]; then \
+         tar xJf /tmp/s6-overlay-noarch.tar.xz --keep-directory-symlink -C / \
+         && tar xJf /tmp/s6-overlay-arch.tar.xz --keep-directory-symlink --exclude='./usr/bin/execlineb' -C / \
+         && tar xJf /tmp/s6-overlay-symlinks-noarch.tar.xz --keep-directory-symlink -C / \
+         && tar xJf /tmp/s6-overlay-symlinks-arch.tar.xz --keep-directory-symlink -C /; \
        else \
-         tar xJf "$s6tar" --keep-directory-symlink -C /; \
+         tar xJf /tmp/s6-overlay-noarch.tar.xz -C / \
+         && tar xJf /tmp/s6-overlay-arch.tar.xz -C / \
+         && tar xJf /tmp/s6-overlay-symlinks-noarch.tar.xz -C / \
+         && tar xJf /tmp/s6-overlay-symlinks-arch.tar.xz -C /; \
        fi 
 
 # Install octoprint
@@ -82,6 +90,8 @@ RUN make install
 
 # Copy services into s6 servicedir and set default ENV vars
 COPY root /
+RUN chmod +x /etc/cont-init.d/* /etc/services.d/*/run
+
 ENV CAMERA_DEV=/dev/video0
 ENV MJPG_STREAMER_INPUT="-n -r 640x480"
 ENV PIP_USER=true
