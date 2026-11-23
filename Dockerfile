@@ -54,7 +54,7 @@ RUN apt-get update && apt-get install -y \
 COPY --from=s6build /tmp /tmp
 RUN if [ "$(readlink -f /bin)" = /usr/bin ]; then \
          tar xJf /tmp/s6-overlay-noarch.tar.xz --keep-directory-symlink -C / \
-         && tar xJf /tmp/s6-overlay-arch.tar.xz --keep-directory-symlink --exclude='./usr/bin/execlineb' -C / \
+         && tar xJf /tmp/s6-overlay-arch.tar.xz --keep-directory-symlink -C / \
          && tar xJf /tmp/s6-overlay-symlinks-noarch.tar.xz --keep-directory-symlink -C / \
          && tar xJf /tmp/s6-overlay-symlinks-arch.tar.xz --keep-directory-symlink -C /; \
        else \
@@ -71,8 +71,7 @@ RUN	curl -fsSLO --compressed --retry 3 --retry-delay 10 \
   && tar xzf ${octoprint_ref}.tar.gz --strip-components 1 -C /opt/octoprint --no-same-owner
 
 WORKDIR /opt/octoprint
-RUN pip install --upgrade pip
-# RUN pip install .
+
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
   && pip install --no-cache-dir .
 RUN mkdir -p /octoprint/octoprint /octoprint/plugins
