@@ -24,7 +24,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
 FROM python:${PYTHON_BASE_IMAGE} AS build
 
 ARG octoprint_ref
-ENV octoprint_ref=${octoprint_ref:-master}
+ENV octoprint_ref=${octoprint_ref:-main}
 
 RUN apt-get update && apt-get install -y \
   avrdude \
