@@ -26,7 +26,7 @@ ENV PIP_USER=true
 ENV PATH="${PYTHONUSERBASE}/bin:${PATH}"
 
 ARG octoprint_ref 
-ENV octoprint_ref=${octoprint_ref:-master}
+ENV octoprint_ref=${octoprint_ref:-main}
 
 RUN	mkdir tmp && curl -fsSLO --compressed --retry 3 --retry-delay 10 \
   https://github.com/OctoPrint/OctoPrint/archive/${octoprint_ref}.tar.gz \
