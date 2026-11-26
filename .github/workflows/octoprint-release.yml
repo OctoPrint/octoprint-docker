@@ -15,7 +15,7 @@ jobs:
     steps:
       - 
         id: metadata
-        uses: crazy-max/ghaction-docker-meta@v1
+        uses: crazy-max/ghaction-docker-meta@v6
         with:
           images: octoprint/octoprint
 
