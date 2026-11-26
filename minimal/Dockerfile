@@ -1,4 +1,4 @@
-ARG PYTHON_BASE_IMAGE=3-slim-bullseye
+ARG PYTHON_BASE_IMAGE=3-slim-buster
 
 FROM python:${PYTHON_BASE_IMAGE} AS build
 
@@ -36,6 +36,7 @@ RUN	mkdir tmp && curl -fsSLO --compressed --retry 3 --retry-delay 10 \
   https://github.com/OctoPrint/OctoPrint/archive/${octoprint_ref}.tar.gz \
   && tar xzf ${octoprint_ref}.tar.gz --strip-components 1 -C tmp \
   && cd /home/octoprint/tmp \
+  && pip install argon2-cffi-bindings==25.1.0 \
   && pip install . \
   && rm -rf /home/octoprint/tmp
 
