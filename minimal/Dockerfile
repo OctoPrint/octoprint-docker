@@ -1,14 +1,6 @@
-# Stopgap until the move to trixie: bullseye keeps Python 3.11 (so no plugin reinstall)
-# and has glibc 2.31, which current armv7 wheels such as lxml's need.
-ARG PYTHON_BASE_IMAGE=3.11-slim-bullseye
+ARG PYTHON_BASE_IMAGE=3.13-slim-trixie
 
 FROM python:${PYTHON_BASE_IMAGE} AS build
-
-RUN [ $(lsb_release -cs) != "bullseye" ] || \
-  ( \
-    sed -i 's!deb\.debian\.org!archive\.debian\.org!g' /etc/apt/sources.list && \
-    echo 'Acquire::Check-Valid-Until "false";' | tee /etc/apt/apt.conf.d/10-nocheckvalid \
-  )
 
 RUN apt-get update && apt-get install -y \
   build-essential \
@@ -29,18 +21,17 @@ USER octoprint
 
 WORKDIR /home/octoprint
 
-ENV PYTHONUSERBASE /octoprint/plugins
-ENV PIP_USER true
-ENV PATH "${PYTHONUSERBASE}/bin:${PATH}"
+ENV PYTHONUSERBASE=/octoprint/plugins
+ENV PIP_USER=true
+ENV PATH="${PYTHONUSERBASE}/bin:${PATH}"
 
 ARG octoprint_ref 
-ENV octoprint_ref ${octoprint_ref:-master}
+ENV octoprint_ref=${octoprint_ref:-main}
 
 RUN	mkdir tmp && curl -fsSLO --compressed --retry 3 --retry-delay 10 \
   https://github.com/OctoPrint/OctoPrint/archive/${octoprint_ref}.tar.gz \
   && tar xzf ${octoprint_ref}.tar.gz --strip-components 1 -C tmp \
   && cd /home/octoprint/tmp \
-  && pip install argon2-cffi-bindings==25.1.0 \
   && pip install . \
   && rm -rf /home/octoprint/tmp
 
