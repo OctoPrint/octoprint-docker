@@ -35,11 +35,10 @@ jobs:
       - 
         name: Get OctoPrint Stable
         id: latest-octoprint
-        uses: pozetroninc/github-action-get-latest-release@master
-        with:
-          owner: OctoPrint
-          repo: OctoPrint
-          excludes: prerelease,draft
+        # authenticated, so it doesn't share the runner IP's anonymous rate limit (#297)
+        run: echo "release=$(gh release view --repo OctoPrint/OctoPrint --json tagName --jq .tagName)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
       - 
         name: Set up QEMU
         id: qemu
@@ -99,11 +98,10 @@ jobs:
       - 
         name: Get OctoPrint Stable
         id: latest-octoprint
-        uses: pozetroninc/github-action-get-latest-release@master
-        with:
-          owner: OctoPrint
-          repo: OctoPrint
-          excludes: prerelease,draft
+        # authenticated, so it doesn't share the runner IP's anonymous rate limit (#297)
+        run: echo "release=$(gh release view --repo OctoPrint/OctoPrint --json tagName --jq .tagName)" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
       - 
         name: Set up QEMU
         id: qemu
