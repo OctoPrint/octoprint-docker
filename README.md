@@ -6,7 +6,7 @@ The `octoprint/octoprint` image uses semantic versioning, but the tags for `octo
 
 You can subscribe to be notified of releases as well, by selecting the Watch button in the upper right corner, choosing "Custom", and checking "Releases".
 
-In addition, we know that OctoPrint is not the best suited type of application for containerization, but we're working hard to make it as compatible as possible. Please check out our [Roadmap](https://github.com/OctoPrint/octoprint-docker/projects/4), or join the discussion in the `#dev-docker` or `#support-docker` channels on the official OctoPrint Discord [discord.octoprint.org](https://discord.octoprint.org).
+In addition, we know that OctoPrint is not the best suited type of application for containerization, but we're working hard to make it as compatible as possible. 
 
 **Tags and platforms**
 
@@ -140,7 +140,7 @@ docker run -d -v octoprint:/octoprint --device /dev/ttyACM0:/dev/ttyACM0 --devic
 
 ## Extended Documentation
 
-We are in the process of creating more extensive documentation for using the octoprint/octprint image. Check out the [docs](docs/README.md)
+We are in the process of creating more extensive documentation for using the `octoprint/octprint` image. Check out the [docs](docs/README.md)
 
 If you would like to build the docker image yourself, please read [building-an-octoprint-image](docs/README.md#building-your-own-octoprint-image)
 
