@@ -2,8 +2,8 @@ name: Build Images
 
 on:
   push:
-    #branches-ignore:
-    #  - master
+    branches-ignore:
+      - master
   pull_request:
     branches:
       - master
