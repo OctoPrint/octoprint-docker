@@ -2,7 +2,7 @@ name: Deploy Images
 
 on:
   repository_dispatch:
-    types: [deploy, released, prereleased, canary, bleeding]
+    types: [deploy, released, prereleased, dev]
   push:
     branches:
       - master
@@ -83,8 +83,7 @@ jobs:
           extra_tags: |
             latest::${{ steps.stable-octoprint.outputs.release == github.event.client_payload.tag_name }}
             edge::${{ github.event.action == 'prereleased' || github.event.client_payload.tag_name == steps.latest-octoprint.outputs.release }}
-            canary::${{ github.event.action == 'canary' }}
-            bleeding::${{ github.event.action == 'bleeding' }}
+            dev::${{ github.event.action == 'dev' }}
       -
         run: echo "tags ${{ steps.tagging.outputs.tags }}"
       - 
@@ -170,8 +169,7 @@ jobs:
           extra_tags: |
             minimal::${{ steps.stable-octoprint.outputs.release == github.event.client_payload.tag_name }}
             edge-minimal::${{ github.event.action == 'prereleased' || github.event.client_payload.tag_name == steps.latest-octoprint.outputs.release }}
-            canary-minimal::${{ github.event.action == 'canary' }}
-            bleeding-minimal::${{ github.event.action == 'bleeding' }}
+            dev-minimal::${{ github.event.action == 'dev' }}
       -
         run: echo "tags ${{ steps.tagging.outputs.tags }}"
       - 

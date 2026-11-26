@@ -14,11 +14,12 @@ All images for the `octoprint/octoprint` image are multi-arch images, and we pub
 
 - `latest` - will always follow the latest _stable_ release
 - `edge` - will always follow the latest release _including prereleases_.
-- `canary` - follows the [OctoPrint/Octoprint@maintenance](https://github.com/OctoPrint/OctoPrint/tree/maintenance) branch
-- `bleeding`- follows the [OctoPrint/Octoprint@devel](https://github.com/OctoPrint/OctoPrint/tree/devel) branch
+- `dev` - follows the [OctoPrint/Octoprint@dev](https://github.com/OctoPrint/OctoPrint/tree/dev) branch
 - `X`,`X.Y`,`X.Y.Z`,`X.Y.Z-rc` - these tags will follow the latest build that matches the tag
 - `minimal` - This is built whenever `latest` is built, but uses the [minimal image](docs/using_the_minimal_image.md)
-- `latest|edge|canary|bleeding|X.Y.Z-minimal` - a minimal version of each of the tags described above, published under the same condition but from the [minimal image](docs/using_the_minimal_image.md)
+- `latest|edge|dev|X.Y.Z-minimal` - a minimal version of each of the tags described above, published under the same condition but from the [minimal image](docs/using_the_minimal_image.md)
+
+The tags `canary` and `bleeding` are deprecated and will no longer see updates going forward.
 
 **Table of Contents**
 
