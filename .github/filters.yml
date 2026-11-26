@@ -5,3 +5,8 @@ minimal:
   - 'minimal/**'
 readme:
   - 'README.md'
+# changes to the test build itself; only build.yml uses this, so it never triggers a release
+ci:
+  - '.github/workflows/build.yml'
+  - '.github/filters.yml'
+  - 'scripts/smoke-test.sh'
