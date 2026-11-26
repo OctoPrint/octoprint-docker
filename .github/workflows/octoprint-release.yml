@@ -68,7 +68,7 @@ jobs:
             ${{ runner.os }}-buildx-
       -
         id: buildxy
-        run: echo "name=buildxy::$BUILDXY" >> $GITHUB_OUTPUT
+        run: echo "buildxy=$BUILDXY" >> $GITHUB_OUTPUT
         env:
           BUILDXY: ${{ (github.event.action == 'deploy'|| github.event.action == 'released') && github.event.client_payload.tag_name == steps.stable-octoprint.outputs.release }}
       -
@@ -156,7 +156,7 @@ jobs:
             ${{ runner.os }}-buildx-
       -
         id: buildxy
-        run: echo "name=buildxy::$BUILDXY" >> $GITHUB_OUTPUT
+        run: echo "buildxy=$BUILDXY" >> $GITHUB_OUTPUT
         env:
           BUILDXY: ${{ (github.event.action == 'deploy'|| github.event.action == 'released') && github.event.client_payload.tag_name == steps.stable-octoprint.outputs.release }}
       -
