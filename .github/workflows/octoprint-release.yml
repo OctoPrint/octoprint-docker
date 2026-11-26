@@ -68,7 +68,9 @@ jobs:
             ${{ runner.os }}-buildx-
       -
         id: buildxy
-        run: echo '::set-output name=buildxy::${{ (github.event.action == 'deploy'|| github.event.action == 'released') && github.event.client_payload.tag_name == steps.stable-octoprint.outputs.release }}'
+        run: echo "name=buildxy::$BUILDXY" >> $GITHUB_OUTPUT
+        env:
+          BUILDXY: ${{ (github.event.action == 'deploy'|| github.event.action == 'released') && github.event.client_payload.tag_name == steps.stable-octoprint.outputs.release }}
       -
         name: Tagging Strategy
         id: tagging
@@ -154,7 +156,9 @@ jobs:
             ${{ runner.os }}-buildx-
       -
         id: buildxy
-        run: echo '::set-output name=buildxy::${{ (github.event.action == 'deploy'|| github.event.action == 'released') && github.event.client_payload.tag_name == steps.stable-octoprint.outputs.release }}'
+        run: echo "name=buildxy::$BUILDXY" >> $GITHUB_OUTPUT
+        env:
+          BUILDXY: ${{ (github.event.action == 'deploy'|| github.event.action == 'released') && github.event.client_payload.tag_name == steps.stable-octoprint.outputs.release }}
       -
         name: Tagging Strategy
         id: tagging
