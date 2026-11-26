@@ -96,7 +96,7 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Build and Deploy
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v7
         with:
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -184,7 +184,7 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Build and Deploy
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v7
         with:
           push: true
           context: ./minimal
@@ -287,7 +287,7 @@ jobs:
       - 
         name: Build and Deploy
         id: build_deploy
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v7
         with:
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -369,7 +369,7 @@ jobs:
       - 
         name: Build and Deploy
         id: build_deploy
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v7
         with:
           push: true
           context: ./minimal
