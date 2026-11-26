@@ -59,7 +59,7 @@ jobs:
       - 
         name: Run a Test Build
         id: build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v7
         with:
           push: false
           cache-from: type=local,src=/tmp/.buildx-cache
@@ -107,7 +107,7 @@ jobs:
       - 
         name: Run a Test Build
         id: build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v7
         with:
           push: false
           context: ./minimal
