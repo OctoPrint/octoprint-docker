@@ -60,7 +60,7 @@ jobs:
         uses: docker/setup-buildx-action@v4
       -
         name: Cache Docker Layers
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ hashfiles('**/Dockerfile') }}
@@ -148,7 +148,7 @@ jobs:
         uses: docker/setup-buildx-action@v4
       -
         name: Cache Docker Layers
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ hashfiles('**/Dockerfile') }}
@@ -257,7 +257,7 @@ jobs:
         uses: docker/setup-buildx-action@v4
       -
         name: Cache Docker Layers
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ hashfiles('**/Dockerfile') }}
@@ -339,7 +339,7 @@ jobs:
         uses: docker/setup-buildx-action@v4
       -
         name: Cache Docker Layers
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ hashfiles('**/Dockerfile') }}
