@@ -1,4 +1,4 @@
-ARG PYTHON_BASE_IMAGE=3-slim-buster
+ARG PYTHON_BASE_IMAGE=3.13-slim-trixie
 
 FROM python:${PYTHON_BASE_IMAGE} AS build
 
@@ -6,7 +6,9 @@ RUN apt-get update && apt-get install -y \
   build-essential \
   curl \
   ffmpeg \
-  libffi-dev
+  libffi-dev \
+  libjpeg-dev \
+  zlib1g-dev
 
 RUN groupadd --gid 1000 octoprint \
   && useradd --uid 1000 --gid octoprint -G dialout --shell /bin/bash -m octoprint \
@@ -19,12 +21,12 @@ USER octoprint
 
 WORKDIR /home/octoprint
 
-ENV PYTHONUSERBASE /octoprint/plugins
-ENV PIP_USER true
-ENV PATH "${PYTHONUSERBASE}/bin:${PATH}"
+ENV PYTHONUSERBASE=/octoprint/plugins
+ENV PIP_USER=true
+ENV PATH="${PYTHONUSERBASE}/bin:${PATH}"
 
 ARG octoprint_ref 
-ENV octoprint_ref ${octoprint_ref:-master}
+ENV octoprint_ref=${octoprint_ref:-main}
 
 RUN	mkdir tmp && curl -fsSLO --compressed --retry 3 --retry-delay 10 \
   https://github.com/OctoPrint/OctoPrint/archive/${octoprint_ref}.tar.gz \
