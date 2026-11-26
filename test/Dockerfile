@@ -1,5 +1,5 @@
-# syntax = docker/dockerfile:1.2
-FROM octoprint/octoprint:1.5.2
+# syntax=docker/dockerfile:1
+FROM octoprint/octoprint:2.0.2
 
 ARG username=octoprint
 

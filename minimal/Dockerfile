@@ -1,4 +1,6 @@
-ARG PYTHON_BASE_IMAGE=3-slim-buster
+# Stopgap until the move to trixie: bullseye keeps Python 3.11 (so no plugin reinstall)
+# and has glibc 2.31, which current armv7 wheels such as lxml's need.
+ARG PYTHON_BASE_IMAGE=3.11-slim-bullseye
 
 FROM python:${PYTHON_BASE_IMAGE} AS build
 
@@ -12,7 +14,9 @@ RUN apt-get update && apt-get install -y \
   build-essential \
   curl \
   ffmpeg \
-  libffi-dev
+  libffi-dev \
+  libjpeg-dev \
+  zlib1g-dev
 
 RUN groupadd --gid 1000 octoprint \
   && useradd --uid 1000 --gid octoprint -G dialout --shell /bin/bash -m octoprint \

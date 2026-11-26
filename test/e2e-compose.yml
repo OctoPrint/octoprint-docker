@@ -1,5 +1,3 @@
-version: '2.4'
-
 services:
   octoprint:
     image: octoprint/octoprint:e2e
@@ -17,7 +15,7 @@ services:
     restart: unless-stopped
     environment:
       - PUID=0
-      - GUID=0
+      - PGID=0
       - TZ=America/Chicago
     volumes:
       - octoprint:/octoprint
