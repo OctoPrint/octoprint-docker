@@ -23,6 +23,12 @@ FROM python:${PYTHON_BASE_IMAGE} AS build
 ARG octoprint_ref
 ENV octoprint_ref ${octoprint_ref:-master}
 
+RUN [ $(lsb_release -cs) != "bullseye" ] || \
+  ( \
+    sed -i 's!deb\.debian\.org!archive\.debian\.org!g' /etc/apt/sources.list && \
+    echo 'Acquire::Check-Valid-Until "false";' | tee /etc/apt/apt.conf.d/10-nocheckvalid \
+  )
+
 RUN apt-get update && apt-get install -y \
   avrdude \
   build-essential \

@@ -2,6 +2,12 @@ ARG PYTHON_BASE_IMAGE=3-slim-buster
 
 FROM python:${PYTHON_BASE_IMAGE} AS build
 
+RUN [ $(lsb_release -cs) != "bullseye" ] || \
+  ( \
+    sed -i 's!deb\.debian\.org!archive\.debian\.org!g' /etc/apt/sources.list && \
+    echo 'Acquire::Check-Valid-Until "false";' | tee /etc/apt/apt.conf.d/10-nocheckvalid \
+  )
+
 RUN apt-get update && apt-get install -y \
   build-essential \
   curl \
