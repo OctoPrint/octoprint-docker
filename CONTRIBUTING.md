@@ -28,14 +28,26 @@ at the time you open the PR.
 
 Prerequisites:
 
-- docker and its dependencies installed and up to date
-- buildx enabled in the docker daemon (experimental features should be true)
+- docker and its dependencies installed and up to date, including the buildx and compose plugins
+
+### Smoke test
+
+To check that an image starts and serves OctoPrint, run:
+
+```
+make smoke           # main image, answers on container port 80
+make smoke-minimal   # minimal image, answers on container port 5000
+```
+
+Each target builds the image for your machine's architecture, starts it, and waits up to two minutes for an HTTP
+answer. It also checks that the installed OctoPrint version matches `octoprint_ref`, which defaults to the latest
+stable release. CI runs the same check, `scripts/smoke-test.sh`, on every pull request.
 
 ### Simple test images
 
-Simple test images are built only for the architecture of the machine you are on, using docker-compose.
+Simple test images are built only for the architecture of the machine you are on, using docker compose.
 
-We have simplified running the docker-compose commands using the Makefile. To build and run the test image,
+We have simplified running the docker compose commands using the Makefile. To build and run the test image,
 make your changes to the repo, then run:
 
 ```
@@ -49,8 +61,8 @@ Octoprint will be accessible on [http://localhost:53333](), and the config-edito
 
 Before submitting your changes, you should make sure the image builds on all supported architectures. 
 
-Running `make test` will check to make sure your machine can build all supported architectures, and then build the image
-for all architectures using cache from both your local machine and the latest upstream docker image tag.
+Running `make test` will build the image for all supported architectures, using cache from both your local machine
+and the latest upstream docker image tag.
 
 If you don't have multi-arch support enabled on your machine, you can run `make setup-multi-arch` to add this support.
 
