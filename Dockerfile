@@ -89,7 +89,6 @@ RUN make install
 
 # Copy services into s6 servicedir and set default ENV vars
 COPY root /
-RUN chmod +x /etc/cont-init.d/* /etc/services.d/*/run
 
 ENV CAMERA_DEV=/dev/video0
 ENV MJPG_STREAMER_INPUT="-n -r 640x480"
