@@ -81,7 +81,7 @@ jobs:
           tags: |
             %X%::${{ steps.buildxy.outputs.buildxy }}
             %X.Y%::${{ steps.buildxy.outputs.buildxy }}
-            %X.Y.Z%
+            %X.Y.Z%::${{ steps.buildxy.outputs.buildxy }}
           extra_tags: |
             latest::${{ steps.stable-octoprint.outputs.release == github.event.client_payload.tag_name }}
             edge::${{ github.event.action == 'prereleased' || github.event.client_payload.tag_name == steps.latest-octoprint.outputs.release }}
@@ -169,7 +169,7 @@ jobs:
           tags: |
             %X%-minimal::${{ steps.buildxy.outputs.buildxy }}
             %X.Y%-minimal::${{ steps.buildxy.outputs.buildxy }}
-            %X.Y.Z%-minimal
+            %X.Y.Z%-minimal::${{ steps.buildxy.outputs.buildxy }}
           extra_tags: |
             minimal::${{ steps.stable-octoprint.outputs.release == github.event.client_payload.tag_name }}
             edge-minimal::${{ github.event.action == 'prereleased' || github.event.client_payload.tag_name == steps.latest-octoprint.outputs.release }}
