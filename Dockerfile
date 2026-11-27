@@ -1,10 +1,10 @@
+# syntax=docker/dockerfile:1
 ARG PYTHON_BASE_IMAGE=3.13-slim-trixie
 
-FROM debian:trixie-slim AS s6build 
+FROM debian:trixie-slim AS s6build
 ARG S6_RELEASE
 ENV S6_VERSION=${S6_RELEASE:-v3.2.3.2}
 RUN apt-get update && apt-get install -y curl
-RUN echo "$(dpkg --print-architecture)"
 WORKDIR /tmp
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && case "${dpkgArch##*-}" in \
@@ -23,10 +23,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
 
 FROM python:${PYTHON_BASE_IMAGE} AS build
 
-ARG octoprint_ref
-ENV octoprint_ref=${octoprint_ref:-main}
-
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
   avrdude \
   build-essential \
   cmake \
@@ -48,44 +45,42 @@ RUN apt-get update && apt-get install -y \
   v4l-utils \
   xz-utils \
   zlib1g-dev \
-  x265
+  x265 \
+  && rm -rf /var/lib/apt/lists/*
 
-# updated to use .tar.xz source
-COPY --from=s6build /tmp /tmp
-RUN if [ "$(readlink -f /bin)" = /usr/bin ]; then \
-         tar xJf /tmp/s6-overlay-noarch.tar.xz --keep-directory-symlink -C / \
-         && tar xJf /tmp/s6-overlay-arch.tar.xz --keep-directory-symlink -C / \
-         && tar xJf /tmp/s6-overlay-symlinks-noarch.tar.xz --keep-directory-symlink -C / \
-         && tar xJf /tmp/s6-overlay-symlinks-arch.tar.xz --keep-directory-symlink -C /; \
-       else \
-         tar xJf /tmp/s6-overlay-noarch.tar.xz -C / \
-         && tar xJf /tmp/s6-overlay-arch.tar.xz -C / \
-         && tar xJf /tmp/s6-overlay-symlinks-noarch.tar.xz -C / \
-         && tar xJf /tmp/s6-overlay-symlinks-arch.tar.xz -C /; \
-       fi 
+# Unpack s6-overlay straight from the s6build stage. The tarballs are mounted for this
+# step only, so they never end up in a layer (#277). On merged-/usr bases such as
+# trixie, --keep-directory-symlink stops tar from replacing the /bin symlink.
+RUN --mount=type=bind,from=s6build,source=/tmp,target=/tmp/s6 \
+  if [ "$(readlink -f /bin)" = /usr/bin ]; then keep=--keep-directory-symlink; else keep=; fi \
+  && for t in noarch arch symlinks-noarch symlinks-arch; do \
+       tar xJf "/tmp/s6/s6-overlay-$t.tar.xz" $keep -C / || exit 1; \
+     done
 
-# Install octoprint
-RUN	curl -fsSLO --compressed --retry 3 --retry-delay 10 \
-  https://github.com/OctoPrint/OctoPrint/archive/${octoprint_ref}.tar.gz \
-	&& mkdir -p /opt/octoprint \
-  && tar xzf ${octoprint_ref}.tar.gz --strip-components 1 -C /opt/octoprint --no-same-owner
+# Declared after the apt and s6 layers, so building another OctoPrint version reuses them
+ARG octoprint_ref
+ENV octoprint_ref=${octoprint_ref:-main}
 
-WORKDIR /opt/octoprint
+# Install OctoPrint, then remove the downloaded tarball and source tree (#276)
+RUN curl -fsSL --compressed --retry 3 --retry-delay 10 -o /tmp/octoprint.tar.gz \
+    https://github.com/OctoPrint/OctoPrint/archive/${octoprint_ref}.tar.gz \
+  && mkdir /tmp/octoprint \
+  && tar xzf /tmp/octoprint.tar.gz --strip-components 1 -C /tmp/octoprint --no-same-owner \
+  && pip install --no-cache-dir --root-user-action=ignore --upgrade pip setuptools wheel \
+  && pip install --no-cache-dir --root-user-action=ignore /tmp/octoprint \
+  && rm -rf /tmp/octoprint /tmp/octoprint.tar.gz \
+  && mkdir -p /octoprint/octoprint /octoprint/plugins
 
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
-  && pip install --no-cache-dir .
-RUN mkdir -p /octoprint/octoprint /octoprint/plugins
-
-# Install mjpg-streamer
-RUN curl -fsSLO --compressed --retry 3 --retry-delay 10 \
-  https://github.com/jacksonliam/mjpg-streamer/archive/master.tar.gz \
-  && mkdir /mjpg \
-  && tar xzf master.tar.gz -C /mjpg
-
-
-WORKDIR /mjpg/mjpg-streamer-master/mjpg-streamer-experimental
-RUN make
-RUN make install
+# Build and install mjpg-streamer from a pinned commit, then remove its source and
+# build tree. 310b29f is the tip of jacksonliam/mjpg-streamer master (2021-02-20).
+ARG MJPG_STREAMER_COMMIT=310b29f4a94c46652b20c4b7b6e5cf24e532af39
+RUN curl -fsSL --compressed --retry 3 --retry-delay 10 -o /tmp/mjpg-streamer.tar.gz \
+    https://github.com/jacksonliam/mjpg-streamer/archive/${MJPG_STREAMER_COMMIT}.tar.gz \
+  && mkdir /tmp/mjpg-streamer \
+  && tar xzf /tmp/mjpg-streamer.tar.gz --strip-components 1 -C /tmp/mjpg-streamer \
+  && make -C /tmp/mjpg-streamer/mjpg-streamer-experimental \
+  && make -C /tmp/mjpg-streamer/mjpg-streamer-experimental install \
+  && rm -rf /tmp/mjpg-streamer /tmp/mjpg-streamer.tar.gz
 
 # Copy services into s6 servicedir and set default ENV vars
 COPY root /
