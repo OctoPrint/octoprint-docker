@@ -23,9 +23,6 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
 
 FROM python:${PYTHON_BASE_IMAGE} AS build
 
-ARG octoprint_ref
-ENV octoprint_ref=${octoprint_ref:-main}
-
 RUN apt-get update && apt-get install -y \
   avrdude \
   build-essential \
@@ -59,17 +56,19 @@ RUN --mount=type=bind,from=s6build,source=/tmp,target=/tmp/s6 \
        tar xJf "/tmp/s6/s6-overlay-$t.tar.xz" $keep -C / || exit 1; \
      done
 
-# Install octoprint
-RUN	curl -fsSLO --compressed --retry 3 --retry-delay 10 \
-  https://github.com/OctoPrint/OctoPrint/archive/${octoprint_ref}.tar.gz \
-	&& mkdir -p /opt/octoprint \
-  && tar xzf ${octoprint_ref}.tar.gz --strip-components 1 -C /opt/octoprint --no-same-owner
+# Declared after the apt and s6 layers, so building another OctoPrint version reuses them
+ARG octoprint_ref
+ENV octoprint_ref=${octoprint_ref:-main}
 
-WORKDIR /opt/octoprint
-
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
-  && pip install --no-cache-dir .
-RUN mkdir -p /octoprint/octoprint /octoprint/plugins
+# Install OctoPrint, then remove the downloaded tarball and source tree (#276)
+RUN curl -fsSL --compressed --retry 3 --retry-delay 10 -o /tmp/octoprint.tar.gz \
+    https://github.com/OctoPrint/OctoPrint/archive/${octoprint_ref}.tar.gz \
+  && mkdir /tmp/octoprint \
+  && tar xzf /tmp/octoprint.tar.gz --strip-components 1 -C /tmp/octoprint --no-same-owner \
+  && pip install --no-cache-dir --root-user-action=ignore --upgrade pip setuptools wheel \
+  && pip install --no-cache-dir --root-user-action=ignore /tmp/octoprint \
+  && rm -rf /tmp/octoprint /tmp/octoprint.tar.gz \
+  && mkdir -p /octoprint/octoprint /octoprint/plugins
 
 # Install mjpg-streamer
 RUN curl -fsSLO --compressed --retry 3 --retry-delay 10 \
