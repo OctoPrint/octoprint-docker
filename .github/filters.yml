@@ -1,12 +1,14 @@
+# Which image each change affects. Only build.yml reads this: a pull request or
+# branch push builds and smoke-tests just the images whose files changed. Changes
+# to the test build itself count for both images.
 main:
   - 'Dockerfile'
   - 'root/**'
-minimal:
-  - 'minimal/**'
-readme:
-  - 'README.md'
-# changes to the test build itself; only build.yml uses this, so it never triggers a release
-ci:
+  - 'scripts/smoke-test.sh'
   - '.github/workflows/build.yml'
   - '.github/filters.yml'
+minimal:
+  - 'minimal/**'
   - 'scripts/smoke-test.sh'
+  - '.github/workflows/build.yml'
+  - '.github/filters.yml'
