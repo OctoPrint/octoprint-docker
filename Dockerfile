@@ -70,16 +70,16 @@ RUN curl -fsSL --compressed --retry 3 --retry-delay 10 -o /tmp/octoprint.tar.gz 
   && rm -rf /tmp/octoprint /tmp/octoprint.tar.gz \
   && mkdir -p /octoprint/octoprint /octoprint/plugins
 
-# Install mjpg-streamer
-RUN curl -fsSLO --compressed --retry 3 --retry-delay 10 \
-  https://github.com/jacksonliam/mjpg-streamer/archive/master.tar.gz \
-  && mkdir /mjpg \
-  && tar xzf master.tar.gz -C /mjpg
-
-
-WORKDIR /mjpg/mjpg-streamer-master/mjpg-streamer-experimental
-RUN make
-RUN make install
+# Build and install mjpg-streamer from a pinned commit, then remove its source and
+# build tree. 310b29f is the tip of jacksonliam/mjpg-streamer master (2021-02-20).
+ARG MJPG_STREAMER_COMMIT=310b29f4a94c46652b20c4b7b6e5cf24e532af39
+RUN curl -fsSL --compressed --retry 3 --retry-delay 10 -o /tmp/mjpg-streamer.tar.gz \
+    https://github.com/jacksonliam/mjpg-streamer/archive/${MJPG_STREAMER_COMMIT}.tar.gz \
+  && mkdir /tmp/mjpg-streamer \
+  && tar xzf /tmp/mjpg-streamer.tar.gz --strip-components 1 -C /tmp/mjpg-streamer \
+  && make -C /tmp/mjpg-streamer/mjpg-streamer-experimental \
+  && make -C /tmp/mjpg-streamer/mjpg-streamer-experimental install \
+  && rm -rf /tmp/mjpg-streamer /tmp/mjpg-streamer.tar.gz
 
 # Copy services into s6 servicedir and set default ENV vars
 COPY root /
