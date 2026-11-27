@@ -72,6 +72,7 @@ jobs:
           echo "image=ghcr.io/${OWNER,,}/octoprint" | tee -a "$GITHUB_OUTPUT"
 
   release:
+    name: Release ${{ matrix.variant }}
     needs: plan
     runs-on: ubuntu-latest
     permissions:
