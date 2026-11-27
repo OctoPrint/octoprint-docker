@@ -1,10 +1,10 @@
+# syntax=docker/dockerfile:1
 ARG PYTHON_BASE_IMAGE=3.13-slim-trixie
 
-FROM debian:trixie-slim AS s6build 
+FROM debian:trixie-slim AS s6build
 ARG S6_RELEASE
 ENV S6_VERSION=${S6_RELEASE:-v3.2.3.2}
 RUN apt-get update && apt-get install -y curl
-RUN echo "$(dpkg --print-architecture)"
 WORKDIR /tmp
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && case "${dpkgArch##*-}" in \
@@ -50,19 +50,14 @@ RUN apt-get update && apt-get install -y \
   zlib1g-dev \
   x265
 
-# updated to use .tar.xz source
-COPY --from=s6build /tmp /tmp
-RUN if [ "$(readlink -f /bin)" = /usr/bin ]; then \
-         tar xJf /tmp/s6-overlay-noarch.tar.xz --keep-directory-symlink -C / \
-         && tar xJf /tmp/s6-overlay-arch.tar.xz --keep-directory-symlink -C / \
-         && tar xJf /tmp/s6-overlay-symlinks-noarch.tar.xz --keep-directory-symlink -C / \
-         && tar xJf /tmp/s6-overlay-symlinks-arch.tar.xz --keep-directory-symlink -C /; \
-       else \
-         tar xJf /tmp/s6-overlay-noarch.tar.xz -C / \
-         && tar xJf /tmp/s6-overlay-arch.tar.xz -C / \
-         && tar xJf /tmp/s6-overlay-symlinks-noarch.tar.xz -C / \
-         && tar xJf /tmp/s6-overlay-symlinks-arch.tar.xz -C /; \
-       fi 
+# Unpack s6-overlay straight from the s6build stage. The tarballs are mounted for this
+# step only, so they never end up in a layer (#277). On merged-/usr bases such as
+# trixie, --keep-directory-symlink stops tar from replacing the /bin symlink.
+RUN --mount=type=bind,from=s6build,source=/tmp,target=/tmp/s6 \
+  if [ "$(readlink -f /bin)" = /usr/bin ]; then keep=--keep-directory-symlink; else keep=; fi \
+  && for t in noarch arch symlinks-noarch symlinks-arch; do \
+       tar xJf "/tmp/s6/s6-overlay-$t.tar.xz" $keep -C / || exit 1; \
+     done
 
 # Install octoprint
 RUN	curl -fsSLO --compressed --retry 3 --retry-delay 10 \
