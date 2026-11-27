@@ -153,8 +153,10 @@ Within the container the MJPG port will start at 8080 and increment for each dev
 Whilst the container should be pre-configured to allow for OctoPrint to be restarted within the container, there are still some edge cases where this pre-configuration does not take effect. If the option to restart OctopPrint is not present in the user interface, ensure the following command is present in the `Restart OctoPrint` field under the Server section of the OctoPrint Settings.
 
 ```shell
-s6-svc -r /var/run/s6/services/octoprint
+s6-svc -r /run/service/octoprint
 ```
+
+Volumes set up by older images contain `s6-svc -r /var/run/s6/services/octoprint` instead. That path keeps working, so there's no need to change it.
 
 #### Editing Config files manually
 
