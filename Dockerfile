@@ -45,7 +45,8 @@ RUN apt-get update && apt-get install -y \
   v4l-utils \
   xz-utils \
   zlib1g-dev \
-  x265
+  x265 \
+  && rm -rf /var/lib/apt/lists/*
 
 # Unpack s6-overlay straight from the s6build stage. The tarballs are mounted for this
 # step only, so they never end up in a layer (#277). On merged-/usr bases such as

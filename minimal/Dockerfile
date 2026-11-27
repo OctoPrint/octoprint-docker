@@ -8,7 +8,8 @@ RUN apt-get update && apt-get install -y \
   ffmpeg \
   libffi-dev \
   libjpeg-dev \
-  zlib1g-dev
+  zlib1g-dev \
+  && rm -rf /var/lib/apt/lists/*
 
 ARG octoprint_ref
 ENV octoprint_ref=${octoprint_ref:-main}
