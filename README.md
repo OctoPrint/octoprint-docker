@@ -1,28 +1,27 @@
 # OctoPrint-docker [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://discord.octoprint.org)
 
-This is the primary image of `octoprint/octoprint`. It is designed to work similarly, and support the same out of the box features as the octopi raspberry-pi machine image, using docker.
+This repository builds the OctoPrint Docker image, published as `ghcr.io/octoprint/octoprint`. It is designed to work like, and support the same out of the box features as, the OctoPi Raspberry Pi image.
 
-The `octoprint/octoprint` image uses semantic versioning, but the tags for `octoprint/octoprint` follow the version of octoprint contained in the image. As a result we recommend you always check the [CHANGELOG](CHANGELOG.md) or [Releases](https://github.com/OctoPrint/octoprint-docker/releases) before pulling an image, _even if you are pulling the same tag_.
+Tags follow the version of OctoPrint in the image. A tag can be rebuilt with the same OctoPrint version, for example to pick up Debian security updates or changes to the image, so check the [CHANGELOG](CHANGELOG.md) before pulling, even for a tag you already use.
 
-You can subscribe to be notified of releases as well, by selecting the Watch button in the upper right corner, choosing "Custom", and checking "Releases".
+In addition, we know that OctoPrint is not the best suited type of application for containerization, but we're working hard to make it as compatible as possible.
 
-In addition, we know that OctoPrint is not the best suited type of application for containerization, but we're working hard to make it as compatible as possible. 
+> [!IMPORTANT]
+> The image has moved from Docker Hub to `ghcr.io/octoprint/octoprint`, and now runs Python 3.13. `octoprint/octoprint` on Docker Hub no longer gets updates. Before you switch, read [Upgrading to the Python 3.13 images](#upgrading-to-the-python-313-images): plugins installed through the Plugin Manager need to be reinstalled.
 
 **Tags and platforms**
 
-All images for the `octoprint/octoprint` image are multi-arch images, and we publish for `arm64`, `arm/v7`, and `amd64` using the below tags:
+Every image is published for `amd64`, `arm64` and `arm/v7`.
 
-- `latest` - will always follow the latest _stable_ release
-- `edge` - will always follow the latest release _including prereleases_.
-- `dev` - follows the [OctoPrint/Octoprint@dev](https://github.com/OctoPrint/OctoPrint/tree/dev) branch
-- `X`,`X.Y`,`X.Y.Z`,`X.Y.Z-rc` - these tags will follow the latest build that matches the tag
-- `minimal` - This is built whenever `latest` is built, but uses the [minimal image](docs/using_the_minimal_image.md)
-- `latest|edge|dev|X.Y.Z-minimal` - a minimal version of each of the tags described above, published under the same condition but from the [minimal image](docs/using_the_minimal_image.md)
+| Main image | [Minimal image](docs/using_the_minimal_image.md) | Follows |
+| --- | --- | --- |
+| `latest` | `minimal` | The latest stable OctoPrint release |
+| `X.Y`, `X` | `X.Y-minimal`, `X-minimal` | The latest stable release, while it's in that line |
+| `X.Y.Z` | `X.Y.Z-minimal` | That OctoPrint release, prereleases included |
+| `edge` | `edge-minimal` | The newest release, prereleases included |
+| `dev` | `dev-minimal` | OctoPrint's [`dev`](https://github.com/OctoPrint/OctoPrint/tree/dev) branch |
 
-The tags `canary` and `bleeding` are deprecated and will no longer see updates going forward.
-
-> [!IMPORTANT]
-> The images now run Python 3.13. If you're upgrading from an image that ran Python 3.10 or 3.11, plugins installed through the Plugin Manager need to be reinstalled. Read [Upgrading to the Python 3.13 images](#upgrading-to-the-python-313-images) before you pull.
+Every tag also has a `-pythonX.Y` alias with the image's Python version, such as `latest-python3.13` or `2.0.2-minimal-python3.13`. Pin one of those if you want to choose when the Python version changes.
 
 **Table of Contents**
 
@@ -34,7 +33,7 @@ The tags `canary` and `bleeding` are deprecated and will no longer see updates g
       - [Container Environment Variables](#container-environment-variables)
       - [Restarting OctoPrint](#restarting-octoprint)
       - [Editing Config files manually](#editing-config-files-manually)
-  - [Without docker-compose](#without-docker-compose)
+  - [Without Docker Compose](#without-docker-compose)
   - [Extended Documentation](#extended-documentation)
   - [Contributions Welcome](#contributions-welcome)
 
@@ -56,7 +55,7 @@ To upgrade:
 
 1. Under **Settings » Backup & Restore**, create a backup and download it.
 2. Under **Settings » Plugin Manager**, click **Export**. This downloads your plugin list as a `plugin_list.json` file.
-3. Pull the new image and recreate the container:
+3. If your `docker-compose.yml` still says `image: octoprint/octoprint`, change it to `image: ghcr.io/octoprint/octoprint`, keeping any tag you use. Then pull the new image and recreate the container:
 
    ```shell
    docker compose pull
@@ -70,7 +69,7 @@ To upgrade:
    docker compose exec octoprint rm -rf /octoprint/plugins/lib/python3.10
    ```
 
-**Not ready yet?** The last images on the old Python stay available as `octoprint/octoprint:2.0.2-python3.10` and `octoprint/octoprint:2.0.2-minimal-python3.11`. They won't get any more updates, so use them only to put the upgrade off for a while.
+**Not ready yet?** The last images on the old Python stay available as `ghcr.io/octoprint/octoprint:2.0.2-python3.10` and `ghcr.io/octoprint/octoprint:2.0.2-minimal-python3.11`. They won't get any more updates, so use them only to put the upgrade off for a while.
 
 **Choosing when Python changes next:** every tag also has a `-python3.13` variant, such as `latest-python3.13` or `2.0.2-minimal-python3.13`. If you pin one of those, the next Python upgrade only reaches you when you change the tag.
 
@@ -84,11 +83,11 @@ docker compose exec octoprint pip install --no-build-isolation <plugin archive U
 
 ## Usage
 
-We recommend you use docker-compose to run octoprint via docker, and have included a recommended [docker-compose.yml](docker-compose.yml) file for your convenience.
+We recommend you use Docker Compose to run octoprint via docker, and have included a recommended [docker-compose.yml](docker-compose.yml) file for your convenience.
 
-Save the contents of this file on your machine as `docker-compose.yml`, and then run `docker-compose up -d`.
+Save the contents of this file on your machine as `docker-compose.yml`, and then run `docker compose up -d`.
 
-Open octoprint at `http://<octoprint_ip_or_url`
+Open octoprint at `http://<octoprint_ip_or_url>`
 
 ### Configuration
 
@@ -123,7 +122,7 @@ See [container Environment Variables](#container-environment-variables) for a fu
 #### Container Environment Variables
 
 There are configuration values that you pass using container `--environment` options.
-Listed below are the options and their defaults. These are implicit in example [docker-compose.yml](docker-compose.yml), and if you wish to change them, refer to the docker-compose docs on setting environment variables.
+Listed below are the options and their defaults. These are implicit in example [docker-compose.yml](docker-compose.yml), and if you wish to change them, refer to the Docker Compose docs on setting environment variables.
 
 | variable               | default         | description                                                                                                                                                                                                                                             |
 | ---------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -153,10 +152,10 @@ Volumes set up by older images contain `s6-svc -r /var/run/s6/services/octoprint
 
 This docker-compose file also contains a container based instance of [vscode][], accessible via your browser at the same url as your octoprint instance, allowing you to edit configuration files without needing to login to your octoprint host.
 
-To make use of this editor, just uncomment the indicated lines in your [docker-compose.yml](docker-compose.yml#L20-L32) then run the following commands:
+To make use of this editor, just uncomment the indicated lines in your [docker-compose.yml](docker-compose.yml#L18-L35) then run the following commands:
 
 ```shell
-docker-compose up -d config-editor
+docker compose up -d config-editor
 ```
 
 Now go to `http://<octoprint_ip_or_url>:8443/?folder=/octoprint` in your browser to edit your octoprint files!
@@ -167,26 +166,26 @@ All configuration files are in the `octoprint` folder, and the active configurat
 When you're done, we recommend you stop and remove this service/container:
 
 ```shell
-docker-compose stop config-editor && docker-compose rm config-editor
+docker compose stop config-editor && docker compose rm config-editor
 ```
 
-For full documentation about the config editor, see the docs for the product at [github.com/cdr/code-server][code-server].
+For full documentation about the config editor, see the docs for the product at [github.com/coder/code-server][code-server].
 
-## Without docker-compose
+## Without Docker Compose
 
-If you prefer to run without docker-compose, first create an `octoprint` docker volume on the host, and then start your container:
+If you prefer to run without Docker Compose, first create an `octoprint` docker volume on the host, and then start your container:
 
 ```shell
 docker volume create octoprint
-docker run -d -v octoprint:/octoprint --device /dev/ttyACM0:/dev/ttyACM0 --device /dev/video0:/dev/video0 -e ENABLE_MJPG_STREAMER=true -p 80:80 --name octoprint octoprint/octoprint
+docker run -d -v octoprint:/octoprint --device /dev/ttyACM0:/dev/ttyACM0 --device /dev/video0:/dev/video0 -e ENABLE_MJPG_STREAMER=true -p 80:80 --name octoprint ghcr.io/octoprint/octoprint
 ```
 
-[code-server]: https://github.com/cdr/code-server
+[code-server]: https://github.com/coder/code-server
 [vscode]: https://code.visualstudio.com
 
 ## Extended Documentation
 
-We are in the process of creating more extensive documentation for using the `octoprint/octprint` image. Check out the [docs](docs/README.md)
+We are in the process of creating more extensive documentation for using the `ghcr.io/octoprint/octoprint` image. Check out the [docs](docs/README.md)
 
 If you would like to build the docker image yourself, please read [building-an-octoprint-image](docs/README.md#building-your-own-octoprint-image)
 

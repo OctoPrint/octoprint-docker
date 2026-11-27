@@ -1,6 +1,6 @@
 services:
   octoprint:
-    image: octoprint/octoprint
+    image: ghcr.io/octoprint/octoprint
     restart: unless-stopped
     ports:
       - 80:80

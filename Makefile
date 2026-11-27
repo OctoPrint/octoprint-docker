@@ -26,7 +26,7 @@ test:
 	mkdir -p ${cachedir} ${builddir}
 	docker buildx build \
 		--platform ${platforms} \
-		--cache-from type=registry,ref=docker.io/octoprint/octoprint:${octoprint_ref} \
+		--cache-from type=registry,ref=ghcr.io/octoprint/octoprint:${octoprint_ref} \
 		--cache-from type=local,src=${cachedir} \
 		--cache-to type=local,dest=${cachedir} \
 		--build-arg octoprint_ref=${octoprint_ref} \
