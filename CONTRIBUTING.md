@@ -78,11 +78,13 @@ publishing uses the workflow's own `GITHUB_TOKEN`.
 
 ### Build Images
 
-[`build.yml`](.github/workflows/build.yml) runs on pull requests into `main` and on pushes to any other branch. It never
-publishes anything.
+[`build.yml`](.github/workflows/build.yml) runs on pull requests into `main`. It never publishes anything.
 
-- It builds only the images whose files changed, as listed in [`.github/filters.yml`](.github/filters.yml). Changes to
-  `build.yml`, `filters.yml` or `scripts/smoke-test.sh` build both images.
+- On a pull request it builds only the images whose files changed, as listed in
+  [`.github/filters.yml`](.github/filters.yml). Changes to `build.yml`, `filters.yml` or `scripts/smoke-test.sh` build
+  both images.
+- Pushing to a branch doesn't start a build by itself. Open a pull request (a draft is fine), or start one by hand
+  under Actions » Build Images » Run workflow, which builds both images for the branch you pick.
 - For each image it builds for amd64, runs `scripts/smoke-test.sh` against it, then builds for all three platforms.
 - Every run also runs `scripts/test-release-scripts.sh`, so changes to the release logic are tested before they reach
   `main`.

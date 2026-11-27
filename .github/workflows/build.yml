@@ -1,16 +1,17 @@
 name: Build Images
 
-# Builds and smoke-tests the images whose files changed, on pull requests into main and
-# pushes to any other branch. It never publishes anything: release.yml does that.
+# Builds and smoke-tests the images whose files changed, on pull requests into main.
+# Run it by hand (Actions > Build Images > Run workflow) to build both images for any
+# branch. It never publishes anything: release.yml does that.
 # See "How the workflows run" in CONTRIBUTING.md.
 
 on:
-  push:
-    branches-ignore:
-      - main
+  # Not on push: a branch push and its pull request would both run, and cancelling the
+  # duplicate shows up as failed checks on the pull request.
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -22,8 +23,8 @@ defaults:
     shell: bash
 
 concurrency:
-  # a branch's push run and its pull request run share a group, so only the newer one runs
-  group: build-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}
+  # a new commit on a pull request (or branch) cancels the run for the commit it replaces
+  group: build-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -39,18 +40,22 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      variants: ${{ steps.filter.outputs.changes }}
+      # manual runs build both images
+      variants: ${{ steps.filter.outputs.changes || '["main","minimal"]' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: github.event_name == 'pull_request'
         with:
           persist-credentials: false
       - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        if: github.event_name == 'pull_request'
         id: filter
         with:
           filters: .github/filters.yml
 
+  # No custom name: GitHub shows "build (main)" and "build (minimal)" when it runs, and
+  # "build" when no image changed, rather than an unexpanded matrix expression.
   build:
-    name: Build ${{ matrix.variant }}
     needs: changes
     if: needs.changes.outputs.variants != '[]'
     runs-on: ubuntu-latest
