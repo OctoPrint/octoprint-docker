@@ -21,9 +21,13 @@ All images for the `octoprint/octoprint` image are multi-arch images, and we pub
 
 The tags `canary` and `bleeding` are deprecated and will no longer see updates going forward.
 
+> [!IMPORTANT]
+> The images now run Python 3.13. If you're upgrading from an image that ran Python 3.10 or 3.11, plugins installed through the Plugin Manager need to be reinstalled. Read [Upgrading to the Python 3.13 images](#upgrading-to-the-python-313-images) before you pull.
+
 **Table of Contents**
 
 - [OctoPrint-docker ](#octoprint-docker-)
+  - [Upgrading to the Python 3.13 images](#upgrading-to-the-python-313-images)
   - [Usage](#usage)
     - [Configuration](#configuration)
       - [Enabling Webcam Support with Docker](#enabling-webcam-support-with-docker)
@@ -33,6 +37,50 @@ The tags `canary` and `bleeding` are deprecated and will no longer see updates g
   - [Without docker-compose](#without-docker-compose)
   - [Extended Documentation](#extended-documentation)
   - [Contributions Welcome](#contributions-welcome)
+
+## Upgrading to the Python 3.13 images
+
+The images now run Python 3.13 on Debian trixie. Earlier images ran Python 3.10 (main image) or Python 3.11 (minimal image). OctoPrint 2.1 won't support Python 3.10, so every release from here on uses the new images. To see which Python your container runs:
+
+```shell
+docker compose exec octoprint python --version
+```
+
+If it shows 3.10 or 3.11, read this before you pull.
+
+**What carries over:** your settings, users, uploaded files, timelapses and single-file plugins. They live in OctoPrint's config folder, `/octoprint/octoprint`, in your volume.
+
+**What doesn't:** plugins installed through the Plugin Manager. They're Python packages in `/octoprint/plugins/lib/python3.10/site-packages` (`python3.11` on the minimal image), and Python 3.13 doesn't look there. Their settings are kept, so reinstalling them brings them back as they were.
+
+To upgrade:
+
+1. Under **Settings » Backup & Restore**, create a backup and download it.
+2. Under **Settings » Plugin Manager**, click **Export**. This downloads your plugin list as a `plugin_list.json` file.
+3. Pull the new image and recreate the container:
+
+   ```shell
+   docker compose pull
+   docker compose up -d
+   ```
+
+4. Under **Settings » Plugin Manager**, click **Get More**, and in **... from an uploaded file** choose `plugin_list.json`. Restart OctoPrint when asked.
+5. Optional: once everything works, remove the old packages to free up space. On the minimal image, use `python3.11`:
+
+   ```shell
+   docker compose exec octoprint rm -rf /octoprint/plugins/lib/python3.10
+   ```
+
+**Not ready yet?** The last images on the old Python stay available as `octoprint/octoprint:2.0.2-python3.10` and `octoprint/octoprint:2.0.2-minimal-python3.11`. They won't get any more updates, so use them only to put the upgrade off for a while.
+
+**Choosing when Python changes next:** every tag also has a `-python3.13` variant, such as `latest-python3.13` or `2.0.2-minimal-python3.13`. If you pin one of those, the next Python upgrade only reaches you when you change the tag.
+
+**Installing plugins from the command line:** older plugins whose `setup.py` imports `octoprint_setuptools` only build with pip's `--no-build-isolation` flag. The Plugin Manager adds it by itself; on the command line, add it yourself and restart OctoPrint afterwards:
+
+```shell
+docker compose exec octoprint pip install --no-build-isolation <plugin archive URL>
+```
+
+**Changes in OctoPrint 2.0 itself:** some old plugins no longer load on OctoPrint 2.0, whichever image you use. See the [plugin migration guide](https://docs.octoprint.org/en/dev/plugins/migration_2_0_0.html). If you use an authentication proxy with `accessControl.trustRemoteUser`, check the trusted authentication proxies setting described in the [2.0.0 release notes](https://github.com/OctoPrint/OctoPrint/releases/tag/2.0.0).
 
 ## Usage
 
