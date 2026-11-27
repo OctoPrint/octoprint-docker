@@ -127,7 +127,7 @@ Listed below are the options and their defaults. These are implicit in example [
 
 | variable               | default         | description                                                                                                                                                                                                                                             |
 | ---------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `CAMERA_DEV`           | `/dev/video0`   | The camera device(s) inside the container. (See [Camera Devices](#camera-devices) note below)                                                                                                                                                           |
+| `CAMERA_DEV`           | `/dev/video0`   | The camera device inside the container. (See [Camera Devices](#camera-devices) note below)                                                                                                                                                              |
 | `MJPG_STREAMER_INPUT`  | `-n -r 640x480` | params for mjpg-streamer                                                                                                                                                                                                                                |
 | `ENABLE_MJPG_STREAMER` | `false`         | enable or disable mjpg-streamer                                                                                                                                                                                                                         |
 | `AUTOMIGRATE`          | `false`         | Will attempt to detect and migrate filesystems structures from previous versions of this image to be compatible with the latest release version. recommend you backup before trying this as this is a new feature that has been difficult to test fully |
@@ -138,15 +138,6 @@ You will still need to declare the `device` mapping in your docker-compose file 
 The value of `CAMERA_DEV` is used in starting the mjpg-streamer service, whereas the `devices` mapping is used by docker to make sure the container has access to the device.
 
 For example, if you change the `CAMERA_DEV` to be `/dev/video1`, you would also need to map `/dev/video1:/dev/video1` in your container.
-
-###### Multiple Cameras
-
-You may optionally provide a comma separated list of devices such as `/dev/video0,/dev/video1` to map multiple devices.
-Remember to map them all to the container in the `devices` array.
-
-MJPG Streamer will be started for each device, and the stream URL will be `/webcam/<device_name>/?action=stream` where `<device_name>` is the name of the device, e.g. `video0`.
-
-Within the container the MJPG port will start at 8080 and increment for each device, e.g. 8080, 8081, 8082, etc.
 
 #### Restarting OctoPrint
 
