@@ -23,7 +23,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
 
 FROM python:${PYTHON_BASE_IMAGE} AS build
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
   avrdude \
   build-essential \
   cmake \

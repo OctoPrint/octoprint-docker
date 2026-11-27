@@ -2,7 +2,7 @@ ARG PYTHON_BASE_IMAGE=3.13-slim-trixie
 
 FROM python:${PYTHON_BASE_IMAGE} AS build
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
   build-essential \
   curl \
   ffmpeg \
