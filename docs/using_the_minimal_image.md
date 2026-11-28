@@ -1,7 +1,7 @@
 # Using the `minimal` image
 
-The `minimal` image variants of the `octoprint/octoprint` images behave like a more
-traditional docker image. This means there is no process supervisor, and there is only one
+The `minimal` image variants of `ghcr.io/octoprint/octoprint` (tagged `minimal`, `X.Y.Z-minimal` and so on) behave
+like a more traditional docker image. This means there is no process supervisor, and there is only one
 process (octoprint). It has the following differences from the main image:
 
 - it does not contain mjpg-streamer

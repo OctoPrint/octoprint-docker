@@ -1,8 +1,6 @@
-version: '2.4'
-
 services:
   octoprint:
-    image: octoprint/octoprint
+    image: ghcr.io/octoprint/octoprint
     restart: unless-stopped
     ports:
       - 80:80
@@ -31,7 +29,7 @@ services:
   #  restart: unless-stopped
   #  environment:
   #    - PUID=0
-  #    - GUID=0
+  #    - PGID=0
   #    - TZ=America/Chicago
   #  volumes:
   #    - octoprint:/octoprint

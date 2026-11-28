@@ -1,0 +1,169 @@
+name: Release Images
+
+# Builds, smoke-tests and publishes both images to ghcr.io/<repository owner>/octoprint.
+# This runs the same way in forks, publishing to the fork owner's ghcr.io namespace:
+# see "How the workflows run" in CONTRIBUTING.md.
+
+on:
+  # the latest stable OctoPrint release, whenever the images change on main
+  push:
+    branches:
+      - main
+    paths:
+      - 'Dockerfile'
+      - 'root/**'
+      - 'minimal/**'
+      - 'scripts/smoke-test.sh'
+      - 'scripts/release-plan.sh'
+      - 'scripts/release-tags.sh'
+      - '.github/workflows/release.yml'
+  # sent by OctoPrint's own trigger_docker.yml for releases and pushes to its dev branch
+  repository_dispatch:
+    types: [released, prereleased, dev]
+  # Actions > Release Images > Run workflow
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'OctoPrint release to build, such as 2.0.2, or "dev". Leave empty for the latest stable release.'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    # bash with pipefail, so a failing script in front of tee fails the step
+    shell: bash
+
+concurrency:
+  # one run per OctoPrint version at a time; a newer dev build replaces a queued one
+  group: release-${{ github.event.client_payload.tag_name || inputs.version || 'stable' }}
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.plan.outputs.version }}
+      latest: ${{ steps.plan.outputs.latest }}
+      edge: ${{ steps.plan.outputs.edge }}
+      dev: ${{ steps.plan.outputs.dev }}
+      image: ${{ steps.plan.outputs.image }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Decide the version and tags
+        id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          ACTION: ${{ github.event.action }}
+          PAYLOAD_TAG: ${{ github.event.client_payload.tag_name }}
+          INPUT_VERSION: ${{ inputs.version }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          STABLE=$(gh release view --repo OctoPrint/OctoPrint --json tagName --jq .tagName)
+          NEWEST=$(gh api 'repos/OctoPrint/OctoPrint/releases?per_page=10' --jq '[.[] | select(.draft | not)][0].tag_name')
+          export STABLE NEWEST
+          ./scripts/release-plan.sh | tee -a "$GITHUB_OUTPUT"
+          # ghcr.io names must be lowercase
+          echo "image=ghcr.io/${OWNER,,}/octoprint" | tee -a "$GITHUB_OUTPUT"
+
+  release:
+    name: Release ${{ matrix.variant }}
+    needs: plan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: main
+            context: .
+            port: 80
+            title: OctoPrint
+            description: OctoPrint with mjpg-streamer for a webcam, behind haproxy on port 80
+          - variant: minimal
+            context: ./minimal
+            port: 5000
+            title: OctoPrint (minimal)
+            description: OctoPrint alone, running as a non-root user on port 5000
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+        with:
+          platforms: arm,arm64
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      # Releases build without a layer cache and pull the base image, so every
+      # release picks up current Debian security updates.
+      - name: Build amd64 image for the smoke test
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: ${{ matrix.context }}
+          pull: true
+          load: true
+          platforms: linux/amd64
+          tags: octoprint-smoke:${{ matrix.variant }}
+          build-args: |
+            octoprint_ref=${{ needs.plan.outputs.version }}
+      - name: Smoke test
+        timeout-minutes: 5
+        run: ./scripts/smoke-test.sh "octoprint-smoke:${{ matrix.variant }}" "${{ matrix.port }}"
+        env:
+          # dev builds report a development version, so only releases are checked
+          EXPECTED_VERSION: ${{ needs.plan.outputs.dev == 'false' && needs.plan.outputs.version || '' }}
+      - name: Work out the tags
+        id: tags
+        env:
+          IMAGE: ${{ needs.plan.outputs.image }}
+          VARIANT: ${{ matrix.variant }}
+          VERSION: ${{ needs.plan.outputs.version }}
+          LATEST: ${{ needs.plan.outputs.latest }}
+          EDGE: ${{ needs.plan.outputs.edge }}
+        run: |
+          # the Python version comes from the image just built, so the tags can't drift from it
+          PYTHON=$(docker run --rm --entrypoint python "octoprint-smoke:$VARIANT" -c 'import sys; print("%d.%d" % sys.version_info[:2])')
+          export PYTHON
+          ./scripts/release-tags.sh
+          {
+            echo "tags<<EOF"
+            ./scripts/release-tags.sh
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+      - name: Log in to ghcr.io
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push all platforms
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: ${{ matrix.context }}
+          pull: true
+          push: true
+          platforms: |
+            linux/amd64
+            linux/arm/v7
+            linux/arm64
+          build-args: |
+            octoprint_ref=${{ needs.plan.outputs.version }}
+          tags: ${{ steps.tags.outputs.tags }}
+          labels: |
+            org.opencontainers.image.title=${{ matrix.title }}
+            org.opencontainers.image.description=${{ matrix.description }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ needs.plan.outputs.version }}
+          # ghcr.io shows the description and links the repository from the multi-arch index
+          annotations: |
+            index:org.opencontainers.image.description=${{ matrix.description }}
+            index:org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}

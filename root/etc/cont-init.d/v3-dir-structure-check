@@ -3,7 +3,7 @@
 : "${AUTOMIGRATE:=false}"
 
 if $AUTOMIGRATE; then
-  echo "AUTOMIGATE enabled...."
+  echo "AUTOMIGRATE enabled...."
   if [[ -d "/octoprint/data" ]] || [[ -f "/octoprint/config.yaml" ]]; then
     echo "octoprint-docker v2 directory structure detected...."
     echo "migrating to octoprint-docker v3 directory structure..."

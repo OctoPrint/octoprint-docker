@@ -1,15 +1,27 @@
-ARG PYTHON_BASE_IMAGE=3-slim-buster
+ARG PYTHON_BASE_IMAGE=3.13-slim-trixie
 
 FROM python:${PYTHON_BASE_IMAGE} AS build
 
-ARG octoprint_ref 
-ENV octoprint_ref ${octoprint_ref:-master}
-
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
   build-essential \
   curl \
   ffmpeg \
-  libffi-dev
+  libffi-dev \
+  libjpeg-dev \
+  zlib1g-dev \
+  && rm -rf /var/lib/apt/lists/*
+
+ARG octoprint_ref
+ENV octoprint_ref=${octoprint_ref:-main}
+
+# Install OctoPrint into the image's site-packages rather than the volume, so pulling
+# a newer image upgrades it. Plugins still install into the volume (PYTHONUSERBASE below).
+RUN curl -fsSL --compressed --retry 3 --retry-delay 10 -o /tmp/octoprint.tar.gz \
+    https://github.com/OctoPrint/OctoPrint/archive/${octoprint_ref}.tar.gz \
+  && mkdir /tmp/octoprint \
+  && tar xzf /tmp/octoprint.tar.gz --strip-components 1 -C /tmp/octoprint \
+  && pip install --no-cache-dir --root-user-action=ignore /tmp/octoprint \
+  && rm -rf /tmp/octoprint /tmp/octoprint.tar.gz
 
 RUN groupadd --gid 1000 octoprint \
   && useradd --uid 1000 --gid octoprint -G dialout --shell /bin/bash -m octoprint \
@@ -20,18 +32,9 @@ COPY docker-entrypoint.sh /usr/local/bin
 
 USER octoprint
 
-WORKDIR /home/octoprint
-
-ENV PYTHONUSERBASE /octoprint/plugins
-ENV PIP_USER true
-ENV PATH "${PYTHONUSERBASE}/bin:${PATH}"
-
-RUN	mkdir tmp && curl -fsSLO --compressed --retry 3 --retry-delay 10 \
-  https://github.com/OctoPrint/OctoPrint/archive/${octoprint_ref}.tar.gz \
-  && tar xzf ${octoprint_ref}.tar.gz --strip-components 1 -C tmp \
-  && cd /home/octoprint/tmp \
-  && pip install . \
-  && rm -rf /home/octoprint/tmp
+ENV PYTHONUSERBASE=/octoprint/plugins
+ENV PIP_USER=true
+ENV PATH="${PYTHONUSERBASE}/bin:${PATH}"
 
 WORKDIR /octoprint
 COPY config.yaml /octoprint/octoprint

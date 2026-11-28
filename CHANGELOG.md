@@ -1,3 +1,34 @@
+## Unreleased
+
+The image moves to `ghcr.io/octoprint/octoprint`, Debian trixie and Python 3.13. Read
+[Upgrading to the Python 3.13 images](README.md#upgrading-to-the-python-313-images) before you switch: plugins
+installed through the Plugin Manager need to be reinstalled.
+
+### Breaking changes
+
+- Images are published to `ghcr.io/octoprint/octoprint` only. `octoprint/octoprint` on Docker Hub no longer gets
+  updates.
+- Both images run Python 3.13 on Debian trixie. The main image ran Python 3.10 on bullseye, the minimal image
+  Python 3.11. Plugins installed through the Plugin Manager live in a Python-versioned folder and have to be
+  reinstalled.
+- The main image uses s6-overlay v3. OctoPrint's restart command is now `s6-svc -r /run/service/octoprint`, and the
+  old `/var/run/s6/services/octoprint` path in existing volumes keeps working.
+- The `canary` and `bleeding` tags are gone. `dev` follows OctoPrint's `dev` branch.
+
+### Changes
+
+- Every tag gets a `-pythonX.Y` alias, such as `latest-python3.13` or `2.0.2-minimal-python3.13`, so you can choose
+  when the Python version changes.
+- The minimal image installs OctoPrint into the image instead of the volume. Before, an existing volume kept the
+  OctoPrint version it was created with, whatever image you pulled.
+- The minimal image starts the server again when given only options, such as `--port 5001`, which OctoPrint 2.0
+  broke.
+- The images no longer contain the downloaded sources, the s6-overlay tarballs, apt's package lists or recommended
+  packages they don't use. The main image is about 1.2 GB instead of 1.6 GB, the minimal image about 1.05 GB instead
+  of 1.3 GB.
+- mjpg-streamer is built from a pinned commit.
+- The Debian base's CA bundle no longer trusts the compromised eMudhra root (#294).
+
 ## 3.1.0 
 December 13, 2020
 

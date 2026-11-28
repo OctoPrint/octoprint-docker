@@ -1,0 +1,9 @@
+#!/bin/sh
+# s6-overlay v2 supervised services under /var/run/s6/services; v3 uses /run/service.
+# config.yaml files created by older images restart OctoPrint with
+#   s6-svc -r /var/run/s6/services/octoprint
+# and those live in users' volumes, so keep the old path working.
+# (/var/run is a symlink to /run on Debian.)
+if [ ! -e /run/s6/services ]; then
+  ln -s /run/service /run/s6/services
+fi

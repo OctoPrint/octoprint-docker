@@ -17,22 +17,16 @@ Here are some helpful resources on docker that we recommend:
 
 ## Configuring Docker
 
-We recommend using docker 19.03 or higher, and enabling experimental support for your docker engine.
-The examples used in these docs will all use experimental features enabled.
+Use a current Docker Engine or Docker Desktop with the buildx and compose plugins. No daemon settings need
+changing: the features these docs use, such as BuildKit, are on by default.
 
-1. Open `/etc/docker/daemon.json`
-2. Add the experimental true setting:
-
-```json
-{
-  "experimental": true
-}
-```
+Building images for other architectures than your own also needs QEMU emulation. See
+[CONTRIBUTING.md](../CONTRIBUTING.md#testing-your-changes-on-all-architectures) for `make setup-multi-arch`.
 
 ## Building your own OctoPrint image
 
 In some circumstances, the best approach for running octoprint in a container
-will be to build off of the base `octoprint/octoprint` image and add your own 
+will be to build off of the base `ghcr.io/octoprint/octoprint` image and add your own 
 customizations. Here are a few common scenarios you might find yourself wanting to do this:
 
 - you require additional OS packages for plugins
